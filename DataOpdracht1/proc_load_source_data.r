@@ -34,9 +34,10 @@ library(stringi)
 
 
 ifn <- "tls203_part"
-batches <- 1
+batches <- 5
 #ifp <- "D:/DATA_Active/Data/PATSTAT_2018_B/1_Source_Data/source_zip_files/"
-ifp <- ""
+ifp <- "../../../data/"
+#ifp <- ""
 ofn <- "PS18B_ABSTR"
 
 
