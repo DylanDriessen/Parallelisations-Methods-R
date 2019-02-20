@@ -1,8 +1,8 @@
-<<<<<<< HEAD
+
 gc(verbose = TRUE)
 memory.size()
 object.size(readFiles())
-=======
+
 ifn <- "tls203_part"
 batches <- 5
 ifp <- "../../../data/mini/"
@@ -14,7 +14,7 @@ core_no <- detectCores()
 
 microbenchmark(read_and_save_clusterapply(), read_and_save_doparallel_foreach(), read_and_save_parlapply(), read_and_save_sequential(), times = 3)
 
->>>>>>> 5a396f42ca5b8ab3efb8a2af87948cc60dd5c023
+
 readFiles <- function(){
   
   print("Read Files Process started.")
@@ -80,10 +80,7 @@ read_and_save_batch <- function(batch_nr) {
   batch_no <- sprintf("%02d", batch_nr)
   fn <- paste0(ifn, batch_no, ".txt.xz")
   fp <- ifp
-  
-<<<<<<< HEAD
-}
-=======
+
   #read batch file
   print(paste0("Start reading batch <", batch_no, "> (", fn, ")"))
   v <- paste0(ofn, "_", batch_no)
@@ -97,4 +94,4 @@ read_and_save_batch <- function(batch_nr) {
   save(list=v, file=fn, compress="xz", compression_level=2)
   print(paste0("Finished processing batch <", batch_no, ">."))
 }
->>>>>>> 5a396f42ca5b8ab3efb8a2af87948cc60dd5c023
+
