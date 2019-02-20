@@ -9,10 +9,7 @@ ofn <- "ps18b_abstr"
 
 # READ AND PROCESS BATCHES
 
-import(c("foreach", "doParallel"))
 
-core_no <- detectCores()
-registerDoParallel(cores = core_no)
 
 # Read and process batches
 par <- function() {
