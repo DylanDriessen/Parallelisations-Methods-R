@@ -1,3 +1,6 @@
+gc(verbose = TRUE)
+memory.size()
+object.size(readFiles())
 readFiles <- function(){
   
   print("Read Files Process started.")
