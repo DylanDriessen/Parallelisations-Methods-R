@@ -41,15 +41,8 @@ str(docs)
 #
 ################################################################################
 
-
-library(stringi)   # String manipulation
-
-
-# TRANSLITERATE TO LATIN
-
-
-docs$text <- stringi::stri_trans_general(docs$text, 'Latin-ASCII')
-
+source("lib/preProcess.r")
+preProcess()
 
 # ==============================================================================
 #
@@ -59,161 +52,8 @@ docs$text <- stringi::stri_trans_general(docs$text, 'Latin-ASCII')
 #
 # ==============================================================================
 
-
-library(tm)        # Basic text mining
-library(SnowballC) # Additional stemmers
-library(stringi)   # String manipulation
-library(slam)      # Sparse matrices
-library(wordcloud) # Word clouds
-library(corrplot)  # Correlation plots
-#library(RWeka)    # Additional tokenizers
-library(NLP)       # Additional tokenizers
-
-
-# COMPILE CORPUS (FROM DATAFRAME, PREVIOUS TO VERSION 0.7-6)
-
-
-# Define reader to map id, content and metadata
-
-#myReader <- readTabular(mapping=list(id="id", content=as.character("txt"), language="lg", mime="mime"))
-
-# Language setting: fixed language or language set by metadata
-
-# OR Fixed language
-#crp <- VCorpus(DataframeSource(docs), readerControl=list(reader=myReader, language="en"))
-# OR Language in metadata
-#crp <- VCorpus(DataframeSource(docs), readerControl=list(reader=myReader))
-
-
-# COMPILE CORPUS (FROM DATAFRAME, AS OF VERSION 0.7-6)
-
-
-# Create corpus (and define default language)
-
-crp <- VCorpus(DataframeSource(docs), readerControl=list(language="en"))
-
-# Set metadata based on fields in source data
-
-for(i in 1:length(crp)) {
-  meta(crp[[i]], "language") <- docs$language[i]
-  #meta(crp[[i]], "author") <- docs$author[i]
-}
-
-
-# INSPECT CORPUS
-
-# Check number of documents in corpus
-#length(crp)
-
-# Inspect corpus document
-#inspect(crp[1])
-
-# View document text contents
-#str(crp[[1]]$content)
-#strwrap(crp[[1]]$content)
-#as.character(crp[[1]])
-
-# View metadata document
-#meta(crp[[1]])
-#meta(crp[[1]],"id")
-#meta(crp[[1]],"language")
-#meta(crp[[1]],"author")
-
-# Inspect multiple documents
-#lapply(crp[1:10], as.character)
-
-
-# ANALYSE CORPUS
-
-
-# CLEAN CORPUS
-
-
-# Define general function to replace strings in corpus
-
-(crp.replacePattern <- content_transformer(function(x, pattern, replace) gsub(pattern, replace, x)))
-
-# Clean unicode characters
-
-# Remove graphical characters
-crp <- tm_map(crp, crp.replacePattern, "[^[:graph:]]", " ")
-
-# Remove unicode chars
-#crp <- tm_map(crp, content_transformer (function(x) iconv(x,"UTF-8","ASCII",sub="")))
-
-# To lower
-
-crp <- tm_map(crp, content_transformer(tolower))
-
-# Stopword removal
-
-# Check stopword lists
-#stopwords("SMART")
-#stopwords("english")
-#stopwords("en")
-# Supported languages: danish, dutch, english, finnish, french, german, 
-# hungarian, italian, norwegian, portugese, russion, spanish, swedish
-
-#crp <- tm_map(crp, removeWords, c("the", "a", "is"))
-crp <- tm_map(crp, removeWords, stopwords("SMART"))
-#crp <- tm_map(crp, removeWords, stopwords("english"))
-#crp <- tm_map(crp, removeWords, stopwords("en"))
-#crp <- tm_map(crp, removeWords, c(stopwords("english"), "method", "process"))
-#crp <- tm_map(crp, removeWords, c(stopwords("english"), stopwords("dutch")))
-
-#crp <- tm_map(crp, removeWords, stopwords(meta(corp, "language")))
-
-# Stemming
-
-crp <- tm_map(crp, stemDocument, language = "porter")
-#crp <- tm_map(crp, stemDocument, language = "english")
-
-#crp <- tm_map(crp, stemDocument, language = meta(crp, "language"))
-
-# Stem completion
-
-# Numbers
-
-# All numbers (including numbers as part of a alphanumerical term)
-crp <- tm_map(crp, removeNumbers)
-
-# Pure numbers
-#crp <- tm_map(crp, crp.replacePattern, " [[:digit:]]+ ", " ")
-#crp <- tm_map(crp, crp.replacePattern, " [[:digit:]]+ ", " ")
-#crp <- tm_map(crp, crp.replacePattern, " [[:digit:]]+ ", " ")
-#crp <- tm_map(crp, crp.replacePattern, " [[:digit:]]+ ", " ")
-#crp <- tm_map(crp, crp.replacePattern, " [[:digit:]]+ ", " ")
-#crp <- tm_map(crp, crp.replacePattern, " [[:digit:]]+$", "")
-
-# Punctuation
-
-crp <- tm_map(crp, removePunctuation, preserve_intra_word_dashes = TRUE)
-
-# Whitespace
-
-crp <- tm_map(crp, stripWhitespace)
-
-# Remove special characters (or replace by space)
-
-#crp <- tm_map(crp, crp.replacePattern, "-", " ")
-#crp <- tm_map(crp, crp.replacePattern, "'", "")
-#crp <- tm_map(crp, crp.replacePattern, """, "")
-
-# Remove final punctuation
-
-#crp <- tm_map(crp, removePunctuation, preserve_intra_word_dashes = TRUE)
-#crp <- tm_map(crp, crp.replacePattern, "[[:punct:]] +", " ")
-
-# Remove final whitespace
-
-#crp <- tm_map(crp, stripWhitespace)
-
-
-# SAVE RESULTS
-
-
-save(crp, file="crp.RDa")
-
+source("lib/createCorpus.r")
+createCorpus()
 
 # ==============================================================================
 #
@@ -223,33 +63,8 @@ save(crp, file="crp.RDa")
 #
 # ==============================================================================
 
-
-# CREATE DTM (RAW AND WEIGHTED)
-
-
-dtm_ctrl <- list(tokenize = "words",
-                 tolower = FALSE, 
-                 removePunctuation = FALSE,
-                 removeNumbers = FALSE,
-                 stopwords = FALSE,
-                 stemming = FALSE,
-                 dictionary = NULL,
-                 bounds = list(global = c(1, Inf)),
-                 weighting = weightTf,
-                 wordLengths = c(1, Inf) 
-)
-
-
-dtm_raw    <- DocumentTermMatrix(crp, control = dtm_ctrl)
-dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
-
-
-# SAVE RESULTS
-
-
-save(dtm_raw, dtm_ctrl, file="dtm_raw.RDa")
-save(dtm_tfidf, dtm_ctrl, file="dtm_tfidf.RDa")
-
+source("lib/createDTM.r")
+createDTM()
 
 # ==============================================================================
 #
@@ -259,19 +74,8 @@ save(dtm_tfidf, dtm_ctrl, file="dtm_tfidf.RDa")
 #
 # ==============================================================================
 
-
-# DERIVE VOCABULARY
-
-
-voc <- data.frame(trm = as.character(names(col_sums(dtm_raw))), cFrqs = col_sums(dtm_raw), dFrqs = col_sums(weightBin(dtm_raw)),stringsAsFactors=FALSE)
-#voc <- voc[with (voc, order(trm)),]
-voc <- voc[with (voc, order(-cFrqs,-dFrqs,trm)),]
-voc <- cbind(trm_id=seq(1, nrow(voc)),voc)
-rownames(voc) <- voc$trm_id
-#voc$stopword.nl <- sapply(voc$trm, function(x) {as.integer(x %in% stopwords("nl"))})
-#voc$stopword.en <- sapply(voc$trm, function(x) {as.integer(x %in% stopwords("en"))})
-#voc$isCapitalCase <- sapply(voc$trm, function(x) as.integer(isCapitalCase(x)))
-
+source("lib/deriveVocabulary.r")
+deriveVocabulary()
 
 # SAVE RESULTS
 
