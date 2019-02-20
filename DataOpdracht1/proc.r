@@ -22,7 +22,7 @@ import(c("readr","tibble","data.table","stringi"))
 ifn <- "tls203_part"
 batches <- 1
 #ifp <- "D:/DATA_Active/Data/PATSTAT_2018_B/1_Source_Data/source_zip_files/"
-ifp <- ""
+ifp <- "../../../data/"
 ofn <- "ps18b_abstr"
 
 
@@ -31,12 +31,12 @@ ofn <- "ps18b_abstr"
 
 # Read and process batches
 for(batch_nr in 1:batches) {
-  
+
   # Compile file name to read
   batch_no <- sprintf("%02d", batch_nr)
   fn <- paste0(ifn, batch_no, ".txt.xz")
   fp <- ifp
-  
+
   # Read batch file
   v <- paste0(ofn, "_", batch_no)
   assign(v, tibble::as_data_frame(readr::read_delim(paste0(fp, fn), 
@@ -60,12 +60,11 @@ for(batch_nr in 1:batches) {
                                                  locale = locale(encoding = "UTF-8")
          ))
   )
-  
-  
+
   # Save intermediate batch file
   fn <- paste0(ofn, "_", batch_no, ".xz.RDa")
   save(list=v, file=fn, compress="xz", compression_level=2)
-  
+
 } # Read and process batches
 
 
@@ -91,6 +90,7 @@ assign(v, as.data.frame(rbindlist(mget(ls(pattern=pt)))))
 
 docs <- ps18b_abstr_smpl[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
 names(docs) <- c("doc_id", "text", "language")
+str(docs)
 
 
 ################################################################################
