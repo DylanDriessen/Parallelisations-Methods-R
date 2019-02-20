@@ -1,24 +1,27 @@
 readFiles <- function(){
+  
+  print("Read Files Process started.")
+  
   ifn <- "tls203_part"
-  batches <- 3
-  #ifp <- "D:/DATA_Active/Data/PATSTAT_2018_B/1_Source_Data/source_zip_files/"
+  batches <- 1
   ifp <- "../../../data/"
   ofn <- "ps18b_abstr"
-  print("Var toegewezen")
+  
 
 # READ AND PROCESS BATCHES
 
 
 #Read and process batches
-for(batch_nr in 3:batches) {
-  print("for loop")
-  # Compile file name to read
+for(batch_nr in 1:batches) {
+  
+    # Compile file name to read
   batch_no <- sprintf("%02d", batch_nr)
   fn <- paste0(ifn, batch_no, ".txt.xz")
   fp <- ifp
 
+  print(paste0("Start reading batch <", batch_nr, "> (", fn, ")"))
+  
   # Read batch file
-  print("Read batch file")
   v <- paste0(ofn, "_", batch_no)
   assign(v, tibble::as_data_frame(readr::read_delim(paste0(fp, fn),
                                                     ",",
@@ -41,15 +44,15 @@ for(batch_nr in 3:batches) {
                                                     locale = locale(encoding = "UTF-8")
   ))
   )
-  print("assignd")
+  
 
   # Save intermediate batch file
   fn <- paste0(ofn, "_", batch_no, ".xz.RDa")
+  print(paste0("Start saving batch <", batch_nr, "> to ", fn, "."))
   save(list=v, file=fn, compress="xz", compression_level=2)
-  print("saved")
+  print(paste0("Finished processing batch <", batch_nr, ">."))
 
 } # Read and process batches
-
 
 # COMBINE BATCHES
 
@@ -59,5 +62,7 @@ v <- ofn
 
 # Pattern to use
 pt <- paste0(ofn, "_", "[0-9]+")
+print("Combining batches...")
 assign(v, as.data.frame(rbindlist(mget(ls(pattern=pt)))))
+print("Finished reading batches.")
 }
