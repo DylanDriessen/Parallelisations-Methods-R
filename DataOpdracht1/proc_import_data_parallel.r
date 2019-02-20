@@ -2,7 +2,7 @@ source("importPackage.r")
 import(c("readr","tibble","data.table","stringi", "R.utils", "microbenchmark"))
 
 ifn <- "tls203_part"
-batches <- 5
+batches <- 3
 #ifp <- "D:/DATA_Active/Data/PATSTAT_2018_B/1_Source_Data/source_zip_files/"
 ifp <- "../../../data/"
 ofn <- "ps18b_abstr"
@@ -56,7 +56,7 @@ seq <- function() {
     
   }# Read and process batches
 }
-microbenchmark(par(), seq(), times = 3)
+microbenchmark(par(), seq(), times = 1)
   
   
   
