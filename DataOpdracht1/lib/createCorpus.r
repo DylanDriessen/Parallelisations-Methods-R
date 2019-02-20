@@ -35,7 +35,7 @@ createCorpus <- function() {
     no_cores <- detectCores()
     cl <- makeCluster(no_cores)
     registerDoParallel(cl)
-    foreach(i = 1:length(crp), .export = c("docs", "crp")) %dopar% {
+    foreach(i = 1:length(crp), .export = c("docs", "crp"), .packages = c("tm")) %dopar% {
       meta(crp[[i]], "language") <- docs$language[i]
     }
     stopCluster(cl)
@@ -43,7 +43,7 @@ createCorpus <- function() {
   
   
   
-  microbenchmark(seqClus(),parClus(), times = 1)
+  microbenchmark(seqClus(),parClus(), times = 3)
   
   # Define general function to replace strings in corpus
   (crp.replacePattern <-

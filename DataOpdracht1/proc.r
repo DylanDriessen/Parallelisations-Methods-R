@@ -1,6 +1,5 @@
 (.packages())
 
-
 # Issues: 
 #   Language dependent stop word removal
 #   Language dependent stemming
@@ -13,8 +12,7 @@
 #
 ################################################################################
 
-source("importPackage.r")
-import(c("readr","tibble","data.table","stringi"))
+source("util/importPackage.r")
 
 source("lib/readFiles.r")
 docs <- readFiles()
