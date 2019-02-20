@@ -17,21 +17,7 @@ source("importPackage.r")
 import(c("readr","tibble","data.table","stringi"))
 
 source("lib/readFiles.r")
-readFiles()
-
-################################################################################
-#
-# 1 COMPILE DOCUMENT COLLECTION
-#
-# 18/02/2019 Tom Magerman
-#
-################################################################################
-
-
-docs <- ps18b_abstr_smpl[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
-names(docs) <- c("doc_id", "text", "language")
-str(docs)
-
+docs <- readFiles()
 
 ################################################################################
 #
@@ -53,7 +39,7 @@ preProcess()
 # ==============================================================================
 
 source("lib/createCorpus.r")
-createCorpus()
+docsCorpus <- createCorpus()
 
 # ==============================================================================
 #

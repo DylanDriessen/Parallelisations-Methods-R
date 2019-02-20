@@ -3,8 +3,8 @@ readFiles <- function(){
   print("Read Files Process started.")
   
   ifn <- "tls203_part"
-  batches <- 1
-  ifp <- "../../../data/"
+  batches <- 5
+  ifp <- "../../../data/mini/"
   ofn <- "ps18b_abstr"
   
   
