@@ -1,3 +1,5 @@
+gc(verbose = TRUE)
+
 source("util/importPackage.r")
 import(c("readr","tibble","data.table","stringi", "microbenchmark"))
 import(c("foreach", "doParallel", "parallel"))
@@ -62,6 +64,7 @@ read_and_save_sequential <- function() {
     read_and_save_batch(batch_nr)
   }
 }
+
 
 readFiles <- function(){
   
