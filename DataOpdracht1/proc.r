@@ -14,10 +14,9 @@
 ################################################################################
 
 
-library(readr)
-library(tibble)
-library(data.table)
-library(stringi)
+source("importPackage.r")
+
+import(c("readr","tibble","data.table","stringi"))
 
 
 ifn <- "tls203_part"
@@ -40,8 +39,7 @@ for(batch_nr in 1:batches) {
 
   # Read batch file
   v <- paste0(ofn, "_", batch_no)
-  assign(v,
-         tibble::as_data_frame(readr::read_delim(paste0(fp, fn),
+  assign(v, tibble::as_data_frame(readr::read_delim(paste0(fp, fn), 
                                                  ",",
                                                  col_names=TRUE,
                                                  #col_types="icc",
