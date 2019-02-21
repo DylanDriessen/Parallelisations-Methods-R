@@ -1,4 +1,6 @@
 gc(verbose = TRUE)
+library(peakRAM)
+library(dplyr)
 
 source("util/importPackage.r")
 import(c("readr","tibble","data.table","stringi", "microbenchmark"))
@@ -102,6 +104,13 @@ readFiles <- function(){
   return(docs)
 }
 
+#functie roept de 4 soorten functies op 
+call_functions_for_ram <- function(){
+    ram_data_functions <- data.frame(peakRAM( read_clusterapply(), read_doparallel_foreach(), read_parlapply(), read_sequential()))
+    ram_data <- rbind(ram_data_functions, ram_Seq_data)
+    saveRDS(ram_data, file = "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
+}
+ 
 benchmark_readFiles <- function() {
   microbenchmark(read_clusterapply(), read_doparallel_foreach(), read_parlapply(), read_sequential(), times = 3)
 }

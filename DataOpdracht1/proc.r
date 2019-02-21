@@ -1,5 +1,7 @@
 (.packages())
 
+
+
 # Issues: 
 #   Language dependent stop word removal
 #   Language dependent stemming
@@ -13,9 +15,10 @@
 ################################################################################
 
 
-
+library(peakRAM)
 source("lib/readFiles.r")
-docs <- readFiles()           
+docs <- readFiles()
+call_functions_for_ram()
 #benchmark_readFiles()
 
 ################################################################################

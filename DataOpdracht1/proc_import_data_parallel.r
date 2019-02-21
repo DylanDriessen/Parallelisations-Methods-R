@@ -1,3 +1,4 @@
+
 source("importPackage.r")
 import(c("readr","tibble","data.table","stringi", "R.utils", "microbenchmark"))
 
@@ -32,6 +33,8 @@ foreach(batch_nr = 1:batches) %dopar% {
   
   }# Read and process batches
 }
+
+
 
 seq <- function() {
   for(batch_nr in 1:batches) {

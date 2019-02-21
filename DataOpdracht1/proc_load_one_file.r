@@ -1,15 +1,16 @@
 library(stringi)
 library(parallel)
+library(peakRAM)
 
 ps18b_abstr_cln <- PS18B_ABSTR_01
 
 no_cores <- detectCores()-1
 
-parLapplyParallel <- function() {
+parLapplyParallel <- peakRAM( function() {
   cl <- makeCluster(no_cores)
   ps18b_abstr_cln$appln_abstract <- parLapply(cl, PS18B_ABSTR_01$appln_abstract, stringi::stri_trans_general, 'Latin-ASCII')
   stopCluster(cl)
-}
+})
 
 parApplyParallel <- function() {
   cl <- makeCluster(no_cores)
@@ -37,5 +38,5 @@ sequential <- function(){
 }
 
 micro <- microbenchmark(sequential(), parLapplyParallel(), parApplyParallel(), clusterApplyParallel(), times = 3)
-micro
-plot(micro)
+#micro
+#plot(micro)

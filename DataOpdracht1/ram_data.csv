@@ -1,0 +1,2 @@
+"Function_Call" "Elapsed_Time_sec" "Total_RAM_Used_MiB" "Peak_RAM_Used_MiB"
+"1" "docs<-readFiles()" 2.6299999999992 0.0999999999999943 45.8
