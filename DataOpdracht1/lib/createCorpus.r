@@ -20,7 +20,7 @@ createCorpus <- function() {
   
   ##### Create corpus (and define default language)
   
-  VCorp()
+  Quan()
 }
 
 #####################################################################
@@ -30,64 +30,52 @@ createCorpus <- function() {
 #####################################################################
 
 VCorp <- function() {
+  print("Creating VCorpus")
   crp <-
     VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
   
-  
-  ##### Set metadata based on fields in source data
-  
-  # seqClus <- function() {
-  #   for (i in 1:length(crp2)) {
-  #     metadoc(crp2, i, "language") <- docs$language[i]
-  #   }
-  # }
-  # 
-  # parClus <- function() {
-  #   no_cores <- detectCores()
-  #   #cl <- makeCluster(no_cores)
-  #   registerDoMC(no_cores)
-  #   foreach(
-  #     i = 1:length(crp),
-  #     .export = c("docs", "crp"),
-  #     .packages = c("tm")
-  #   ) %dopar% {
-  #     meta(crp[[i]], "language") <- docs$language[i]
-  #   }
-  #   #stopCluster(cl)
-  # }
-  
   ##### Define general function to replace strings in corpus
+  print("Define general function to replace strings in corpus")
   (crp.replacePattern <-
       content_transformer(function(x, pattern, replace)
         gsub(pattern, replace, x)))
   
   ##### Clean unicode characters
   ##### Remove graphical characters
+  print("Remove graphical characters")
   crp <- tm_map(crp, crp.replacePattern, "[^[:graph:]]", " ")
   
   ##### To lower
+  print("To lower")
   crp <- tm_map(crp, content_transformer(tolower))
   
   ##### Stopword removal
-  crp <- tm_map(crp, removeWords, stopwords(source ="smart"))
+  print("Stopword removal")
+  crp <- tm_map(crp, removeWords, stopwords(source = "smart"))
   
   ##### Stemming
+  print("Stemming")
   crp <- tm_map(crp, stemDocument, language = "porter")
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term)
+  print("Removing all numbers")
   crp <- tm_map(crp, removeNumbers)
   
   ##### Punctuation
+  print("remove Puncuation")
   crp <-
     tm_map(crp, removePunctuation, preserve_intra_word_dashes = TRUE)
   
   ##### Whitespace
+  print("Remove whitespace")
   crp <- tm_map(crp, stripWhitespace)
   
   # SAVE RESULTS
+  print("Saving results")
   save(crp, file = "crp.RDa")
+  return(crp)
 }
 
 #####################################################################
@@ -97,40 +85,46 @@ VCorp <- function() {
 #####################################################################
 
 Quan <- function() {
+  print("Creating Quanteda Corpus")
   crp2 <- corpus(docs)
   
   #Quanteda tokens
+  print("Creating tokens and removing punctuation")
   crpT <- tokens(crp2, remove_punct = TRUE)
-  
-  #metadoc(crp2, "language") <- "english"
   
   ##### Clean unicode characters
   ##### Remove graphical characters
+  print("Remove graphical characters")
   crpT <- tokens_replace(crpT, "[^[:graph:]]", " ")
   
   ##### To lower
+  print("To lower")
   crpT <- tokens_tolower(crpT)
   
   ##### Stopword removal
+  print("Stopword removal")
   crpT <- tokens_remove(crpT, stopwords(source = "smart"))
   
   ##### Stemming
+  print("Stemming")
   crpT <- tokens_wordstem(crpT, language = "porter")
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term) + punction + symbols
+  print("Removing all numbers and symbols")
   crpT <-
-    tokens(
-      crpT,
-      remove_numbers = TRUE,
-      remove_symbols = TRUE
-    )
+    tokens(crpT,
+           remove_numbers = TRUE,
+           remove_symbols = TRUE)
   
   # SAVE RESULTS
+  print("Saving")
   save(crpT, file = "crpT.RDa")
+  print("Return result")
+  return(crpT)
 }
 
 
-microbenchmark(Quan(), VCorp(), times = 1)
+#microbenchmark(Quan(), VCorp(), times = 1)
 
