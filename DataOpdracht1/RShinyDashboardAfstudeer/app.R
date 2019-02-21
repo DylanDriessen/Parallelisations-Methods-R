@@ -28,7 +28,7 @@ ui <- fluidPage(
   mainPanel(
     plot_ly(
       x = row.names(ram),
-      y = ram$Elapsed_Time_sec,
+      y = ram[,"Elapsed_Time_sec"],
       type = "bar")
     ),
     
