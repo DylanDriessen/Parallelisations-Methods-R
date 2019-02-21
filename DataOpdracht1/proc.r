@@ -15,8 +15,8 @@
 
 
 source("lib/readFiles.r")
-#docs <- readFiles()           
-benchmark_readFiles()
+docs <- readFiles()           
+#benchmark_readFiles()
 
 ################################################################################
 #
