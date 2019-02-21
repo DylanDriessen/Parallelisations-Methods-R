@@ -41,6 +41,7 @@ docs$text <- preProcess_DevidedInChunks()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
+#microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 
 # ==============================================================================
 #
