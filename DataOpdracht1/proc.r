@@ -15,8 +15,8 @@
 
 
 source("lib/readFiles.r")
-docs <- readFiles()
-#benchmark_readFile()
+docs <- readFiles()           
+#benchmark_readFiles()
 
 ################################################################################
 #
@@ -27,7 +27,7 @@ docs <- readFiles()
 ################################################################################
 
 source("lib/preProcess.r")
-preProcess()
+docs$cln <- parLPreProcess()
 
 # ==============================================================================
 #
