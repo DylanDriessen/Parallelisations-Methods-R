@@ -31,7 +31,7 @@ preProcess_foreachPar <- function() {
   return(result)
 }
 
-preProcess_DevidedInChunks <- function(){
+preProcess_DevidedInChunks_doparallel <- function(){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
   
   import(c("stringi","doParallel"))
@@ -40,25 +40,35 @@ preProcess_DevidedInChunks <- function(){
   #https://code.i-harness.com/en/q/32a23d
   ids <- 1: length(docs$text)
   no_cores = detectCores()-1
-  chunk <- split(ids,factor(sort(rank(ids)%%no_cores)))
+  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
   
   #process
   registerDoParallel(detectCores()-1)
-  res <- foreach(c = chunk,
+  res <- foreach(chunk = chunks,
                  .combine = c) %dopar%
-    stringi::stri_trans_general(docs$text[c], 'Latin-ASCII')
+    stringi::stri_trans_general(docs$text[chunk], 'Latin-ASCII')
   
   stopImplicitCluster()
   
   return(res)
 }
 
-tmp <- function(){
-  func <- function(){
-    
-  }
+preProcess_DevidedInChunks_parallel <- function(){
+  #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
+  
+  import(c("stringi","parallel"))
+  
+  #split id's into chunks
+  #https://code.i-harness.com/en/q/32a23d
+  ids <- 1: length(docs$text)
+  no_cores = detectCores()-1
+  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
+  
+  cluster <- makeCluster(no_cores)
+  res <- parLapply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)
+  stopCluster(cluster)
+  
+  return(res)
 }
 
-benchmark_preProcess <- function(times){
-  microbenchmark(preProcess_seq(),prePorcess_parLapply(),preProcess_foreachPar(),preProcess_DevidedInChunks(),times = times)
-}
+

@@ -8,24 +8,51 @@
 #
 
 library(shiny)
+library(ggplot2)
+library(plotly)
+ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
+
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
+  
+ sidebarPanel(
+       helpText("Select wich axes"),
+      selectInput("input_id", "Choose a variabel to display:", c("parallelForeach
+", "clusterApply", "parLapplyParallel"))),
+        
+    
+  
+  
+  mainPanel(
+    plot_ly(
+      x = row.names(ram),
+      y = ram$Elapsed_Time_sec,
+      type = "bar")
+    ),
+    
+  DT::dataTableOutput("table")
+  )
+  # sidebarPanel(
+      #selectInput("input_id", "Choose a variabel to display:", 
+                 # c(" ", "percent black", "percent Hispanic", "percent Asian"),
+                  #"Percent White")
+   # )
    
-    sidebarPanel(
-      selectInput("input_id", "Choose a variabel to display:", 
-                  c("percent white ", "percent black", "percent Hispanic", "percent Asian"),
-                  "Percent White")
-    )
-   )
   
      
 
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+   output$table <- DT::renderDataTable(DT::datatable({
+     data <- ram
+   }))
    
-   
+   setwd("../")
+   source("lib/readFiles.r")
+   call_functions_for_ram()
 }
 
 # Run the application 

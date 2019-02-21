@@ -1,5 +1,7 @@
 (.packages())
 
+
+
 # Issues: 
 #   Language dependent stop word removal
 #   Language dependent stemming
@@ -13,9 +15,10 @@
 ################################################################################
 
 
-
+library(peakRAM)
 source("lib/readFiles.r")
-docs <- readFiles()           
+docs <- readFiles()
+call_functions_for_ram()
 #benchmark_readFiles()
 
 ################################################################################
@@ -28,8 +31,9 @@ docs <- readFiles()
 
 source("lib/preProcess.r")
 docs$text <- preProcess_DevidedInChunks()
+# docs$cln <- preProcess_DevidedInChunks2()
 # docs$text <- preProcess_DevidedInChunks()
-# benchmark_preProcess(times = 1)
+microbenchmark(preProcess_DevidedInChunks(),preProcess_DevidedInChunks2(),times=1)
 
 # ==============================================================================
 #
