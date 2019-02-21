@@ -27,7 +27,9 @@ docs <- readFiles()
 ################################################################################
 
 source("lib/preProcess.r")
-docs$cln <- parLPreProcess()
+docs$text <- preProcess_DevidedInChunks()
+# docs$text <- preProcess_DevidedInChunks()
+# benchmark_preProcess(times = 1)
 
 # ==============================================================================
 #
