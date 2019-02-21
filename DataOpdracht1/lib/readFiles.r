@@ -58,15 +58,20 @@ read_parlapply <- function() {
   cl <- makeReadFileCluster()
   res <- parLapply(cl, 1:batches, read_batch)
   stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  res_df <- as.data.frame(do.call(rbind, res))
+  rm(res)
+  gc()
+  return(res_df)
 }
 
 read_clusterapply <- function() {
   cl <- makeReadFileCluster()
   res <- clusterApply(cl, 1:batches, read_batch)
   stopCluster(cl)
-  str(res)
-  return(as.data.frame(do.call(rbind, res)))
+  res_df <- as.data.frame(do.call(rbind, res))
+  rm(res)
+  gc()
+  return(res_df)
 }
 
 read_doparallel_foreach <- function() {
@@ -75,13 +80,17 @@ read_doparallel_foreach <- function() {
   res <- foreach(batch_nr = 1:batches, .combine = rbind) %dopar% {
     read_batch(batch_nr)
   }
-  stopImplicitCluster()
+  stopCluster(cl)
+  gc()
   return(res)
 }
 
 read_sequential <- function() {
   res <- lapply(1:batches, read_batch)
-  return(as.data.frame(do.call(rbind, res)))
+  res_df <- as.data.frame(do.call(rbind, res))
+  rm(res)
+  gc()
+  return(res_df)
 }
 
 
@@ -112,5 +121,5 @@ call_functions_for_ram <- function(){
 }
  
 benchmark_readFiles <- function() {
-  microbenchmark(read_clusterapply(), read_doparallel_foreach(), read_parlapply(), read_sequential(), times = 3)
+  microbenchmark(read_clusterapply(), read_doparallel_foreach(), read_parlapply(), read_sequential(), times = 1)
 }
