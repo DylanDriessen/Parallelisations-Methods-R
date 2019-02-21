@@ -10,7 +10,11 @@ createCorpus <- function() {
       "NLP",
       "foreach",
       "doParallel",
-      "microbenchmark"
+      "microbenchmark",
+      "text2vec",
+      "doMC"
+      ,"quanteda",
+      "textmineR"
     )
   )
   
@@ -21,10 +25,6 @@ createCorpus <- function() {
   
   # Set metadata based on fields in source data
   
-  # no_cores <- detectCores()
-  # cl <- makeCluster(no_cores)
-  # registerDoParallel(cl)
-  
   seqClus <- function() {
     for (i in 1:length(crp)) {
       meta(crp[[i]], "language") <- docs$language[i]
@@ -33,17 +33,15 @@ createCorpus <- function() {
   
   parClus <- function() {
     no_cores <- detectCores()
-    cl <- makeCluster(no_cores)
-    registerDoParallel(cl)
+    #cl <- makeCluster(no_cores)
+    registerDoMC(no_cores)
     foreach(i = 1:length(crp), .export = c("docs", "crp"), .packages = c("tm")) %dopar% {
       meta(crp[[i]], "language") <- docs$language[i]
     }
-    stopCluster(cl)
+    #stopCluster(cl)
   }
   
-  
-  
-  microbenchmark(seqClus(),parClus(), times = 3)
+  microbenchmark(seqClus(),parClus(), times = 10)
   
   # Define general function to replace strings in corpus
   (crp.replacePattern <-
