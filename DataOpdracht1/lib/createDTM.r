@@ -14,6 +14,7 @@ createDTM <- function(){
   
   
   dtm_raw    <- DocumentTermMatrix(crp, control = dtm_ctrl)
+  dtm_rawQuan <- dfm(crpT)
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   
   # SAVE RESULTS
