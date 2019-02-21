@@ -43,67 +43,67 @@ VCorpChunk <- function() {
   ##### Clean unicode characters
   ##### Remove graphical characters
   print("Remove graphical characters")
-  ids <- 1:length(crp)
+  ids <- 1: length(crp)
   no_cores = detectCores()
-  chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
   
   registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
   
-  stopImplicitCluster()
+  #stopImplicitCluster()
   
   ##### To lower
   print("To lower")
-  registerDoParallel(no_cores)
+  #registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], content_transformer(tolower))
   
-  stopImplicitCluster()
+  #stopImplicitCluster()
   
   ##### Stopword removal
   print("Stopword removal")
-  registerDoParallel(no_cores)
+  #registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removeWords, stopwords(source = "snowball"))
   
-  stopImplicitCluster()
+  #stopImplicitCluster()
   
   ##### Stemming
   print("Stemming")
-  registerDoParallel(no_cores)
+  #registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], stemDocument, language = "porter")
   
-  stopImplicitCluster()
+  #stopImplicitCluster()
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term)
   print("Removing all numbers")
-  registerDoParallel(no_cores)
+  #registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removeNumbers)
   
-  stopImplicitCluster()
+  #stopImplicitCluster()
   
   ##### Punctuation
   print("remove Puncuation")
-  registerDoParallel(no_cores)
+  #registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removePunctuation, preserve_intra_word_dashes = TRUE)
   
-  stopImplicitCluster()
-  
+  #stopImplicitCluster()
+
   ##### Whitespace
   print("Remove whitespace")
-  registerDoParallel(no_cores)
+  #registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], stripWhitespace)
@@ -217,3 +217,7 @@ Quan <- function() {
   print("Return result")
   return(crpT)
 }
+
+
+
+

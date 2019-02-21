@@ -45,7 +45,7 @@ microbenchmark(preProcess_DevidedInChunks(),preProcess_DevidedInChunks2(),times=
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
-#microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 
 # ==============================================================================
 #
