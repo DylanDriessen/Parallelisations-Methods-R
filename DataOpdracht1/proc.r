@@ -44,7 +44,7 @@ docs$text <- preProcess_DevidedInChunks_doparallel()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
-microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+#microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 
 # ==============================================================================
 #
@@ -55,7 +55,7 @@ microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 # ==============================================================================
 
 source("lib/createDTM.r")
-createDTM()
+DocumentTermMatrix <- createDTM()
 
 # ==============================================================================
 #
