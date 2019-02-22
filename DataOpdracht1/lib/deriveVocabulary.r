@@ -1,14 +1,15 @@
 deriveVoc <- function(){
-  deriveVocabulary2()
+  deriveVocabularyDFM()
 }
 
-deriveVocabulary <- function() {
+deriveVocabularyDFM <- function() {
   # DERIVE VOCABULARY
   voc <-
     data.frame(
       trm = as.character(names(col_sums(DocumentTermMatrix))),
       cFrqs = col_sums(DocumentTermMatrix),
-      dFrqs = col_sums(weightBin(DocumentTermMatrix)),
+      #dFrqs = col_sums(weightBin(DocumentTermMatrix)),
+      dFrqs = col_sums(dfm_weight(DocumentTermMatrix, scheme = "prop")),
       stringsAsFactors = FALSE
     )
   voc <- voc[with (voc, order(-cFrqs, -dFrqs, trm)), ]
@@ -17,7 +18,7 @@ deriveVocabulary <- function() {
   return(voc)
 }
 
-deriveVocabulary2 <- function() {
+deriveVocabulary <- function() {
   # DERIVE VOCABULARY QUAN
   voc2 <-
     data.frame(

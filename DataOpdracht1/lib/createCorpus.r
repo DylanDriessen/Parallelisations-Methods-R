@@ -187,6 +187,12 @@ Quan <- function() {
   print("Creating tokens, removing punctuation & numbers")
   crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
   
+  #Remove symbols
+  print("Remove regex")
+  crpT <- tokens_remove(crpT, "\\p{Z}", valuetype = "regex")
+  print("Remove symbols")
+  crpT <- tokens(crpT, remove_symbols = TRUE)
+  
   ##### Stemming
   print("Stemming")
   #crpT <- tokens_wordstem(crpT, language = "porter")
@@ -203,7 +209,11 @@ Quan <- function() {
   ##### Clean unicode characters
   ##### Remove graphical characters
   print("Remove graphical characters")
-  crpT <- tokens_replace(crpT, "*#*", "")
+  crpT <- tokens_remove(crpT, "*#*")
+  crpT <- tokens_remove(crpT, "*-*")
+  crpT <- tokens_remove(crpT, "*.*")
+  crpT <- tokens_remove(crpT, "*,*")
+  crpT <- tokens_remove(crpT, "*\\d*")
   
   ##### Numbers
   
