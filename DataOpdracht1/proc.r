@@ -30,8 +30,8 @@ docs <- readFiles_doparallel_foreach()
 
 source("lib/preProcess.r")
 docs$text <- preProcess_DevidedInChunks_doparallel()
-# docs$cln <- preProcess_DevidedInChunks2()
-# microbenchmark(preProcess_DevidedInChunks(),preProcess_DevidedInChunks2(),times=1)
+#benchmark_preProcess()
+
 
 # ==============================================================================
 #
@@ -43,7 +43,7 @@ docs$text <- preProcess_DevidedInChunks_doparallel()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
-microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+#microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 
 # ==============================================================================
 #
@@ -54,7 +54,7 @@ microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 # ==============================================================================
 
 source("lib/createDTM.r")
-createDTM()
+DocumentTermMatrix <- createDTM()
 
 # ==============================================================================
 #
