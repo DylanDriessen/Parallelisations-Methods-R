@@ -1,3 +1,8 @@
+if (!exists("docs")){
+  load("docs.rds")
+}
+
+
 preProcess_seq <- function() {
   #process every line sequentially
   

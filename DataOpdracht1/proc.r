@@ -1,6 +1,6 @@
 (.packages())
-
-
+source("util/importPackage.r")
+no_cores <- detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
@@ -14,10 +14,9 @@
 #
 ################################################################################
 
-
 #library(peakRAM)
 source("lib/readFiles.r")
-docs <- readFiles()
+docs <- readFiles_doparallel_foreach()
 #call_functions_for_ram()
 #benchmark_readFiles()
 
