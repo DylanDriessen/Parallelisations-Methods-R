@@ -15,10 +15,10 @@
 ################################################################################
 
 
-library(peakRAM)
+#library(peakRAM)
 source("lib/readFiles.r")
 docs <- readFiles()
-call_functions_for_ram()
+#call_functions_for_ram()
 #benchmark_readFiles()
 
 ################################################################################
