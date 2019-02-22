@@ -15,9 +15,9 @@ createDTM <- function() {
 createDFM <- function() {
   # CREATE DFM
   print("create a DFM")
-  dtm_rawQuan <- dfm(docsCorpus)
-  #dtm_tfidf  <- weightTfIdf(dtm_rawQuan, normalize = FALSE)
-  return(dtm_rawQuan)
+  dtm_raw <- dfm(docsCorpus)
+  #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  return(dtm_raw)
 }
 
 #####################################################################
@@ -29,10 +29,10 @@ createDFM <- function() {
 createDFMasDTM <- function() {
   # CREATE DFM
   print("create a DFM")
-  dtm_rawQuan <- dfm(docsCorpus)
+  dtm_raw <- dfm(docsCorpus)
   #as dtm now
   print("convert to DTM")
-  dtm_raw <- convert(dtm_rawQuan, to = "tm")
+  dtm_raw <- convert(dtm_raw, to = "tm")
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   return(dtm_raw)
 }
