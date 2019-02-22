@@ -19,26 +19,21 @@ read_batch_peakRAM <- function(x) {
 read_doparallel_foreach_peakRAM <- function() {
   cl <- makeReadFileClusterPeakRAM()
   registerDoParallel(cl)
-  res <- foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% 
-    read_batch_peakRAM(batch_nr)
-  stopCluster(cl)
-  return(res)
+  on.exit(stopCluster(cl))
+  return(foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% read_batch_peakRAM(batch_nr))
 }
 read_clusterapply_peakRAM<- function() {
   cl <- makeReadFileClusterPeakRAM()
-  res <- clusterApply(cl, 1:batches, read_batch_peakRAM)
-  stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  on.exit(stopCluster(cl))
+  return(as.data.frame(do.call(rbind, clusterApply(cl, 1:batches, read_batch_peakRAM))))
 }
 read_parlapply_peakRAM <- function() {
   cl <- makeReadFileClusterPeakRAM()
-  res <- parLapply(cl, 1:batches, read_batch_peakRAM)
-  stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  on.exit(stopCluster(cl))
+  return(as.data.frame(do.call(rbind, parLapply(cl, 1:batches, read_batch_peakRAM))))
 }
 read_sequential_peakRAM <- function() {
-  res <- lapply(1:batches, read_batch_peakRAM)
-  return(as.data.frame(do.call(rbind, res)))
+  return(as.data.frame(do.call(rbind, lapply(1:batches, read_batch_peakRAM))))
 }
 
 #functie roept de 4 soorten functies op 
