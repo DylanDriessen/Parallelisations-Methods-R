@@ -1,13 +1,23 @@
 (.packages())
 source("util/importPackage.r")
 
+
 import ( c("parallel"))
 no_cores <- detectCores()
+
+## Batches info
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+
+import("parallel")
+no_cores <- 2#detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
 #   Language dependent stemming
 #   Stem completion
+
+source("lib/readFiles_peakRAM.r")
+read_peakRAM_to_rds()
 
 ################################################################################
 #
@@ -15,8 +25,7 @@ no_cores <- detectCores()
 #
 ################################################################################
 
-## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+
 
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach()
@@ -74,7 +83,7 @@ DocumentTermMatrix <- createDTM()
 # ==============================================================================
 
 source("lib/deriveVocabulary.r")
-deriveVocabulary()
+Voca <- deriveVoc()
 
 # SAVE RESULTS
 
