@@ -95,7 +95,7 @@ read_sequential <- function() {
 readFiles <- function(){
   print("Read Files Process started.")
   # READ AND PROCESS BATCHES
-  ps18b_abstr <- read_sequential()
+  ps18b_abstr <- read_doparallel_foreach()
   # COMBINE BATCHES
   # # Variable name to use
   # w <- ofn
@@ -107,6 +107,9 @@ readFiles <- function(){
   print("Compiling to dataframe 'docs'.")
   docs <- ps18b_abstr[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
   names(docs) <- c("doc_id", "text", "language")
+  
+  saveRDS(docs, file="docs.rds")
+  
   print("Finished reading batches.")
   return(docs)
 }
