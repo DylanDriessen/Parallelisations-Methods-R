@@ -11,7 +11,7 @@ library(shiny)
 library(ggplot2)
 library(plotly)
 ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
-
+benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
 
 
 # Define UI for application that draws a histogram
@@ -31,8 +31,11 @@ ui <- fluidPage(
       y = ram[,"Elapsed_Time_sec"],
       type = "bar")
     ),
+ 
+ 
     
-  DT::dataTableOutput("table")
+  DT::dataTableOutput("table"),
+  DT::dataTableOutput("tableBenchMark")
   )
   # sidebarPanel(
       #selectInput("input_id", "Choose a variabel to display:", 
@@ -50,8 +53,12 @@ server <- function(input, output) {
      data <- ram
    }))
    
+   output$tableBenchMark <- DT::renderDataTable(DT::datatable({
+     data <- benchmark
+   }))
+   
    setwd("../")
-   source("lib/readFiles.r")
+   source("lib/readFiles_peakRAM.r")
    call_functions_for_ram()
 }
 

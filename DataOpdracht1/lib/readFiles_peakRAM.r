@@ -1,4 +1,4 @@
-source("readFiles.r")
+source("lib/readFiles.r")
 #RAM TEST
 
 #PEAKRAM
