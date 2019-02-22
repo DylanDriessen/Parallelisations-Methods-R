@@ -18,7 +18,7 @@
 #library(peakRAM)
 source("lib/readFiles.r")
 docs <- readFiles()
-call_functions_for_ram()
+#call_functions_for_ram()
 #benchmark_readFiles()
 
 ################################################################################
@@ -30,7 +30,7 @@ call_functions_for_ram()
 ################################################################################
 
 source("lib/preProcess.r")
-docs$text <- preProcess_DevidedInChunks()
+docs$text <- preProcess_DevidedInChunks_doparallel()
 # docs$cln <- preProcess_DevidedInChunks2()
 # microbenchmark(preProcess_DevidedInChunks(),preProcess_DevidedInChunks2(),times=1)
 
