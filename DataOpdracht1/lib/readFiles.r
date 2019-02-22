@@ -1,5 +1,5 @@
 ### LOOPED METHOD : read batch for given path, filename and batch no
-read_batch <- function(batch_nr, ifn, ifp, ofn) {
+read_batch <- function(batch_nr) {
   ## Compile file name to read
   batch_no <- sprintf("%02d", batch_nr)
   fn <- paste0(ifn, batch_no, ".txt.xz")
@@ -50,9 +50,6 @@ read_sequential <- function() {
 readFiles <- function(f = read_sequential){
   import(c("readr","tibble","data.table"))
   print("Read Files Process started.")
-  
-  ## Batches info
-  ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
   
   ## Read in files and combine to 1 dataframe
   ps18b_abstr <- f()
