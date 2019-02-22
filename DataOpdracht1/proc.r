@@ -31,7 +31,7 @@ docs <- readFiles()
 
 source("lib/preProcess.r")
 docs$text <- preProcess_DevidedInChunks_doparallel()
-benchmark_preProcess()
+#benchmark_preProcess()
 
 
 # ==============================================================================
