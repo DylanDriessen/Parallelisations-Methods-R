@@ -21,6 +21,7 @@ createCorpus <- function() {
   ##### Create corpus (and define default language)
   
   Quan()
+  #VCorpChunk()
 }
 
 #####################################################################
@@ -183,34 +184,35 @@ Quan <- function() {
   crpT <- corpus(docs)
   
   #Quanteda tokens
-  print("Creating tokens and removing punctuation")
-  crpT <- tokens(crpT, remove_punct = TRUE)
+  print("Creating tokens, removing punctuation & numbers")
+  crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
   
-  ##### Clean unicode characters
-  ##### Remove graphical characters
-  print("Remove graphical characters")
-  crpT <- tokens_replace(crpT, "[^[:graph:]]", " ")
+  ##### Stemming
+  print("Stemming")
+  #crpT <- tokens_wordstem(crpT, language = "porter")
+  crpT <- tokens_wordstem(crpT)
+  
+  ##### Stopword removal
+  print("Stopword removal")
+  crpT <- tokens_select(crpT, stopwords(source = "smart"),selection='remove')
   
   ##### To lower
   print("To lower")
   crpT <- tokens_tolower(crpT)
   
-  ##### Stopword removal
-  print("Stopword removal")
-  crpT <- tokens_remove(crpT, stopwords(source = "smart"))
-  
-  ##### Stemming
-  print("Stemming")
-  crpT <- tokens_wordstem(crpT, language = "porter")
+  ##### Clean unicode characters
+  ##### Remove graphical characters
+  print("Remove graphical characters")
+  crpT <- tokens_replace(crpT, "*#*", "")
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term) + punction + symbols
-  print("Removing all numbers and symbols")
-  crpT <-
-    tokens(crpT,
-           remove_numbers = TRUE,
-           remove_symbols = TRUE)
+  # print("Removing all numbers and symbols")
+  # crpT <-
+  #   tokens(crpT,
+  #          remove_numbers = TRUE,
+  #          remove_symbols = TRUE)
   
   # SAVE RESULTS
   print("Saving")

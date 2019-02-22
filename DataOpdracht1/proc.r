@@ -72,7 +72,7 @@ DocumentTermMatrix <- createDTM()
 # ==============================================================================
 
 source("lib/deriveVocabulary.r")
-deriveVocabulary()
+Voca <- deriveVoc()
 
 # SAVE RESULTS
 

@@ -3,18 +3,28 @@ createDTM <- function(){
   import(c("glmnet"))
   
   createDFM()
-  
+  #createDTMC()
 }
 
 createDFM <- function(){
   # CREATE DFM
   print("create a DFM")
   dtm_rawQuan <- dfm(docsCorpus)
+  dtm_raw <- dtm_rawQuan
+  #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  return(dtm_raw)
+}
+
+createDFMasDTM <- function(){
+  # CREATE DFM
+  print("create a DFM")
+  dtm_rawQuan <- dfm(docsCorpus)
   #as dtm now
+  print("convert to DTM")
   tmdfm <- convert(dtm_rawQuan, to = "tm")
   dtm_raw <- tmdfm
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
-  return(rawQuanM)
+  return(dtm_raw)
 }
 
 createDTMC <- function(){
@@ -39,5 +49,5 @@ createDTMC <- function(){
   save(dtm_raw, dtm_ctrl, file="dtm_raw.RDa")
   save(dtm_tfidf, dtm_ctrl, file="dtm_tfidf.RDa")
   
-  return(dtm_tfidf)
+  return(dtm_raw)
 }
