@@ -25,15 +25,15 @@ read_doparallel_foreach_peakRAM <- function() {
 read_clusterapply_peakRAM<- function() {
   cl <- makeReadFileClusterPeakRAM()
   on.exit(stopCluster(cl))
-  return(as.data.frame(do.call(rbind, clusterApply(cl, 1:batches, read_batch_peakRAM))))
+  return(list_to_df(clusterApply(cl, 1:batches, read_batch_peakRAM)))
 }
 read_parlapply_peakRAM <- function() {
   cl <- makeReadFileClusterPeakRAM()
   on.exit(stopCluster(cl))
-  return(as.data.frame(do.call(rbind, parLapply(cl, 1:batches, read_batch_peakRAM))))
+  return(list_to_df(parLapply(cl, 1:batches, read_batch_peakRAM)))
 }
 read_sequential_peakRAM <- function() {
-  return(as.data.frame(do.call(rbind, lapply(1:batches, read_batch_peakRAM))))
+  return(list_to_df(lapply(1:batches, read_batch_peakRAM)))
 }
 
 #functie roept de 4 soorten functies op 
