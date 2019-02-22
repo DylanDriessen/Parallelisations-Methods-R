@@ -2,8 +2,14 @@ deriveVoc <- function(){
   deriveVocabularyDFM()
 }
 
+#####################################################################
+##
+##                    Derive Vocabulary On DFM
+##
+#####################################################################
+
 deriveVocabularyDFM <- function() {
-  # DERIVE VOCABULARY
+  # DERIVE VOCABULARY QUAN
   voc <-
     data.frame(
       trm = as.character(names(col_sums(DocumentTermMatrix))),
@@ -18,8 +24,14 @@ deriveVocabularyDFM <- function() {
   return(voc)
 }
 
+#####################################################################
+##
+##                    Derive Vocabulary On DTM
+##
+#####################################################################
+
 deriveVocabulary <- function() {
-  # DERIVE VOCABULARY QUAN
+  # DERIVE VOCABULARY
   voc2 <-
     data.frame(
       trm = as.character(names(col_sums(DocumentTermMatrix))),

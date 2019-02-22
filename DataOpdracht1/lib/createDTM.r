@@ -6,6 +6,12 @@ createDTM <- function() {
   #createDTMC()
 }
 
+#####################################################################
+##
+##                    Document-Feature Matrix
+##
+#####################################################################
+
 createDFM <- function() {
   # CREATE DFM
   print("create a DFM")
@@ -13,6 +19,12 @@ createDFM <- function() {
   #dtm_tfidf  <- weightTfIdf(dtm_rawQuan, normalize = FALSE)
   return(dtm_rawQuan)
 }
+
+#####################################################################
+##
+##          Document-Feature Matrix to Document-Term Matrix
+##
+#####################################################################
 
 createDFMasDTM <- function() {
   # CREATE DFM
@@ -24,6 +36,12 @@ createDFMasDTM <- function() {
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   return(dtm_raw)
 }
+
+#####################################################################
+##
+##                     Document-Term Matrix
+##
+#####################################################################
 
 createDTMC <- function() {
   # CREATE DTM (RAW AND WEIGHTED)
