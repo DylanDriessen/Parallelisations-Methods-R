@@ -1,5 +1,6 @@
 (.packages())
 source("util/importPackage.r")
+import("parallel")
 no_cores <- detectCores()
 
 # Issues: 
@@ -7,18 +8,18 @@ no_cores <- detectCores()
 #   Language dependent stemming
 #   Stem completion
 
-
 ################################################################################
 #
 # IMPORT SOURCE DATA
 #
 ################################################################################
 
-#library(peakRAM)
+## Batches info
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach()
-#call_functions_for_ram()
-#benchmark_readFiles()
+#benchmark_read()
 
 ################################################################################
 #
