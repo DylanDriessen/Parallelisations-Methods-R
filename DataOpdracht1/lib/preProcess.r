@@ -71,4 +71,18 @@ preProcess_DevidedInChunks_parallel <- function(){
   return(res)
 }
 
+benchmark_preProcess <- function(times = 3,display=true,save=false){
+  benchmarkResult <- microbenchmark(preProcess_seq(),prePorcess_parLapply(),preProcess_DevidedInChunks_doparallel(),times = 1)
+  
+  if(save){
+    save(benchmakrResult,file="doc/preProcessBenchmarkResult.rda")
+  }
+  
+  if(display){
+    return(benchmakrResult)  
+  }
+  
+  
+}
+
 
