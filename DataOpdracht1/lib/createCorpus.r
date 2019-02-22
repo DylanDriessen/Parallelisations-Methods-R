@@ -176,14 +176,15 @@ VCorp <- function() {
 ##                            Quanteda
 ##
 #####################################################################
+#https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 
 Quan <- function() {
   print("Creating Quanteda Corpus")
-  crp2 <- corpus(docs)
+  crpT <- corpus(docs)
   
   #Quanteda tokens
   print("Creating tokens and removing punctuation")
-  crpT <- tokens(crp2, remove_punct = TRUE)
+  crpT <- tokens(crpT, remove_punct = TRUE)
   
   ##### Clean unicode characters
   ##### Remove graphical characters
