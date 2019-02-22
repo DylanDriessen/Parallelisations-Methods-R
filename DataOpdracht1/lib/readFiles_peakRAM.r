@@ -1,48 +1,47 @@
-source("readFiles.r")
-#RAM TEST
+source("lib/readFiles.r")
 
-#PEAKRAM
+### MAKE FILE CLUSTER
 makeReadFileClusterPeakRAM <- function() {
   cl <- makeReadFileCluster()
-  clusterEvalQ(cl, import("peakRAM"))
+  clusterExport(cl, c("read_batch_peakRAM"))
+  clusterEvalQ(cl, library("peakRAM"))
   return(cl)
 }
 
+### LOOPED FUNC
+read_batch_peakRAM <- function(x) { 
+  t <- Sys.time()
+  df <- peakRAM(read_batch(x))
+  cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
+}
+
+### LOOPS
 read_doparallel_foreach_peakRAM <- function() {
   cl <- makeReadFileClusterPeakRAM()
   registerDoParallel(cl)
-  res <- foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% 
-    peakRAM(read_batch(batch_nr))[1,2:4]
-  stopCluster(cl)
-  return(res)
+  on.exit(stopCluster(cl))
+  return(foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% read_batch_peakRAM(batch_nr))
 }
-
-#PEAKRAM
 read_clusterapply_peakRAM<- function() {
   cl <- makeReadFileClusterPeakRAM()
-  res <- clusterApply(cl, 1:batches, function(x) { 
-    t <- Sys.time()
-    df <- peakRAM(read_batch(x))[,2:4]
-    df <- cbind(df, start = t, end = Sys.time())
-    df
-  })
-  stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  on.exit(stopCluster(cl))
+  return(list_to_df(clusterApply(cl, 1:batches, read_batch_peakRAM)))
 }
-
-#PEAKRAM
-read_parlapplyPeakRAM <- function() {
+read_parlapply_peakRAM <- function() {
   cl <- makeReadFileClusterPeakRAM()
-  res <- parLapply(cl, 1:batches, function(x) { peakRAM(read_batch(x))[,2:4] })
-  stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  on.exit(stopCluster(cl))
+  return(list_to_df(parLapply(cl, 1:batches, read_batch_peakRAM)))
+}
+read_sequential_peakRAM <- function() {
+  return(list_to_df(lapply(1:batches, read_batch_peakRAM)))
 }
 
 #functie roept de 4 soorten functies op 
-call_functions_for_ram <- function(){
-  import("readr","tibble","data.table", "peakRAM", "dplyr", "foreach", "doParallel", "parallel")
-  ram_data <- rbind(parallelForeach = read_doparallel_foreach_peakRAM(), 
-                    clusterApply = read_clusterapply_peakRAM(), 
-                    parLapplyParallel = read_parlapplyPeakRAM())
-  saveRDS(ram_data, file = "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
+read_peakRAM_to_rds <- function(){
+  import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel"))
+  sp <- "RShinyDashboardAfstudeer/data/"
+  saveRDS(read_doparallel_foreach_peakRAM(), file = paste0(sp, "read_doparallel_foreach_peakRAM.rds"))
+  saveRDS(read_parlapply_peakRAM(), file = paste0(sp, "read_parlapply_peakRAM.rds"))
+  saveRDS(read_clusterapply_peakRAM(), file = paste0(sp, "read_clusterapply_peakRAM.rds"))
+  saveRDS(read_sequential_peakRAM(), file = paste0(sp, "read_sequential_peakRAM.rds"))
 }
