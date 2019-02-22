@@ -1,9 +1,7 @@
 gc(verbose = TRUE)
-library(peakRAM)
-library(dplyr)
 
 source("util/importPackage.r")
-import(c("readr","tibble","data.table","stringi", "microbenchmark"))
+import(c("readr","tibble","data.table","stringi", "microbenchmark", "peakRAM", "dplyr"))
 import(c("foreach", "doParallel", "parallel"))
 
 ifn <- "tls203_part"

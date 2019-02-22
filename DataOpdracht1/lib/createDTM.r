@@ -13,7 +13,7 @@ createDTM <- function(){
   )
   
   
-  dtm_raw    <- DocumentTermMatrix(crp, control = dtm_ctrl)
+  dtm_raw <- DocumentTermMatrix(crp, control = dtm_ctrl)
   dtm <- as.matrix(dtm_raw[1:50,1:50])
   dtm_rawQuan <- dfm(crpT)
   rawQuanM <- as.matrix(dtm_rawQuan)
