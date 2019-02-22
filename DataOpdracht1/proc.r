@@ -1,5 +1,6 @@
 (.packages())
 source("util/importPackage.r")
+import ( c("parallel"))
 no_cores <- detectCores()
 
 # Issues: 
@@ -44,6 +45,8 @@ docs$text <- preProcess_DevidedInChunks_doparallel()
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
 #microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+microbenchmark_data <- microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+saveRDS(microbenchmark_data, file = "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
 
 # ==============================================================================
 #
