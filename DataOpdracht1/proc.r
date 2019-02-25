@@ -22,8 +22,6 @@ no_cores <- 2#detectCores()
 #
 ################################################################################
 
-
-
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach_ffdf()
 docs2 <- readFiles_doparallel_foreach()
