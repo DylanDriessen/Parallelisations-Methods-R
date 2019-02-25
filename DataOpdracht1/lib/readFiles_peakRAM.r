@@ -31,7 +31,8 @@ read_doparallel_foreach_peakRAM <- function() {
  
 }
 read_clusterapply_peakRAM<- function() {
-  cl <- makeReadFileClusterPeakRAM()
+ 
+   cl <- makeReadFileClusterPeakRAM()
   on.exit(stopCluster(cl))
   sp <- "RShinyDashboardAfstudeer/data/"
   saveRDS(list_to_df(clusterApply(cl, 1:batches, read_batch_peakRAM)), file = paste0(sp, "read_clusterapply_peakRAM.rds"))
