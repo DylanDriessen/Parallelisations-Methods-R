@@ -50,8 +50,8 @@ preProcess_DevidedInChunks_doparallel <- function(plot=FALSE){
     
   #process
   if(plot){
-    plot(
-      snow.time({
+   plot(
+      qwe <- snow.time({
       res <- foreach(chunk = chunks,
                      .combine = c) %dopar%
         stringi::stri_trans_general(docs$text[chunk], 'Latin-ASCII')
@@ -64,7 +64,7 @@ preProcess_DevidedInChunks_doparallel <- function(plot=FALSE){
   }
   
   stopCluster(cluster)
-  return(res)
+  return(qwe)
 }
 
 preProcess_DevidedInChunks_parallel <- function(plot=FALSE){
