@@ -1,5 +1,6 @@
 (.packages())
 source("util/importPackage.r")
+source("lib/realtime_sysinfo.r")
 
 ## Batches info
 ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
