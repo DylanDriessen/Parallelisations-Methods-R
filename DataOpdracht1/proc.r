@@ -13,15 +13,13 @@ no_cores <- 2#detectCores()
 #   Stem completion
 
 source("lib/readFiles_peakRAM.r")
-read_peakRAM_to_rds()
+#read_peakRAM_to_rds()
 
 ################################################################################
 #
 # IMPORT SOURCE DATA
 #
 ################################################################################
-
-
 
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach()
@@ -36,7 +34,7 @@ docs <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
-docs$text <- preProcess_DevidedInChunks_doparallel()
+docs$text <- preProcess_DevidedInChunks_parallel()
 #benchmark_preProcess()
 
 
