@@ -2,9 +2,6 @@
 source("util/importPackage.r")
 
 
-import ( c("parallel"))
-no_cores <- detectCores()
-
 ## Batches info
 ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
