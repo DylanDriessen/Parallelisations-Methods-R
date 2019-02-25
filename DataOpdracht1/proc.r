@@ -21,8 +21,6 @@ read_peakRAM_to_rds()
 #
 ################################################################################
 
-
-
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach()
 #benchmark_read()
