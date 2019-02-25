@@ -60,6 +60,7 @@ preProcess_DevidedInChunks_doparallel <- function(plot=FALSE){
     svg('plot_preProcess_DevidedInChunks_doparallel.svg')
     plot(
       snow.time({
+
       res <- foreach(chunk = chunks,
                      .combine = c,
                      .export = "docs") %dopar%
@@ -76,7 +77,7 @@ preProcess_DevidedInChunks_doparallel <- function(plot=FALSE){
 
   
   stopCluster(cluster)
-  return(res)
+  return(qwe)
 }
 
 preProcess_DevidedInChunks_parallel <- function(plot=FALSE){

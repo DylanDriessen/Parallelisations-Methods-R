@@ -11,11 +11,26 @@ read_batch <- function(batch_nr) {
                                              trim_ws= TRUE, skip=0, n_max=Inf, locale = locale(encoding = "UTF-8"))))
 }
 
+read_batch_ffdf <- function(batch_nr) {
+  batch_no <- sprintf("%02d", batch_nr)
+  fn <- paste0(ifn, batch_no, ".txt.xz")
+  fp <- ifp
+  ## Read batch file
+  print(paste0("Start reading batch <", batch_no, "> (", normalizePath(fp), "/", fn, ")"))
+  return(read.table.ffdf(file = paste0(fp, fn), sep=",", skip=1, appendLevels = FALSE, levels = NULL))
+}
+
 ### CREATE CLUSTER : make a cluster for parralel processing, fit to run read_batch
 makeReadFileCluster <- function() {
   cl <- makeCluster(no_cores, outfile = "")
   clusterExport(cl, c("read_batch", "ifn", "ifp", "ofn"))
   clusterEvalQ(cl, { library("readr"); library("tibble"); library("data.table") })
+  return(cl)
+}
+makeReadFileCluster_ffdf <- function() {
+  cl <- makeCluster(no_cores, outfile = "")
+  clusterExport(cl, c("read_batch_ffdf", "ifn", "ifp", "ofn"))
+  clusterEvalQ(cl, { library("ff") })
   return(cl)
 }
 
@@ -41,6 +56,15 @@ read_doparallel_foreach <- function() {
 read_sequential <- function() {
   return(list_to_df(lapply(1:batches, read_batch)))
 }
+read_doparallel_foreach_ffdf <- function() {
+  cl <- makeReadFileCluster_ffdf()
+  registerDoParallel(cl)
+  on.exit(stopCluster(cl))
+  return( foreach(batch_nr = 1:batches, .combine = ffdfappend ) %dopar% {
+    res <- read_batch_ffdf(batch_nr)
+    res
+  })
+}
 
 ### MAIN FUNCTION : read batches and save as dataframe docs
 readFiles <- function(f = read_sequential){
@@ -52,7 +76,8 @@ readFiles <- function(f = read_sequential){
   print("Compiling to dataframe 'docs'.")
   
   ## Rename and order columns
-  docs <- ps18b_abstr[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
+  #docs <- ps18b_abstr[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
+  docs <- ps18b_abstr[,c(1, 3, 2)]
   names(docs) <- c("doc_id", "text", "language")
   
   ## Save to rds file and return
@@ -77,13 +102,18 @@ readFiles_parlapply <- function() {
   import("parallel")
   return(readFiles(read_parlapply))
 }
+readFiles_doparallel_foreach_ffdf <- function() {
+  import(c("foreach", "doParallel", "ff", "ffbase"))
+  return(readFiles(read_doparallel_foreach_ffdf))
+}
 
 ### BENCHMARK
 benchmark_read <- function() {
   import(c("readr","tibble","data.table", "parallel", "foreach", "doParallel"))
-  microbenchmark(read_clusterapply(), 
+ benchmarkReadFilesSmall <-  microbenchmark(read_clusterapply(), 
                  read_doparallel_foreach(), 
                  read_parlapply(), 
                  read_sequential(),
                  times = 1)
+ saveRDS(benchmarkReadFilesSmall, "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
 }
