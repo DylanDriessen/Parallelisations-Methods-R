@@ -44,9 +44,9 @@ VCorpChunk <- function() {
   ##### Clean unicode characters
   ##### Remove graphical characters
   print("Remove graphical characters")
-  ids <- 1: length(crp)
+  ids <- 1:length(crp)
   no_cores = detectCores()
-  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
+  chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   
   registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
@@ -101,7 +101,7 @@ VCorpChunk <- function() {
     tm_map(crp[chunk], removePunctuation, preserve_intra_word_dashes = TRUE)
   
   #stopImplicitCluster()
-
+  
   ##### Whitespace
   print("Remove whitespace")
   #registerDoParallel(no_cores)
@@ -187,6 +187,12 @@ Quan <- function() {
   print("Creating tokens, removing punctuation & numbers")
   crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
   
+  #Remove symbols
+  print("Remove regex")
+  crpT <- tokens_remove(crpT, "\\p{Z}", valuetype = "regex")
+  print("Remove symbols")
+  crpT <- tokens(crpT, remove_symbols = TRUE)
+  
   ##### Stemming
   print("Stemming")
   #crpT <- tokens_wordstem(crpT, language = "porter")
@@ -194,7 +200,8 @@ Quan <- function() {
   
   ##### Stopword removal
   print("Stopword removal")
-  crpT <- tokens_select(crpT, stopwords(source = "smart"),selection='remove')
+  crpT <-
+    tokens_select(crpT, stopwords(source = "smart"), selection = 'remove')
   
   ##### To lower
   print("To lower")
@@ -203,7 +210,11 @@ Quan <- function() {
   ##### Clean unicode characters
   ##### Remove graphical characters
   print("Remove graphical characters")
-  crpT <- tokens_replace(crpT, "*#*", "")
+  crpT <- tokens_remove(crpT, "*#*")
+  crpT <- tokens_remove(crpT, "*-*")
+  crpT <- tokens_remove(crpT, "*.*")
+  crpT <- tokens_remove(crpT, "*,*")
+  crpT <- tokens_remove(crpT, "*\\d*")
   
   ##### Numbers
   
