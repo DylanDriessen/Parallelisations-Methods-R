@@ -19,31 +19,27 @@ makeReadFileCluster <- function() {
   return(cl)
 }
 
+list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
+
 ### LOOPING METHODS / PARALLEL-SEQUENTIAL : read all batches, return as one combined <dataframe>
 read_parlapply <- function() {
   cl <- makeReadFileCluster()
-  res <- parLapply(cl, 1:batches, read_batch)
-  stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  on.exit(stopCluster(cl))
+  return(list_to_df(parLapply(cl, 1:batches, read_batch)))
 }
 read_clusterapply <- function() {
   cl <- makeReadFileCluster()
-  res <- clusterApply(cl, 1:batches, read_batch)
-  stopCluster(cl)
-  return(as.data.frame(do.call(rbind, res)))
+  on.exit(stopCluster(cl))
+  return(list_to_df(clusterApply(cl, 1:batches, read_batch)))
 }
 read_doparallel_foreach <- function() {
   cl <- makeReadFileCluster()
   registerDoParallel(cl)
-  res <- foreach(batch_nr = 1:batches, .combine = rbind) %dopar% {
-    read_batch(batch_nr)
-  }
-  stopCluster(cl)
-  return(res)
+  on.exit(stopCluster(cl))
+  return( foreach(batch_nr = 1:batches, .combine = rbind) %dopar% read_batch(batch_nr) )
 }
 read_sequential <- function() {
-  res <- lapply(1:batches, read_batch)
-  return(as.data.frame(do.call(rbind, res)))
+  return(list_to_df(lapply(1:batches, read_batch)))
 }
 
 ### MAIN FUNCTION : read batches and save as dataframe docs
@@ -88,6 +84,6 @@ benchmark_read <- function() {
   microbenchmark(read_clusterapply(), 
                  read_doparallel_foreach(), 
                  read_parlapply(), 
-                 read_sequential(), 
+                 read_sequential(),
                  times = 1)
 }
