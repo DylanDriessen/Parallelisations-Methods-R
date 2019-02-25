@@ -7,15 +7,15 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
-library(ggplot2)
-library(plotly)
+import(c("shiny", "ggplot2", "plotly", "DT"))
+
 setwd("../")
 source("lib/readFiles_peakRAM.r")
 source("lib/readFiles.r")
+source("lib/realtime_sysinfo.r")
+
 
 ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
-benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -45,8 +45,11 @@ ui <- fluidPage(
     actionButton("overallTime", "Render overall time"),
     
     plotlyOutput("RAMoutputFunctions"),
+    plotlyOutput("ram_vector"),
     plotlyOutput("OverallScore"),
     plotlyOutput("vector"),  
+    
+    
     
   
     
@@ -80,6 +83,12 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
+  output$ram_vector <- renderPlotly({
+    plot_ly(y = ram_vector,
+            type = "scatter",
+            mode = "lines")
+  })
+  
   observeEvent(input$overallTime, {
     benchmark_read()
     benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
@@ -90,7 +99,9 @@ server <- function(input, output) {
     
   
  observeEvent(input$excecuteSequential,{
-    read_sequential_peakRAM()
+   start_monitor()
+   read_sequential_peakRAM()
+   end_monitor()
     sequentialData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_sequential_peakRAM.rds")
     output$RAMoutputFunctions <- renderPlotly({
       plot_ly(data = sequentialData, x = row.names(sequentialData) , y = sequentialData[,input$input_coresX], type = 'bar' ,
