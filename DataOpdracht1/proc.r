@@ -12,8 +12,8 @@ no_cores <- 2#detectCores()
 #   Language dependent stemming
 #   Stem completion
 
-source("lib/readFiles_peakRAM.r")
-read_peakRAM_to_rds()
+# source("lib/readFiles_peakRAM.r")
+# read_peakRAM_to_rds()
 
 ################################################################################
 #
@@ -22,7 +22,8 @@ read_peakRAM_to_rds()
 ################################################################################
 
 source("lib/readFiles.r")
-docs <- readFiles_doparallel_foreach()
+docs <- readFiles_doparallel_foreach_ffdf()
+docs2 <- readFiles_doparallel_foreach()
 #benchmark_read()
 
 ################################################################################
