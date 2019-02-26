@@ -109,11 +109,24 @@ readFiles_doparallel_foreach_ffdf <- function() {
 
 ### BENCHMARK
 benchmark_read <- function() {
-  import(c("readr","tibble","data.table", "parallel", "foreach", "doParallel"))
- benchmarkReadFilesSmall <-  microbenchmark(read_clusterapply(), 
-                 read_doparallel_foreach(), 
-                 read_parlapply(), 
-                 read_sequential(),
-                 times = 1)
- saveRDS(benchmarkReadFilesSmall, "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
+  import(c(
+    "readr",
+    "tibble",
+    "data.table",
+    "parallel",
+    "foreach",
+    "doParallel",
+    "microbenchmark"
+  ))
+  benchmarkReadFilesSmall <-  microbenchmark(
+    read_clusterapply(),
+    read_doparallel_foreach(),
+    read_parlapply(),
+    read_sequential(),
+    times = 1
+  )
+  saveRDS(
+    benchmarkReadFilesSmall,
+    "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds"
+  )
 }
