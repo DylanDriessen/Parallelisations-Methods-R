@@ -36,7 +36,8 @@ preProcess_doparallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   print("#####################preProcess_doparallel")
   
   import(c("stringi","doParallel"))
-  registerDoParallel(no_cores)
+  cluster <- makeCluster(no_cores)
+  registerDoParallel(cluster)
   
   if(createPlot){
     png('docs/plot_preProcess_doparallel.png')
@@ -52,7 +53,7 @@ preProcess_doparallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
       stringi::stri_trans_general(str=str,id="Latin-ASCII")  
   }
   
-  stopImplicitCluster()
+  stopCluster(cluster)
   return(result)
 }
 
