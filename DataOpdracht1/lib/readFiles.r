@@ -1,4 +1,6 @@
 ### LOOPED METHOD : read batch for given path, filename and batch no
+
+source("lib/realtime_sysinfo.r")
 read_batch <- function(batch_nr) {
   ## Compile file name to read
   batch_no <- sprintf("%02d", batch_nr)

@@ -7,12 +7,14 @@
 #    http://shiny.rstudio.com/
 #
 
-import(c("shiny", "ggplot2", "plotly", "DT"))
+import(c("shiny", "ggplot2", "plotly", "DT", "future", "promises"))
 
 setwd("../")
 source("lib/readFiles_peakRAM.r")
 source("lib/readFiles.r")
 source("lib/realtime_sysinfo.r")
+import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel", "microbenchmark"))
+
 
 
 ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
@@ -84,13 +86,22 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$ram_vector <- renderPlotly({
+  #fileReaderData <- reactiveFileReader(500, NULL,
+                                     #  "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_vector.rds", readRDS)
+  
+  
+ 
+   output$ram_vector <- renderPlotly({
+    invalidateLater(1000)
     plot_ly(y = ram_vector,
-            type = "scatter",
+            x = c(0: (length(ram_vector)-1)),
+           type = "scatter",
             mode = "lines")
   })
+ 
   
-  observeEvent(input$overallTime, {
+  
+   observeEvent(input$overallTime, {
     benchmark_read()
     benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
     output$OverallScore <- renderPlotly({
@@ -98,19 +109,30 @@ server <- function(input, output) {
     })
   })
     
-  
+  result_val <- reactiveVal()  
  observeEvent(input$excecuteSequential,{
-   start_monitor()
-   read_sequential_peakRAM()
-   end_monitor()
-    sequentialData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_sequential_peakRAM.rds")
-    output$RAMoutputFunctions <- renderPlotly({
-      plot_ly(data = sequentialData, x = row.names(sequentialData) , y = sequentialData[,input$input_coresX], type = 'bar' ,
-              mode = 'markers' )
-    })
-  })
+   result <- future({
+     read_sequential_peakRAM()
+   }) %...>% result_val()
+   
+   result <- catch(result, function(e){
+     result_val(NULL)
+     print(e$message)
+     showNotification(e$message)
+   })
+   
+   finally(result, function(){
+     sequentialData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_sequential_peakRAM.rds")
+     output$RAMoutputFunctions <- renderPlotly({
+       plot_ly(data = sequentialData, x = row.names(sequentialData) , y = sequentialData[,input$input_coresX], type = 'bar' ,
+               mode = 'markers' )
+     })
+     
+   })
+   NULL
+ })
   
-  observeEvent(input$excecuteForEach, {
+ observeEvent(input$excecuteForEach, {
     read_doparallel_foreach_peakRAM()
      foreachData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_doparallel_foreach_peakRAM.rds")
      output$RAMoutputFunctions <- renderPlotly({
@@ -137,12 +159,18 @@ server <- function(input, output) {
     })
   })
   
-  output$vector <- renderPlotly({
-    plot_ly ( x = c(1,2,3,4),
-              type = "scatter",
-              mode = "lines"
-    )
-  })
+  
+}
+
+shinyApp(ui = ui, server = server)
+
+
+  #output$vector <- renderPlotly({
+   # plot_ly ( x = c(1,2,3,4),
+        #      type = "scatter",
+         #     mode = "lines"
+    #)
+  #})
   
   
   
@@ -156,8 +184,8 @@ server <- function(input, output) {
    #output$ScatterplotCPU <- renderPlotly({
    # plot_ly ( x = input, y =
       # ,
-     # type = ‘scatter’ ,
-      #mode = ‘lines’
+     # type = ???scatter??? ,
+      #mode = ???lines???
     #)
   #})
     
@@ -178,7 +206,7 @@ server <- function(input, output) {
    #setwd("../")
   # source("lib/readFiles_peakRAM.r")
    #read_peakRAM_to_rds()
-}
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
