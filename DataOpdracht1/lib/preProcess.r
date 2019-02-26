@@ -151,11 +151,7 @@ preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE,no_cores=detectC
   cluster <- makeCluster(no_cores,outfile="")
   
   if(createPlot){
-<<<<<<< HEAD
-    svg('docs/plot_preProcess_devidedInChunks_cluster.svg')
-=======
-    png('docs/plot_preProcess_parallel.png')
->>>>>>> 0c796923191c4b0c6e282f96b293c4a7e88eef76
+    png('docs/plot_preProcess_devidedInChunks_cluster.svg')
     plot(snow.time(result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
     dev.off()
   }else{
