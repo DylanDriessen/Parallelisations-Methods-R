@@ -37,7 +37,7 @@ preProcess_doparallel <- function(createPlot=FALSE) {
   registerDoParallel(cluster)
   
   if(createPlot){
-    svg('docs/plot_preProcess_doparallel.svg')
+    png('docs/plot_preProcess_doparallel.png')
     plot(
       snow.time({
         result <- foreach(str = docs$text) %dopar%
@@ -88,7 +88,7 @@ preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE){
     
   #process
   if(createPlot){
-    svg('docs/plot_preProcess_DevidedInChunks_doparallel.svg')
+    png('docs/plot_preProcess_DevidedInChunks_doparallel.png')
     plot(
       snow.time({
         res <- foreach(chunk = chunks,
@@ -124,7 +124,7 @@ preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE){
   cluster <- makeCluster(no_cores,outfile="")
   
   if(createPlot){
-    svg('docs/plot_preProcess_DevidedInChunks_parallel.svg')
+    png('docs/plot_preProcess_DevidedInChunks_parallel.png')
     plot(snow.time(res <- parLapply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
     dev.off()
   }else{
@@ -147,7 +147,7 @@ preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE) {
   cluster <- makeCluster(no_cores,outfile="")
   
   if(createPlot){
-    svg('docs/plot_preProcess_parallel.svg')
+    png('docs/plot_preProcess_parallel.png')
     plot(snow.time(result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
     dev.off()
   }else{

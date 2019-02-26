@@ -21,3 +21,13 @@ start_monitor <- function() {
 end_monitor <- function() {
   tclTaskDelete("monitor")
 }
+
+#start_monitor()
+#n=1000
+#df=data.frame(time=1:n,y=ram_vector)
+#window=100
+#for(i in 1:(n-window)) {
+ # flush.console()
+#  plot(df$time,df$y,type='l',xlim=c(i,i+window))
+ # Sys.sleep(.09)
+#}

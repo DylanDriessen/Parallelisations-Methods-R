@@ -27,7 +27,6 @@ read_doparallel_foreach_peakRAM <- function() {
   registerDoParallel(cl)
   on.exit(stopCluster(cl))
   sp <- "RShinyDashboardAfstudeer/data/"
-  
   saveRDS(foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% read_batch_peakRAM(batch_nr), file = paste0(sp, "read_doparallel_foreach_peakRAM.rds"))
   end_monitor()
  

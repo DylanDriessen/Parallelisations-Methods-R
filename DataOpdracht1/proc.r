@@ -4,7 +4,7 @@ source("lib/realtime_sysinfo.r")
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
 
 import("parallel")
 no_cores <- 2#detectCores()
@@ -38,8 +38,8 @@ docs <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
-docs$cln <- preProcess_DevidedInChunks_parallel()
-#benchmark_preProcess()
+#docs$cln <- preProcess_DevidedInChunks_parallel()
+benchmark_preProcess(createPlot = TRUE)
 
 
 # ==============================================================================
