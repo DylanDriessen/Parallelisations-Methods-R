@@ -50,7 +50,7 @@ docs$cln <- preProcess_DevidedInChunks_parallel()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
-#microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 #microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
 microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
                              quanFunction = microbenchmark(Quan() ,times = 1)[,2]*10^-9, 
@@ -67,7 +67,7 @@ saveRDS(microbenchmark_data, file = "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashb
 # ==============================================================================
 
 source("lib/createDTM.r")
-DocumentTermMatrix <- createDTM()
+DTM <- createDTM()
 
 # ==============================================================================
 #
