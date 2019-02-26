@@ -13,19 +13,17 @@ preProcess_seq <- function() {
 
 preProcess_parallel <- function(createPlot=FALSE) {
   #process every line in parallel with lapply
-  plot=TRUE
   import(c("stringi","parallel","snow"))  
   no_cores = detectCores()
   cluster <- makeCluster(no_cores)
   
-  if(plot){
+  if(createPlot){
     svg('docs/plot_preProcess_parallel.svg')
     plot(snow.time(result <- parLapply(cluster,docs$text,stringi::stri_trans_general,id="Latin-ASCII")))
     dev.off()
   }else{
     result <- parLapply(cluster,docs$text,stringi::stri_trans_general,id="Latin-ASCII")  
   }
-  
   
   stopCluster(cluster)
   return(result)
@@ -35,9 +33,10 @@ preProcess_doparallel <- function(createPlot=FALSE) {
   #process every line sequentially with foreach
   
   import(c("stringi","doParallel"))
-  registerDoParallel(detectCores())
+  cluster <- makeCluster(detectCores())
+  registerDoParallel(cluster)
   
-  if(plot){
+  if(createPlot){
     svg('docs/plot_preProcess_doparallel.svg')
     plot(
       snow.time({
@@ -51,6 +50,25 @@ preProcess_doparallel <- function(createPlot=FALSE) {
       stringi::stri_trans_general(str=str,id="Latin-ASCII")  
   }
   
+  stopCluster(cluster)
+  return(result)
+}
+
+preProcess_cluster <- function(createPlot=FALSE) {
+  #process every line in parallel with lapply
+  import(c("stringi","parallel","snow"))  
+  no_cores = detectCores()
+  cluster <- makeCluster(no_cores)
+  
+  if(createPlot){
+    svg('docs/plot_preProcess_cluster.svg')
+    plot(snow.time(result <- clusterApply(cl = cluster,x=docs$text,stringi::stri_trans_general,id="Latin-ASCII")))
+    dev.off()
+  }else{
+    result <- clusterApply(cl = cluster,x=docs$text,stringi::stri_trans_general,id="Latin-ASCII")
+  }
+  
+  stopCluster(cluster)
   return(result)
 }
 
@@ -69,7 +87,7 @@ preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE){
   registerDoSNOW(cluster)
     
   #process
-  if(plot){
+  if(createPlot){
     svg('docs/plot_preProcess_DevidedInChunks_doparallel.svg')
     plot(
       snow.time({
@@ -105,7 +123,7 @@ preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE){
   
   cluster <- makeCluster(no_cores,outfile="")
   
-  if(plot){
+  if(createPlot){
     svg('docs/plot_preProcess_DevidedInChunks_parallel.svg')
     plot(snow.time(res <- parLapply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
     dev.off()
@@ -118,14 +136,39 @@ preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE){
   return(res)
 }
 
+preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE) {
+  #process every line in parallel with lapply
+  import(c("stringi","parallel","snow"))
+  
+  ids <- 1: length(docs$text)
+  no_cores = detectCores()
+  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
+  
+  cluster <- makeCluster(no_cores,outfile="")
+  
+  if(createPlot){
+    svg('docs/plot_preProcess_parallel.svg')
+    plot(snow.time(result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
+    dev.off()
+  }else{
+    result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)
+  }
+  
+  stopCluster(cluster)
+  return(result)
+}
+
+
 benchmark_preProcess <- function(times = 1,display=TRUE,save=FALSE,createPlot=FALSE){
   import("microbenchmark")
   
-  benchmarkResult <- microbenchmark(preProcess_seq(createPlot=createPlot),
+  benchmarkResult <- microbenchmark(preProcess_seq(),
                                     preProcess_parallel(createPlot=createPlot),
                                     preProcess_doparallel(createPlot=createPlot),
+                                    preProcess_cluster(createPlot = createPlot),
                                     preProcess_DevidedInChunks_parallel(createPlot=createPlot),
                                     preProcess_DevidedInChunks_doparallel(createPlot=createPlot),
+                                    preProcess_DevidedInChunks_cluster(createPlot = createPlot),
                                     times=times)
   if(save){
     save(benchmarkResult,file="doc/preProcessBenchmarkResult.rda")
