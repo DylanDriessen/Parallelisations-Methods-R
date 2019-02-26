@@ -25,8 +25,8 @@ source("lib/readFiles_peakRAM.r")
 ################################################################################
 
 source("lib/readFiles.r")
-docs <- readFiles_doparallel_foreach_ffdf()
-docs2 <- readFiles_doparallel_foreach()
+#docs2 <- readFiles_doparallel_foreach_ffdf()
+docs <- readFiles_doparallel_foreach()
 #benchmark_read()
 
 ################################################################################
@@ -38,7 +38,7 @@ docs2 <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
-docs$text <- preProcess_DevidedInChunks_parallel()
+docs$cln <- preProcess_DevidedInChunks_parallel()
 #benchmark_preProcess()
 
 
@@ -58,7 +58,7 @@ docsCorpus <- createCorpus()
 microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
                              quanFunction = microbenchmark(Quan() ,times = 1)[,2]*10^-9, 
                              vcorpchunkFunction = microbenchmark(VCorpChunk() ,times = 1)[,2]*10^-9)
-        
+
 saveRDS(microbenchmark_data, file = "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
 
 # ==============================================================================
