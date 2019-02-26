@@ -19,6 +19,7 @@ import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "par
 
 
 ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
+#benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(

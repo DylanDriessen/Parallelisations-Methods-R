@@ -1,7 +1,5 @@
 (.packages())
 source("util/importPackage.r")
-source("lib/realtime_sysinfo.r")
-
 
 ## Batches info
 ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
@@ -14,9 +12,8 @@ no_cores <- 2#detectCores()
 #   Language dependent stemming
 #   Stem completion
 
-source("lib/readFiles_peakRAM.r")
-#read_peakRAM_to_rds()
-
+# source("lib/readFiles_peakRAM.r")
+# read_peakRAM_to_rds()
 
 ################################################################################
 #
@@ -38,8 +35,12 @@ docs <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
+
 #docs$cln <- preProcess_DevidedInChunks_parallel()
 benchmark_preProcess(createPlot = TRUE)
+docs$text <- preProcess_DevidedInChunks_doparallel()
+docs$cln <- preProcess_DevidedInChunks_parallel()
+#benchmark_preProcess()
 
 
 # ==============================================================================
@@ -54,7 +55,6 @@ source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
 #microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 #microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
-
 microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
                              quanFunction = microbenchmark(Quan() ,times = 1)[,2]*10^-9, 
                              vcorpchunkFunction = microbenchmark(VCorpChunk() ,times = 1)[,2]*10^-9)
