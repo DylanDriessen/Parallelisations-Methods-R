@@ -2,8 +2,9 @@ createDTM <- function() {
   # CREATE
   import(c("glmnet"))
   
-  createDFM()
+  createDFMasDTM()
   #createDTMC()
+  #createDFM()
 }
 
 #####################################################################
