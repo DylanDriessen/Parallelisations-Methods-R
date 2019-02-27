@@ -5,7 +5,7 @@ source("util/importPackage.r")
 ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 import("parallel")
-no_cores <- 8#detectCores()
+no_cores <- 2#detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
@@ -24,6 +24,7 @@ no_cores <- 8#detectCores()
 source("lib/readFiles.r")
 #docs2 <- readFiles_doparallel_foreach_ffdf()
 docs <- readFiles_doparallel_foreach()
+docs$id <- 1:nrow(docs)
 #benchmark_read()
 
 ################################################################################

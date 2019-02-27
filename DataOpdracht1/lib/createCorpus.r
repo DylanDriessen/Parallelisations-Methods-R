@@ -15,7 +15,8 @@ createCorpus <- function() {
       "text2vec",
       "doMC",
       "quanteda",
-      "textmineR"
+      "textmineR",
+      "stopwords"
     )
   )
   
@@ -182,7 +183,7 @@ VCorp <- function() {
 
 Quan <- function() {
   
-  quanteda_options(threads = 4)
+  quanteda_options(threads = 8)
   
   print("Creating Quanteda Corpus")
   crpT <- corpus(docs)
