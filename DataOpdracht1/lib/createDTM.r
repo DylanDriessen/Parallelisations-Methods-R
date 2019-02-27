@@ -3,6 +3,7 @@ createDTM <- function() {
   import(c("glmnet", "quanteda"))
   
   createDFMasDTM()
+  #createDfmChunks()
   #createDTMC()
   #createDFM()
 }
@@ -13,32 +14,36 @@ createDTM <- function() {
 ##
 #####################################################################
 
-createDfmChunks <- function(){
+createDfmChunks <- function() {
   print("detectCores")
-  no_cores=detectCores()
+  no_cores = detectCores()
+  cl <- makeCluster(no_cores)
+  registerDoParallel(cl)
   print("create List")
-  corpusMatrixList <- list()
-  print("checking limits")
-  for(i in 1:no_cores){
-    og <- round((i-1)*nrow(docs)/no_cores)+1
-    bg <- round(nrow(docs)/no_cores*i)
-    print(paste0("create list", i))
-    corpusMatrixList[[i]] = tokens_subset(docsCorpus, id >= og & id <= bg)
-  }
+  dfmList <- list()
+  print("checking limits & writing dfm's to list")
+  docrows <- nrow(docs)
+  print("test")
+  dfmList <-
+    foreach(i = 1:no_cores, .packages = "quanteda", .export = c("docs", "docsCorpus")) %dopar% {
+      og <- round((i - 1) * docrows / no_cores) + 1
+      bg <- round(docrows / no_cores * i)
+      sub <- tokens_subset(docsCorpus, id >= og & id <= bg)
+      dfm(sub)
+    }
   print("remove big Corpus")
-  rm(docsCorpus)
+  #rm(docsCorpus)
   
-  print("create DFM's")
-  for(i in 1:length(corpusMatrixList)){
-    assign(paste0("dfm", i), dfm(corpusMatrixList[[i]]))
-  }
+  print("write first dfm to total")
+  dfmTotal <- dfmList[[1]]
   
   print("binding DFM's")
-  dfmTotal <- dfm1
-  
-  for(i in 2:length(corpusMatrixList)){
-    dfmTotal <- rbind(dfmTotal, get(paste0("dfm", i)))
+  for (i in 2:length(dfmList)) {
+    dfmTotal <- rbind(dfmTotal, dfmList[[i]])
   }
+  
+  stopCluster(cl)
+  
 }
 
 #####################################################################
