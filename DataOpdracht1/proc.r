@@ -2,10 +2,10 @@
 source("util/importPackage.r")
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 import("parallel")
-no_cores <- 2#detectCores()
+no_cores <- 8#detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
