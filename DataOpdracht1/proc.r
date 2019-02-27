@@ -35,7 +35,7 @@ docs <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
-docs$cln <- preProcessClusterChunked()
+docs$text <- preProcessClusterChunked()
 
 benchmark_preProcess(createPlot = TRUE,times = 1)
 
