@@ -25,34 +25,70 @@ ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ra
 ui <- fluidPage(
   
  sidebarPanel(
-       helpText("Select wich axes"),
-      selectInput(inputId = "input_coresX", label = "Choose a variabel to display:",
-                  choices = c("Elapsed_Time_sec", "Total_RAM_Used_MiB", "Peak_RAM_Used_MiB", "Start_Time", "End_Time"),
+      helpText("Select wich function"),
+      selectInput(inputId = "callFunction", label = "Choose a function to display:",
+                  choices = c( ReadFile = "Read", createCorpus = "Corpus", createDTM = "DTM",  deriveVocabulary = "Voc", Cluster = "Cluster"),
                   selected = "Elapsed_Time_sec"
-                  )),
-        
-    
-#sidebarPanel(
-  # selectInput(inputId = "input_plotX", label = "Choose a variabel to display:",
-              #choices = c("Elapsed_Time_sec", "Total_RAM_Used_MiB", "Peak_RAM_used_MiB", "Start_Time", "End_Time"),
-              #selected = "Total_RAM_used_MIB"
-   #)),
+                  ),
  
+      conditionalPanel(
+        condition = "input.callFunction == 'Read'",
+        selectInput(inputId = "callMethodReadFiles", label = "Choose method to display",
+                   choices = c("sequential", "clusterapply", "parlapply", "foreach"))
+      ),
+ 
+      conditionalPanel(
+        condition = "input.callFunction == 'Corpus'", 
+        selectInput(inputId= "callMethodCorpus", label = "Choose a function to display",
+              choices = c("VCorpChunk", "VCorp", "Quan"))),
   
+      
+      conditionalPanel(
+        condition = "input.callFunction == 'DTM'", 
+        selectInput(inputId= "callMethodDTM", label = "Choose a function to display",
+               choices = c("methods to implement"))),
+      
+      conditionalPanel(
+        condition = "input.callFunction == 'Voc'", 
+        selectInput(inputId= "callMethodVoc", label = "Choose a function to display",
+               choices = c("methods to implement"))),
   
+     conditionalPanel(
+         condition = "input.callFunction == 'Cluster'", 
+          selectInput(inputId= "callMethodCluster", label = "Choose a function to display",
+               choices = c("methods to implement"))),
+     
+    selectInput(inputId = "sizeBatch", label = "Choose a batch to calculate",
+                choices = c("mini batch","small batch", "medium batch", "big batch")),
+     
+      actionButton("runApp", "RUN")
+     
+ ),
   mainPanel(
-        
-    actionButton("excecuteSequential", "Render Sequential"),
-    actionButton("excecuteForEach", "Render forEach"),
-    actionButton("excecuteclusterApplyData", "Render Cluster"),
-    actionButton("excecuteparlapply", "Render Parlapply"),
-    actionButton("overallTime", "Render overall time"),
     
+    conditionalPanel(condition = "input.callFunction == 'Read'",
+                     actionButton("excecuteSequential", "Render Sequential"),
+                     actionButton("excecuteForEach", "Render forEach"),
+                     actionButton("excecuteclusterApplyData", "Render Cluster"),
+                     actionButton("excecuteparlapply", "Render Parlapply")),
+        
+    conditionalPanel(condition = "input.callFunction == 'Corpus'",
+                    actionButton("excecuteVCorpChunk", "Show VCorpChunk"),
+                    actionButton("excecuteVCorp", "Show VCorp"),
+                    actionButton("excecuteQuan", "Show Quan")
+),
+    
+    
+    
+
+
     plotlyOutput("RAMoutputFunctions"),
     imageOutput("CPUusage"),
     plotlyOutput("ram_vector"),
     plotlyOutput("OverallScore"),
-    plotlyOutput("vector"),  
+    plotlyOutput("vector")
+  )
+)
     
     
     
@@ -67,10 +103,9 @@ ui <- fluidPage(
  
  
     
-  DT::dataTableOutput("table"),
-  DT::dataTableOutput("tableBenchMark")
-  )
-)
+  
+  
+
   # sidebarPanel(
       #selectInput("input_id", "Choose a variabel to display:", 
                  # c(" ", "percent black", "percent Hispanic", "percent Asian"),
@@ -185,49 +220,8 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 
 
-  #output$vector <- renderPlotly({
-   # plot_ly ( x = c(1,2,3,4),
-        #      type = "scatter",
-         #     mode = "lines"
-    #)
-  #})
-  
-  
-  
-  
-  
-  
-  #output$table <- DT::renderDataTable(DT::datatable({
-   # data <- sequentialData
-#  }))
  
-   #output$ScatterplotCPU <- renderPlotly({
-   # plot_ly ( x = input, y =
-      # ,
-     # type = ???scatter??? ,
-      #mode = ???lines???
-    #)
-  #})
-    
-  #plot_ly(
-  #  x = row.names(ram),
-  #y = ram[,"Elapsed_Time_sec"],
-  #type = "bar")
-  #),
-  
-  
-  
- 
-   
-   #output$tableBenchMark <- DT::renderDataTable(DT::datatable({
-    # data <- benchmark
-  # }))
-   
-   #setwd("../")
-  # source("lib/readFiles_peakRAM.r")
-   #read_peakRAM_to_rds()
 
 
-# Run the application 
-shinyApp(ui = ui, server = server)
+
 

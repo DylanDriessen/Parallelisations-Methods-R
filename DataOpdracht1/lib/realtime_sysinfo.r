@@ -15,7 +15,7 @@ monitor <- function() {
 start_monitor <- function() {
   ram_vector <<- NULL
   cpu_vector <<- NULL
-  tclTaskSchedule(1000, monitor(), id = "monitor", redo = TRUE)
+  tclTaskSchedule(1000, as.numeric(system("../scripts/my_ram_usage.sh", intern = TRUE)), id = "monitor", redo = TRUE)
 }
 
 end_monitor <- function() {

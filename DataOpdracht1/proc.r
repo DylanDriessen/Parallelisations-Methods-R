@@ -22,7 +22,7 @@ no_cores <- 2#detectCores()
 ################################################################################
 
 source("lib/readFiles.r")
-#docs2 <- readFiles_doparallel_foreach_ffdf()
+#docs <- readFiles_doparallel_foreach_ffdf()
 docs <- readFiles_doparallel_foreach()
 docs$id <- 1:nrow(docs)
 #benchmark_read()
@@ -36,7 +36,7 @@ docs$id <- 1:nrow(docs)
 ################################################################################
 
 source("lib/preProcess.r")
-docs$text <- preProcess_DevidedInChunks_cluster()
+docs$text <- preProcessClusterChunked()
 
 #benchmark_preProcess(createPlot = TRUE,times = 1)
 

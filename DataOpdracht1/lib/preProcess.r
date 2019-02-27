@@ -1,8 +1,8 @@
-if (!exists("docs")){
-  load("docs.rds")
-}
+# if (!exists("docs")){
+#   load("docs.rds")
+# }
 
-preProcess_seq <- function() {
+preProcessSequential <- function() {
   #process every line sequentially
   print("#####################preProcess_seq")
   
@@ -12,7 +12,7 @@ preProcess_seq <- function() {
   
 }
 
-preProcess_parallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
+preProcessParallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line in parallel with lapply
   print("#####################preProcess_parallel")
   
@@ -31,7 +31,7 @@ preProcess_parallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   return(result)
 }
 
-preProcess_doparallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
+preProcessDoparallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line sequentially with foreach
   print("#####################preProcess_doparallel")
   
@@ -57,7 +57,7 @@ preProcess_doparallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   return(result)
 }
 
-preProcess_cluster <- function(createPlot=FALSE,no_cores = detectCores()-1) {
+preProcessCluster <- function(createPlot=FALSE,no_cores = detectCores()-1) {
   #process every line in parallel with lapply
   print("#####################preProcess_cluster")
   
@@ -69,14 +69,14 @@ preProcess_cluster <- function(createPlot=FALSE,no_cores = detectCores()-1) {
     plot(snow.time(result <- clusterApply(cl = cluster,x=docs$text,stringi::stri_trans_general,id="Latin-ASCII")))
     dev.off()
   }else{
-    result <- clusterApply(cl = cluster,x=docs$text,stringi::stri_trans_general,id="Latin-ASCII")
+    result <- unlist(clusterApply(cl = cluster,x=docs$text,stringi::stri_trans_general,id="Latin-ASCII"))
   }
   
   stopCluster(cluster)
   return(result)
 }
 
-preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE,no_cores = detectCores()-1){
+preProcessDoparallelChunked <- function(createPlot=FALSE,no_cores = detectCores()-1){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
   print("#####################preProcess_DevidedInChunks_doparallel")
   
@@ -115,7 +115,7 @@ preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE,no_cores = de
   return(res)
 }
 
-preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE,no_cores=detectCores()-1){
+preProcessParallelChunked <- function(createPlot=FALSE,no_cores=detectCores()-1){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
   print("#####################preProcess_DevidedInChunks_parallel")
   
@@ -142,7 +142,7 @@ preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE,no_cores=detect
   return(res)
 }
 
-preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE,no_cores=detectCores()-1) {
+preProcessClusterChunked <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line in parallel with lapply
   import(c("stringi","parallel","snow"))
   
@@ -156,7 +156,7 @@ preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE,no_cores=detectC
     plot(snow.time(result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
     dev.off()
   }else{
-    result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)
+    result <- unlist(clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs))
   }
   
   stopCluster(cluster)
@@ -164,16 +164,16 @@ preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE,no_cores=detectC
 }
 
 
-benchmark_preProcess <- function(times = 1,display=TRUE,save=FALSE,createPlot=FALSE){
+benchmarkPreProcess <- function(times = 1,display=TRUE,save=FALSE,createPlot=FALSE){
   import("microbenchmark")
   
-  benchmarkResult <- microbenchmark(preProcess_seq(),
-                                    preProcess_parallel(createPlot=createPlot),
-                                    preProcess_doparallel(createPlot=createPlot),
-                                    preProcess_cluster(createPlot = createPlot),
-                                    preProcess_DevidedInChunks_parallel(createPlot=createPlot),
-                                    preProcess_DevidedInChunks_doparallel(createPlot=createPlot),
-                                    preProcess_DevidedInChunks_cluster(createPlot = createPlot),
+  benchmarkResult <- microbenchmark(preProcessSequential(),
+                                    preProcessParallel(createPlot=createPlot),
+                                    preProcessParallelChunked(createPlot=createPlot),
+                                    preProcessDoparallel(createPlot=createPlot),
+                                    preProcessDoparallelChunked(createPlot=createPlot),
+                                    preProcessCluster(createPlot = createPlot),
+                                    preProcessClusterChunked(createPlot = createPlot),
                                     times=times)
   if(save){
     save(benchmarkResult,file="doc/preProcessBenchmarkResult.rda")
