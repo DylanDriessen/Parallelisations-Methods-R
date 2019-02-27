@@ -14,14 +14,31 @@ createDTM <- function() {
 #####################################################################
 
 createDfmChunks <- function(){
+  print("detectCores")
   no_cores=detectCores()
-  list <- list()
+  print("create List")
+  corpusMatrixList <- list()
+  print("checking limits")
   for(i in 1:no_cores){
     og <- round((i-1)*nrow(docs)/no_cores)+1
     bg <- round(nrow(docs)/no_cores*i)
-    list[[i]] = tokens_subset(docsCorpus, id >= og & id <= bg)
+    print(paste0("create list", i))
+    corpusMatrixList[[i]] = tokens_subset(docsCorpus, id >= og & id <= bg)
   }
+  print("remove big Corpus")
   rm(docsCorpus)
+  
+  print("create DFM's")
+  for(i in 1:length(corpusMatrixList)){
+    assign(paste0("dfm", i), dfm(corpusMatrixList[[i]]))
+  }
+  
+  print("binding DFM's")
+  dfmTotal <- dfm1
+  
+  for(i in 2:length(corpusMatrixList)){
+    dfmTotal <- rbind(dfmTotal, get(paste0("dfm", i)))
+  }
 }
 
 #####################################################################
