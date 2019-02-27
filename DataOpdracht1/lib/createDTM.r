@@ -1,10 +1,24 @@
 createDTM <- function() {
   # CREATE
-  import(c("glmnet"))
+  import(c("glmnet", "quanteda"))
   
   createDFMasDTM()
   #createDTMC()
   #createDFM()
+}
+
+#####################################################################
+##
+##             Document-Feature Matrix Parallel Chunks
+##
+#####################################################################
+
+createDfmChunks <- function(){
+  for(i in 1:no_cores){
+    og <- round((i-1)*nrow(docs)/no_cores)+1
+    bg <- round(nrow(docs)/no_cores*i)
+  }
+  subset <- tokens_subset(docsCorpus, id >= og & id <= bg)
 }
 
 #####################################################################
