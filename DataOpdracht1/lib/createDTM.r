@@ -14,11 +14,14 @@ createDTM <- function() {
 #####################################################################
 
 createDfmChunks <- function(){
+  no_cores=detectCores()
+  list <- list()
   for(i in 1:no_cores){
     og <- round((i-1)*nrow(docs)/no_cores)+1
     bg <- round(nrow(docs)/no_cores*i)
+    list[[i]] = tokens_subset(docsCorpus, id >= og & id <= bg)
   }
-  subset <- tokens_subset(docsCorpus, id >= og & id <= bg)
+  rm(docsCorpus)
 }
 
 #####################################################################
