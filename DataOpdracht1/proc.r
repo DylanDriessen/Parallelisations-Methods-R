@@ -2,10 +2,10 @@
 source("util/importPackage.r")
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 import("parallel")
-no_cores <- 2#detectCores()
+no_cores <- 8#detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
@@ -22,7 +22,7 @@ no_cores <- 2#detectCores()
 ################################################################################
 
 source("lib/readFiles.r")
-#docs2 <- readFiles_doparallel_foreach_ffdf()
+#docs <- readFiles_doparallel_foreach_ffdf()
 docs <- readFiles_doparallel_foreach()
 #benchmark_read()
 
@@ -35,12 +35,9 @@ docs <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
+docs$text <- preProcessClusterChunked()
 
-#docs$cln <- preProcess_DevidedInChunks_parallel()
-benchmark_preProcess(createPlot = TRUE)
-docs$text <- preProcess_DevidedInChunks_doparallel()
-docs$cln <- preProcess_DevidedInChunks_parallel()
-#benchmark_preProcess()
+#benchmark_preProcess(createPlot = TRUE,times = 1)
 
 
 # ==============================================================================
