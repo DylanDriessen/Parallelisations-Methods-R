@@ -63,7 +63,7 @@ ui <- fluidPage(
      
       actionButton("runApp", "RUN")
      
- ),
+ , width = 2),
   mainPanel(
     
     conditionalPanel(condition = "input.callFunction == 'Read'",
