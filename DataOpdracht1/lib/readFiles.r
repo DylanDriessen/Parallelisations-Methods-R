@@ -1,4 +1,6 @@
 ### LOOPED METHOD : read batch for given path, filename and batch no
+
+source("lib/realtime_sysinfo.r")
 read_batch <- function(batch_nr) {
   ## Compile file name to read
   batch_no <- sprintf("%02d", batch_nr)
@@ -110,9 +112,10 @@ readFiles_doparallel_foreach_ffdf <- function() {
 ### BENCHMARK
 benchmark_read <- function() {
   import(c("readr","tibble","data.table", "parallel", "foreach", "doParallel"))
-  microbenchmark(read_clusterapply(), 
+ benchmarkReadFilesSmall <-  microbenchmark(read_clusterapply(), 
                  read_doparallel_foreach(), 
                  read_parlapply(), 
                  read_sequential(),
                  times = 1)
+ saveRDS(benchmarkReadFilesSmall, "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
 }

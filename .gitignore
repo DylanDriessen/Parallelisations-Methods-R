@@ -47,3 +47,5 @@ vignettes/*.pdf
 # Data files
 *.RDa
 *.rds
+*.svg
+*.png
