@@ -35,12 +35,9 @@ docs <- readFiles_doparallel_foreach()
 ################################################################################
 
 source("lib/preProcess.r")
+docs$text <- preProcess_DevidedInChunks_cluster()
 
-#docs$cln <- preProcess_DevidedInChunks_parallel()
-benchmark_preProcess(createPlot = TRUE)
-docs$text <- preProcess_DevidedInChunks_doparallel()
-docs$cln <- preProcess_DevidedInChunks_parallel()
-#benchmark_preProcess()
+#benchmark_preProcess(createPlot = TRUE,times = 1)
 
 
 # ==============================================================================

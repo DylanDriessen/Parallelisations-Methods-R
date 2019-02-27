@@ -4,6 +4,7 @@ if (!exists("docs")){
 
 preProcess_seq <- function() {
   #process every line sequentially
+  print("#####################preProcess_seq")
   
   import("stringi")
   result <- stringi::stri_trans_general(docs$text, 'Latin-ASCII')
@@ -11,10 +12,11 @@ preProcess_seq <- function() {
   
 }
 
-preProcess_parallel <- function(createPlot=FALSE) {
+preProcess_parallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line in parallel with lapply
+  print("#####################preProcess_parallel")
+  
   import(c("stringi","parallel","snow"))  
-  no_cores = detectCores()
   cluster <- makeCluster(no_cores)
   
   if(createPlot){
@@ -29,11 +31,12 @@ preProcess_parallel <- function(createPlot=FALSE) {
   return(result)
 }
 
-preProcess_doparallel <- function(createPlot=FALSE) {
+preProcess_doparallel <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line sequentially with foreach
+  print("#####################preProcess_doparallel")
   
   import(c("stringi","doParallel"))
-  cluster <- makeCluster(detectCores())
+  cluster <- makeCluster(no_cores)
   registerDoParallel(cluster)
   
   if(createPlot){
@@ -54,10 +57,11 @@ preProcess_doparallel <- function(createPlot=FALSE) {
   return(result)
 }
 
-preProcess_cluster <- function(createPlot=FALSE) {
+preProcess_cluster <- function(createPlot=FALSE,no_cores = detectCores()-1) {
   #process every line in parallel with lapply
+  print("#####################preProcess_cluster")
+  
   import(c("stringi","parallel","snow"))  
-  no_cores = detectCores()
   cluster <- makeCluster(no_cores)
   
   if(createPlot){
@@ -72,18 +76,19 @@ preProcess_cluster <- function(createPlot=FALSE) {
   return(result)
 }
 
-preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE){
+preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE,no_cores = detectCores()-1){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
+  print("#####################preProcess_DevidedInChunks_doparallel")
+  
   
   import(c("stringi","doParallel","doSNOW"))
   
   #split id's into chunks
   #https://code.i-harness.com/en/q/32a23d
   ids <- 1: length(docs$text)
-  no_cores = detectCores()
   
   chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
-  cluster <- makeCluster(detectCores()-1,outfile="")
+  cluster <- makeCluster(no_cores,outfile="")
   registerDoSNOW(cluster)
     
   #process
@@ -110,15 +115,16 @@ preProcess_DevidedInChunks_doparallel <- function(createPlot=FALSE){
   return(res)
 }
 
-preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE){
+preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE,no_cores=detectCores()-1){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
+  print("#####################preProcess_DevidedInChunks_parallel")
+  
   
   import(c("stringi","parallel","snow"))
   
   #split id's into chunks
   #https://code.i-harness.com/en/q/32a23d
   ids <- 1: length(docs$text)
-  no_cores = detectCores()
   chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
   
   cluster <- makeCluster(no_cores,outfile="")
@@ -136,18 +142,17 @@ preProcess_DevidedInChunks_parallel <- function(createPlot=FALSE){
   return(res)
 }
 
-preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE) {
+preProcess_DevidedInChunks_cluster <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line in parallel with lapply
   import(c("stringi","parallel","snow"))
   
   ids <- 1: length(docs$text)
-  no_cores = detectCores()
   chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
   
   cluster <- makeCluster(no_cores,outfile="")
   
   if(createPlot){
-    png('docs/plot_preProcess_parallel.png')
+    png('docs/plot_preProcess_devidedInChunks_cluster.svg')
     plot(snow.time(result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
     dev.off()
   }else{
