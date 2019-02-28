@@ -22,8 +22,9 @@ createCorpus <- function() {
   
   ##### Create corpus (and define default language)
   
-  #Quan()
-  VCorpChunk()
+  Quan()
+  #VCorpChunk()
+  #VCorp()
 }
 
 createCorpusCluster <- function() {
@@ -61,8 +62,10 @@ VCorpChunk <- function() {
   registerDoParallel(cl)
   print("Remove graphical characters")
   crp <- foreach(chunk = chunks,
-                 .combine = c) %dopar%
+                 .combine = c) %dopar% {
+    print("test")
     tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
+                 }
   
   print("stopCluster")
   stopCluster(cl)
