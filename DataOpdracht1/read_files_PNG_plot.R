@@ -1,34 +1,41 @@
-source("lib/readFiles.r")
-import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel"))
+source("lib/readFiles_peakRAM.r")
+import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel", "microbenchmark"))
 
 #Wegschrijven naar een PNG bestand
 read_doparallel_foreach_PNG<- function() {
   png('docs/read_doparallel_foreach_PNG.png')
-  plot(snow.time(result <- microbenchmark(read_doparallel_foreach(), times = 1)))
+  plot(snow.time(result <- microbenchmark(peakR <- read_doparallel_foreach_peakRAM(), times = 1)))
   dev.off()
 }
 
 readFiles_clusterapply <- function(){
   png('docs/read_clusterapply.png')
-  plot(snow.time(result <- microbenchmark(read_clusterapply(), times = 1)))
+  plot(snow.time(result <- microbenchmark(peakR <- read_clusterapply_peakRAM(), times = 1)))
   dev.off()
 }
 
 readFiles_parlapply <- function(){
   png('docs/read_parLapply.png')
-  plot(snow.time(result <- microbenchmark(read_parlapply(), times = 1)))
+  plot(snow.time(result <- microbenchmark(peakR <- read_parlapply_peakRAM(), times = 1)))
   dev.off()
 }
   
+
+datasize <- "mini"
+
+import(c("stringi","parallel","snow")) 
 readFiles_sequential <- function(){
-  import(c("stringi","parallel","snow")) 
-  png('docs/read_Sequential.png')
-  plot(snow.time(result <- microbenchmark(read_sequential(), times = 1)))
+  start.time <- Sys.time()
+  fpath <- paste0("results/readFiles/sequential/", datasize, "/")
+  png(paste0(fpath, 'snow_plot.png'))
+  plot(snow.time({microbenchmarkResult <- microbenchmark({peakRAMResult <- read_sequential_peakRAM()}, times = 1)}))
   dev.off()
+  saveRDS(microbenchmarkResult, file = paste0(fpath, 'microbenchmark.rds'))
+  saveRDS(peakRAMResult, file = paste0(fpath, 'peakRAM.rds'))
 }
 
-readFiles_doparallel_foreach_ffdf <- function(){
-  png('docs/read_doparallel_foreach_ffdf.png')
-  plot(snow.time(result <- microbenchmark(read_doparallel_foreach_ffdf(), times = 1)))
-  dev.off()
-}
+# readFiles_doparallel_foreach_ffdf <- function(){
+#   png('docs/read_doparallel_foreach_ffdf.png')
+#   plot(snow.time(result <- microbenchmark(read_doparallel_foreach_ffdf(), times = 1)))
+#   dev.off()
+# }
