@@ -28,7 +28,7 @@ docs$id <- 1:nrow(docs)
 #benchmark_read()
 
 ################################################################################
-#
+#p
 # 2 PREPROCESS
 #
 # 18/02/2019 Tom Magerman
@@ -51,7 +51,7 @@ docs$text <- preProcessClusterChunked()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
-docsCorpus2 <- createCorpus()
+#docsCorpus2 <- createCorpus()
 #microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 #microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
 #microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
@@ -70,7 +70,7 @@ docsCorpus2 <- createCorpus()
 
 source("lib/createDTM.r")
 DTM <- createDTM()
-microbenchmark(createDTMC(), createDFM(), createDFMasDTM(), createDfmChunks(), times = 1)
+#microbenchmark(createDFM(), createDFMasDTM(), createDfmChunks(), times = 1)
 
 # ==============================================================================
 #

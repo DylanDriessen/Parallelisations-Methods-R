@@ -3,9 +3,9 @@ createDTM <- function() {
   import(c("glmnet", "quanteda"))
   
   #createDFMasDTM()
-  createDfmChunks()
+  #createDfmChunks()
   #createDTMC()
-  #createDFM()
+  createDFM()
 }
 
 makeCreateDTMCluster <- function() {
@@ -113,13 +113,14 @@ createDTMC <- function() {
     weighting = weightTf,
     wordLengths = c(1, Inf)
   )
+  print("dtm_raw")
   dtm_raw <- DocumentTermMatrix(docsCorpus2, control = dtm_ctrl)
-  dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   #dtm <- as.matrix(dtm_raw[1:50,1:50])
   
   # SAVE RESULTS
-  save(dtm_raw, dtm_ctrl, file = "dtm_raw.RDa")
-  save(dtm_tfidf, dtm_ctrl, file = "dtm_tfidf.RDa")
+  #save(dtm_raw, dtm_ctrl, file = "dtm_raw.RDa")
+  #save(dtm_tfidf, dtm_ctrl, file = "dtm_tfidf.RDa")
   
   return(dtm_raw)
 }
