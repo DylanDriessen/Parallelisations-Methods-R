@@ -69,6 +69,7 @@ docsCorpus <- createCorpus()
 
 source("lib/createDTM.r")
 DTM <- createDTM()
+microbenchmark(createDFM(), createDfmChunks(), createDFMasDTM(), times = 1)
 
 # ==============================================================================
 #
