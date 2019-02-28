@@ -16,7 +16,7 @@ createCorpus <- function() {
       "doMC",
       "quanteda",
       "textmineR",
-      "stopwords"
+      "parallel"
     )
   )
   
@@ -24,6 +24,14 @@ createCorpus <- function() {
   
   Quan()
   #VCorpChunk()
+  #VCorp()
+}
+
+createCorpusCluster <- function() {
+  cl <- makeCluster(4, outfile = "")
+  print("clusterEvalQ")
+  clusterEvalQ(cl, { library("tm") })
+  return(cl)
 }
 
 #####################################################################
@@ -36,7 +44,7 @@ VCorpChunk <- function() {
   print("Creating VCorpus Chunk")
   crp <-
     VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
-  
+  cl <- createCorpusCluster()
   ##### Define general function to replace strings in corpus
   print("Define general function to replace strings in corpus")
   (crp.replacePattern <-
@@ -45,73 +53,78 @@ VCorpChunk <- function() {
   
   ##### Clean unicode characters
   ##### Remove graphical characters
-  print("Remove graphical characters")
   ids <- 1:length(crp)
-  no_cores = detectCores()
+  library(parallel)
+  no_cores <- 4
+  print("split chunks")
   chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   
-  registerDoParallel(no_cores)
+  registerDoParallel(cl)
+  print("Remove graphical characters")
   crp <- foreach(chunk = chunks,
-                 .combine = c) %dopar%
+                 .combine = c) %dopar% {
+    print("test")
     tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
+                 }
   
-  #stopImplicitCluster()
+  print("stopCluster")
+  stopCluster(cl)
   
   ##### To lower
   print("To lower")
-  #registerDoParallel(no_cores)
+  registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], content_transformer(tolower))
   
-  #stopImplicitCluster()
+  stopCluster(cl)
   
   ##### Stopword removal
   print("Stopword removal")
-  #registerDoParallel(no_cores)
+  registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removeWords, stopwords(source = "snowball"))
   
-  #stopImplicitCluster()
+  stopCluster(cl)
   
   ##### Stemming
   print("Stemming")
-  #registerDoParallel(no_cores)
+  registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], stemDocument, language = "porter")
   
-  #stopImplicitCluster()
+  stopCluster(cl)
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term)
   print("Removing all numbers")
-  #registerDoParallel(no_cores)
+  registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removeNumbers)
   
-  #stopImplicitCluster()
+  stopCluster(cl)
   
   ##### Punctuation
   print("remove Puncuation")
-  #registerDoParallel(no_cores)
+  registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removePunctuation, preserve_intra_word_dashes = TRUE)
   
-  #stopImplicitCluster()
+  stopCluster(cl)
   
   ##### Whitespace
   print("Remove whitespace")
-  #registerDoParallel(no_cores)
+  registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], stripWhitespace)
   
-  stopImplicitCluster()
+  stopCluster(cl)
   
   # SAVE RESULTS
   print("Saving results")

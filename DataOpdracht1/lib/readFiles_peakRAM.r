@@ -49,10 +49,7 @@ read_parlapply_peakRAM <- function() {
   end_monitor()
 }
 read_sequential_peakRAM <- function() {
-  start_monitor()
-  sp <- "RShinyDashboardAfstudeer/data/"
-  saveRDS(list_to_df(lapply(1:batches, read_batch_peakRAM)), file = paste0(sp, "read_sequential_peakRAM.rds"))
-  end_monitor()
+  return(list_to_df(lapply(1:batches, read_batch_peakRAM)))
 }
 
 

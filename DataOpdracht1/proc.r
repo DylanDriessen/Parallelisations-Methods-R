@@ -2,10 +2,10 @@
 source("util/importPackage.r")
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
 
 import("parallel")
-no_cores <- 2#detectCores()
+no_cores <- 8#detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
@@ -28,7 +28,7 @@ docs$id <- 1:nrow(docs)
 #benchmark_read()
 
 ################################################################################
-#
+#p
 # 2 PREPROCESS
 #
 # 18/02/2019 Tom Magerman
@@ -51,6 +51,7 @@ docs$text <- preProcessClusterChunked()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
+#docsCorpus2 <- createCorpus()
 #microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
 #microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
 #microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
@@ -69,7 +70,7 @@ docsCorpus <- createCorpus()
 
 source("lib/createDTM.r")
 DTM <- createDTM()
-microbenchmark(createDFM(), createDfmChunks(), createDFMasDTM(), times = 1)
+#microbenchmark(createDFM(), createDFMasDTM(), createDfmChunks(), times = 1)
 
 # ==============================================================================
 #
