@@ -144,23 +144,81 @@ preProcessParallelChunked <- function(createPlot=FALSE,no_cores=detectCores()-1)
 
 preProcessClusterChunked <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   #process every line in parallel with lapply
+  
   import(c("stringi","parallel","snow"))
-  
-  ids <- 1: length(docs$text)
-  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
-  
+  print("Devide docs into chunks")
+  chunks <- createChunksObjects(no_cores)
+  print("Create Clusters")
   cluster <- makeCluster(no_cores,outfile="")
   
   if(createPlot){
     png('docs/plot_preProcess_devidedInChunks_cluster.svg')
-    plot(snow.time(result <- clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs)))
+    plot(snow.time(result <- unlist(clusterApply(cluster,
+                                                 chunks,
+                                                 function(chunk){
+                                                   print("Creating chunk")
+                                                   result <- stringi::stri_trans_general(chunk, 'Latin-ASCII')
+                                                   print("preProcess chunk done")
+                                                   return(result)
+                                                 }))))
     dev.off()
   }else{
-    result <- unlist(clusterApply(cluster,chunks,function(chunk,doc){stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},doc=docs))
+    result <- unlist(clusterApply(cluster,
+                                  chunks,
+                                  function(chunk){
+                                    print("Creating chunk")
+                                    result <- stringi::stri_trans_general(chunk, 'Latin-ASCII')
+                                    print("preProcess chunk done")
+                                    return(result)
+                                  }))
   }
   
   stopCluster(cluster)
   return(result)
+}
+
+preProcessClusterChunked2 <- function(createPlot=FALSE,no_cores=detectCores()-1) {
+  #process every line in parallel with lapply
+  import(c("stringi","parallel","snow"))
+  
+  chunks <- createChunksIds(no_cores)
+  cluster <- makeCluster(no_cores,outfile="")
+  
+  if(createPlot){
+    png('docs/plot_preProcess_devidedInChunks_cluster.svg')
+    plot(snow.time(result <- clusterApply(cluster,
+                                          chunks,
+                                          function(chunk,doc){
+                                            stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII')},
+                                          doc=docs)))
+    dev.off()
+  }else{
+    result <- unlist(clusterApply(cluster,
+                                  chunks,
+                                  function(chunk,doc){
+                                    stringi::stri_trans_general(doc[chunk], 'Latin-ASCII')},
+                                  doc=docs))
+  }
+  
+  stopCluster(cluster)
+  return(result)
+}
+
+createChunksIds <- function(noChunks){
+  ids <- 1: length(docs$text)
+  split(ids,factor(sort(rank(ids)%%noChunks)))
+}
+
+createChunksObjects <- function(noChunks){
+  docsList <- list()
+  for(i in 1:noChunks){
+    og <- round((i-1)*nrow(docs)/noChunks)+1
+    bg <- round(nrow(docs)/noChunks*i)
+    print(paste(og," --> ",bg))
+    docsList[[i]] <- unlist(docs[og:bg,"text"])
+  }
+  
+  return(docsList)
 }
 
 
