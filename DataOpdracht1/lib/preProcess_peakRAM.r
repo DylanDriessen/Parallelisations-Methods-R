@@ -21,7 +21,7 @@ preProcessParallel_peakRAM <- function() {
 preProcessDoparallel_peakRAM <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
-  registerDoParallel(cluster)
+  registerDoSNOW(cluster)
   result <- foreach(str = docs$text, .combine = rbind) %dopar%
       peakRAM(stringi::stri_trans_general(str=str,id="Latin-ASCII"))
   stopCluster(cluster)
@@ -41,7 +41,7 @@ preProcessDoparallelChunked <- function(){
   chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
-  registerDoParallel(cluster)
+  registerDoSNOW(cluster)
   res <- foreach(chunk = chunks,
                   .combine = rbind,
                   .export = "docs") %dopar%
