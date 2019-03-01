@@ -7,12 +7,13 @@
 #    http://shiny.rstudio.com/
 #
 
-import(c("shiny", "ggplot2", "plotly", "DT", "future", "promises"))
+import(c("shiny", "ggplot2", "plotly", "DT", "future", "promises", "markdown"))
 
 setwd("../")
 source("lib/readFiles_peakRAM.r")
 source("lib/readFiles.r")
 source("lib/realtime_sysinfo.r")
+
 import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel", "microbenchmark"))
 plan(multiprocess)
 
@@ -33,7 +34,7 @@ ui <- shinyServer(fluidPage(
     helpText("Select wich function"),
     selectInput(inputId = "callFunction", label = "Choose a function to display:",
                 choices = c( ReadFile = "Read", createCorpus = "Corpus", createDTM = "DTM",  deriveVocabulary = "Voc", Cluster = "Cluster"),
-                selected = "Elapsed_Time_sec"
+                selected = "Read"
     ),
     
     conditionalPanel(
@@ -77,41 +78,30 @@ ui <- shinyServer(fluidPage(
     , width = 2),
   mainPanel(
     
-    fluidRow(
-     
-      #==========================#
-       #Buttons to show all the plots from different method/functions
-      #==========================#
-      
-      
-      conditionalPanel(condition = "input.callFunction == 'Read'",
-                       actionButton("excecuteSequential", "Render Sequential"),
-                       actionButton("excecuteForEach", "Render forEach"),
-                       actionButton("excecuteclusterApplyData", "Render Cluster"),
-                       actionButton("excecuteparlapply", "Render Parlapply")),
-      
-      conditionalPanel(condition = "input.callFunction == 'Corpus'",
-                       actionButton("excecuteVCorpChunk", "Show VCorpChunk"),
-                       actionButton("excecuteVCorp", "Show VCorp"),
-                       actionButton("excecuteQuan", "Show Quan"))
-      
-      
-    ),
     
-    fluidRow( class = "MyRow2",
-      column( plotlyOutput("RAMoutputFunctions"), width = 6),
-      column( imageOutput("CPUusage"), width = 6)
-      
-        
-      ),
-    
-    fluidRow(
-    plotlyOutput("first_column")
-    )
-    
-   
+    navbarPage("Choose your tab",
+               tabPanel("Overzicht",
+                 fluidRow(plotlyOutput("benchMarkSummary"), align = "center")
+                 
+              
+                ),
+               tabPanel("CorsInfo",
+                        column( plotlyOutput("RAMoutputFunctions"), width = 6),
+                        column(imageOutput("CPUusage"), width = 6)
+                        ),
+               tabPanel("Resources"
+                         
+               ),
+               tabPanel("Live Feed",
+                         fluidRow(
+                           plotlyOutput("first_column"),
+                           plotlyOutput("second_column")
+          )
+        )
+      )
+    , width = 10)
   )
-  ))
+)
 
     
 #foreachData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_doparallel_foreach_peakRAM.rds")
@@ -123,17 +113,31 @@ ui <- shinyServer(fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session){
  
+  #====================================#
+  #BenchmarkForDifferenctFunctions
+  #====================================#
+  
+  output$benchMarkSummary <- renderPlotly({
+      if(input$callFunction == "Read"){
+        benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
+        plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = benchmarkReadSmall$time * 10 ^-9) }
+  })
+  
+      
+  
   
   #====================================#
-  #ObserveEvents voor de knoppen van readFiles met image en plot
+  #Asbenoeming
   #====================================#
   
-  #conditionalPanel(
-    #condition = "input.callFunction == 'Read'",
-    #selectInput(inputId = "callMethodReadFiles", label = "Choose method to display",
-    #            choices = c("sequential", "clusterapply", "parlapply", "foreach",
-   #                         selected = "sequential"))
-  #),
+    
+
+    Elapsed <- list(
+        title = "Elapsed_Time_sec"
+    )
+    Process <- list(
+      title = "Process_id"
+      )
     
   observeEvent(input$runApp, {
    
@@ -143,22 +147,16 @@ server <- shinyServer(function(input, output, session){
     
     
     if(input$callFunction == "Read"){
-      
-      Elapsed <- list(
-        title = "Elapsed_Time_sec"
-      )
-      Process <- list(
-        title = "Process_id"
-      )
-                      
-      #==========================#
+     #==========================#
       #SequentialRead
       #==========================#
        if(input$callMethodReadFiles == "sequential"){
+        
         future (read_sequential_peakRAM())
         sequentialData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_sequential_peakRAM.rds")
         output$RAMoutputFunctions <- renderPlotly({
-          plot_ly(data = sequentialData, x = sequentialData$Elapsed_Time_sec , y = sequentialData$Process_id, type = 'bar')%>% layout(xaxis = Elapsed, yaxis = Process)
+          plot_ly(data = sequentialData, x = sequentialData$Elapsed_Time_sec , y = sequentialData$Process_id, 
+                  type = 'bar', height = 480)%>% layout(xaxis = Elapsed, yaxis = Process)
           
                  
         })
@@ -223,7 +221,7 @@ server <- shinyServer(function(input, output, session){
       foreachData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_doparallel_foreach_peakRAM.rds")
       output$RAMoutputFunctions <- renderPlotly({
         plot_ly(data = foreachData, x = foreachData$Elapsed_Time_sec , y = foreachData$Process_id , type = 'bar' ,
-                mode = 'markers' )%>% layout(xaxis = Elapsed, yaxis = Process)
+                mode = 'markers' ) %>% layout(xaxis = Elapsed, yaxis = Process)
       })
       
       output$CPUusage <- renderImage({
@@ -234,7 +232,17 @@ server <- shinyServer(function(input, output, session){
         ))
       },deleteFile = FALSE)
       
+      }
     }
+    
+    else if(input$callFunction == "Corpus" ){
+      if(input$callMehthodCorpus == "VCorpChunk"){
+        #future(#functie uitvoeren van CvorpChunk)
+        output$RAMoutputFunctions <- renderPlotly({
+          plot_ly()
+          
+        })
+      }
     }
   })
   
@@ -246,11 +254,22 @@ server <- shinyServer(function(input, output, session){
   #})
   
   
-  
+  #selectInput(inputId= "callMethodCorpus", label = "Choose a function to display",
+   #           choices = c("VCorpChunk", "VCorp", "Quan"))),
 
   
   
   
+  Elapsed <- list(
+    title = "Elapsed_Time_sec"
+  )
+  RAM <- list(
+    title = "RAMusage"
+  )
+  
+  RAM2 <- list(
+    title = "CPUusage"
+  )
   
  
   
@@ -267,23 +286,52 @@ server <- shinyServer(function(input, output, session){
       return(data)
     }
     
-    # Initialize my_data
     my_data <<- get_new_data()
     
-    # Function to update my_data
     update_data <- function(){
       my_data <<- rbind(get_new_data(), my_data)
     }
     
-    # Plot the 30 most recent values
+    
+    
     output$first_column <- renderPlotly({
       print("Render")
       invalidateLater(1000, session)
       update_data()
       print(my_data)
       plot_ly(data = my_data, x = my_data$time, y = my_data$ram,  type = "scatter",
-              mode = "lines", height = 300, width = 1100)
+              mode = "lines", height = 300, width = 1100) %>% layout(xaxis = Elapsed, yaxis = RAM)
     })
+    
+    
+    #====================================#
+    #Code voor de REAL time CPU usage
+    #====================================#
+    
+    get_new_data2 <- function(){
+      data <-c(time = as.numeric(Sys.time())  , ram = as.numeric(system("../scripts/my_cpu_usage.sh", intern = TRUE))/1024/1024) %>% rbind %>% data.frame
+      return(data)
+    }
+    
+    my_data2 <<- get_new_data2()
+    
+    update_data2 <- function(){
+      my_data2 <<- rbind(get_new_data(), my_data2)
+    }
+    
+    
+    
+    output$second_column <- renderPlotly({
+      print("Render")
+      invalidateLater(1000, session)
+      update_data2()
+      print(my_data)
+      plot_ly(data = my_data2, x = my_data2$time, y = my_data2$ram,  type = "scatter",
+              mode = "lines", height = 300, width = 1100) %>% layout(xaxis = Elapsed, yaxis = RAM2)
+    })
+    
+    
+    
  })
 
 shinyApp(ui = ui, server = server)
