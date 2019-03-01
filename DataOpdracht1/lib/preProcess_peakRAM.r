@@ -3,87 +3,90 @@
 # }
 
 import(c("peakRAM","stringi","parallel", "doParallel"))
+
 list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
+
 no_cores <- detectCores()-1
 
+### help functies
+stringi_peakRAM <- function (x){
+  t <- Sys.time()
+  pram <- peakRAM(res <- stringi::stri_trans_general(x, id="Latin-ASCII"))
+  list(cbind(Process_Id = Sys.getpid(), pram[,2:4], Start_Time = t, End_Time = Sys.time()), res)
+}
+get_pram_from_list <- function (l){
+  pram <- l[[1]][[1]]
+  for (i in 2:length(l)){ pram <- rbind(pram, l[[i]][[1]]) }
+  return(pram)
+}
+get_result_as_vector_from_list <- function (l) {
+  res <- NULL
+  for (i in 2:length(l)){ res <- c(res, l[[i]][[2]]) }
+  return(res)
+}
+
+
+### call functies
 preProcessSequential_peakRAM <- function() {
-  return(peakRAM(stringi::stri_trans_general(docs$text, 'Latin-ASCII')))
+  return(stringi_peakRAM(docs$text)[[1]])
 }
 
 preProcessParallel_peakRAM <- function() {
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
-  result <- parLapply(cluster,docs$text,function(x) { peakRAM(stringi::stri_trans_general(x, id="Latin-ASCII")) })
+  result <- parLapply(cluster,docs$text,stringi_peakRAM)
   stopCluster(cluster)
-  return(list_to_df(result))
+  return(get_pram_from_list(result))
 }
 
 preProcessDoparallel_peakRAM <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
   registerDoSNOW(cluster)
-  result <- foreach(str = docs$text, .combine = rbind) %dopar%
-      peakRAM(stringi::stri_trans_general(str=str,id="Latin-ASCII"))
+  result <- foreach(str = docs$text, .combine = rbind) %dopar% stringi_peakRAM(str)
   stopCluster(cluster)
-  return(result)
+  return(get_pram_from_list(result))
 }
 
 preProcessCluster_peakRAM <- function() {
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
-  result <- clusterApply(cl = cluster,x=docs$text,function(x) { peakRAM(stringi::stri_trans_general(x, id="Latin-ASCII"))})
+  result <- clusterApply(cl = cluster,x=docs$text,stringi_peakRAM)
   stopCluster(cluster)
-  return(list_to_df(result))
+  return(get_pram_from_list(result))
 }
 
-preProcessDoparallelChunked <- function(){
-  ids <- 1: length(docs$text)
-  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
+preProcessDoparallelChunked_peakRAM <- function(){
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
   registerDoSNOW(cluster)
-  res <- foreach(chunk = chunks,
-                  .combine = rbind,
-                  .export = "docs") %dopar%
-    peakRAM(stringi::stri_trans_general(docs$text[chunk], 'Latin-ASCII'))
+  res <- foreach(chunk = createChunksObjects(no_cores)) %dopar% stringi_peakRAM(chunk)
   stopCluster(cluster)
-  return(res)
+  return(get_pram_from_list(result))
 }
 
-preProcessParallelChunked <- function(){
-  ids <- 1: length(docs$text)
-  chunks <- split(ids,factor(sort(rank(ids)%%no_cores)))
+preProcessParallelChunked_peakRAM <- function(){
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
-  res <- parLapply(cluster,chunks,function(chunk,doc){peakRAM(stringi::stri_trans_general(doc$text[chunk], 'Latin-ASCII'))},doc=docs)
+  res <- parLapply(cluster,createChunksObjects(no_cores),stringi_peakRAM)
   stopCluster(cluster)
-  return(list_to_df(res))
+  return(get_pram_from_list(result))
 }
 
-preProcessClusterChunked <- function() {
-  chunks <- createChunksObjects(no_cores)
+preProcessClusterChunked_peakRAM <- function() {
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
-    result <- clusterApply(cluster,
-                                  chunks,
-                                  function(chunk){
-                                    peakRAM(stringi::stri_trans_general(chunk, 'Latin-ASCII'))
-                                  })
+  result <- clusterApply(cluster,createChunksObjects(no_cores),stringi_peakRAM)
   stopCluster(cluster)
-  return(list_to_df(result))
+  return(get_pram_from_list(result))
 }
 
-preProcessClusterChunked2 <- function() {
-  chunks <- createChunksIds(no_cores)
+preProcessClusterChunked2_peakRAM <- function() {
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
-    result <- clusterApply(cluster,
-                                  chunks,
-                                  function(chunk,doc){
-                                    peakRAM(stringi::stri_trans_general(doc[chunk], 'Latin-ASCII'))
-                                    }, doc=docs)
+  result <- clusterApply(cluster, createChunksIds(no_cores),stringi_peakRAM)
   stopCluster(cluster)
-  return(list_to_df(result))
+  return(get_pram_from_list(result))
 }
 
 createChunksIds <- function(noChunks){
@@ -99,27 +102,5 @@ createChunksObjects <- function(noChunks){
     print(paste(og," --> ",bg))
     docsList[[i]] <- unlist(docs[og:bg,"text"])
   }
-  
   return(docsList)
-}
-
-
-benchmarkPreProcess <- function(times = 1,display=TRUE,save=FALSE,createPlot=FALSE){
-  import("microbenchmark")
-  
-  benchmarkResult <- microbenchmark(preProcessSequential(),
-                                    preProcessParallel(createPlot=createPlot),
-                                    preProcessParallelChunked(createPlot=createPlot),
-                                    preProcessDoparallel(createPlot=createPlot),
-                                    preProcessDoparallelChunked(createPlot=createPlot),
-                                    preProcessCluster(createPlot = createPlot),
-                                    preProcessClusterChunked(createPlot = createPlot),
-                                    times=times)
-  if(save){
-    save(benchmarkResult,file="doc/preProcessBenchmarkResult.rda")
-  }
-  
-  if(display){
-    return(benchmarkResult)  
-  }
 }
