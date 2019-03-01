@@ -151,6 +151,7 @@ preProcessClusterChunked <- function(createPlot=FALSE,no_cores=detectCores()-1) 
   print("Create Clusters")
   cluster <- makeCluster(no_cores,outfile="")
   
+  
   if(createPlot){
     png('docs/plot_preProcess_devidedInChunks_cluster.svg')
     plot(snow.time(result <- unlist(clusterApply(cluster,
@@ -165,16 +166,18 @@ preProcessClusterChunked <- function(createPlot=FALSE,no_cores=detectCores()-1) 
   }else{
     result <- unlist(clusterApply(cluster,
                                   chunks,
-                                  function(chunk){
-                                    print("Creating chunk")
-                                    result <- stringi::stri_trans_general(chunk, 'Latin-ASCII')
-                                    print("preProcess chunk done")
-                                    return(result)
-                                  }))
+                                  preProcessChunk)) #functie niet anoniem maken heeft een groot effect op ram gebruik. Ca 58% minder ram 
   }
   
   stopCluster(cluster)
   return(result)
+}
+
+preProcessChunk <- function(chunk){
+  print("PreProcessing chunk")
+  chunk <- stringi::stri_trans_general(chunk, 'Latin-ASCII')
+  print("preProcess chunk done")
+  return(chunk)
 }
 
 preProcessClusterChunked2 <- function(createPlot=FALSE,no_cores=detectCores()-1) {

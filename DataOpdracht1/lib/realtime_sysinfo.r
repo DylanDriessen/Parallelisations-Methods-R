@@ -1,21 +1,19 @@
  #source(util/importPackage.r)
 import("tcltk2")
 
-#create empty vectors
-ram_vector <<- NULL
-cpu_vector <<- NULL
+get_new_data <- function() {
+  return(c(time = Sys.time(), ram = as.numeric(system("../scripts/my_ram_usage.sh", intern = TRUE))/1024/1024, cpu = as.numeric(system("../scripts/my_cpu_usage.sh", intern = TRUE))/8) %>% rbind %>% data.frame)
+}
+
+my_data <<- get_new_data() 
 
 monitor <- function() {
-
-  ram_vector <<- c(ram_vector, as.numeric(system("../scripts/my_ram_usage.sh", intern = TRUE)))
-  cpu_vector <<- c(cpu_vector, as.numeric(system("../scripts/my_cpu_usage.sh", intern = TRUE)))
-  #saveRDS(ram_vector, file="~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_vector.rds")
+  my_data <<- rbind(get_new_data(), my_data)
 }
 
 start_monitor <- function() {
-  ram_vector <<- NULL
-  cpu_vector <<- NULL
-  tclTaskSchedule(1000, as.numeric(system("../scripts/my_ram_usage.sh", intern = TRUE)), id = "monitor", redo = TRUE)
+  my_data <<- get_new_data()
+  tclTaskSchedule(1000, monitor(), id = "monitor", redo = TRUE)
 }
 
 end_monitor <- function() {

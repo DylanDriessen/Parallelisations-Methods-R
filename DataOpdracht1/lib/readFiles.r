@@ -24,13 +24,13 @@ read_batch_ffdf <- function(batch_nr) {
 
 ### CREATE CLUSTER : make a cluster for parralel processing, fit to run read_batch
 makeReadFileCluster <- function() {
-  cl <- makeCluster(no_cores, outfile = "")
+  cl <- makeCluster(min(no_cores, batches), outfile = "")
   clusterExport(cl, c("read_batch", "ifn", "ifp", "ofn"))
   clusterEvalQ(cl, { library("readr"); library("tibble"); library("data.table") })
   return(cl)
 }
 makeReadFileCluster_ffdf <- function() {
-  cl <- makeCluster(no_cores, outfile = "")
+  cl <- makeCluster(min(no_cores, batches), outfile = "")
   clusterExport(cl, c("read_batch_ffdf", "ifn", "ifp", "ofn"))
   clusterEvalQ(cl, { library("ff") })
   return(cl)
