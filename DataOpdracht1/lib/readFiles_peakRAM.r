@@ -40,19 +40,17 @@ read_clusterapply_peakRAM<- function() {
 
 }
 read_parlapply_peakRAM <- function() {
-  start_monitor()
   cl <- makeReadFileClusterPeakRAM()
   on.exit(stopCluster(cl))
   sp <- "RShinyDashboardAfstudeer/data/"
   
   saveRDS(list_to_df(parLapply(cl, 1:batches, read_batch_peakRAM)), file = paste0(sp, "read_parlapply_peakRAM.rds"))
-  end_monitor()
+ 
 }
 read_sequential_peakRAM <- function() {
-  start_monitor()
   sp <- "RShinyDashboardAfstudeer/data/"
   saveRDS(list_to_df(lapply(1:batches, read_batch_peakRAM)), file = paste0(sp, "read_sequential_peakRAM.rds"))
-  end_monitor()
+  
 }
 
 
