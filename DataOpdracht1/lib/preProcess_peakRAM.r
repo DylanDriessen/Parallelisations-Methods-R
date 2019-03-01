@@ -81,13 +81,8 @@ preProcessClusterChunked_peakRAM <- function() {
   return(get_pram_from_list(result))
 }
 
-preProcessClusterChunked2_peakRAM <- function() {
-  cluster <- makeCluster(no_cores,outfile="")
-  clusterEvalQ(cluster, library("peakRAM"))
-  result <- clusterApply(cluster, createChunksIds(no_cores),stringi_peakRAM)
-  stopCluster(cluster)
-  return(get_pram_from_list(result))
-}
+
+#Hulpfuncties
 
 createChunksIds <- function(noChunks){
   ids <- 1: length(docs$text)

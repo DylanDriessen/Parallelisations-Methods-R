@@ -16,3 +16,5 @@ saveFunctionData <- function(f, fpath, peakRAM = TRUE) {
   saveRDS(microbenchmarkResult, file = paste0(fpath, '/microbenchmark.rds'))
   if (peakRAM) saveRDS(peakRAMResult, file = paste0(fpath, '/peakRAM.rds'))
 }
+
+
