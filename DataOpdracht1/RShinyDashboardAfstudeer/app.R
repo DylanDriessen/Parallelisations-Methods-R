@@ -13,6 +13,8 @@ setwd("../")
 source("lib/readFiles_peakRAM.r")
 source("lib/readFiles.r")
 source("lib/realtime_sysinfo.r")
+source("util/SaveFunctionData.r")
+source("lib/preProcess_peakRAM.r")
 
 import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel", "microbenchmark"))
 plan(multiprocess)
@@ -33,41 +35,55 @@ ui <- shinyServer(fluidPage(
   sidebarPanel(
     helpText("Select wich function"),
     selectInput(inputId = "callFunction", label = "Choose a function to display:",
-                choices = c( ReadFile = "Read", createCorpus = "Corpus", createDTM = "DTM",  deriveVocabulary = "Voc", Cluster = "Cluster"),
-                selected = "Read"
-    ),
+                choices = c( ReadFile = "Read", PreProcess = "Pre", createCorpus = "Corpus", createDTM = "DTM",  deriveVocabulary = "Voc", Cluster = "Cluster"),
+                selected = "Read"),
+  
+    
+  
+    
+   
+    
     
     conditionalPanel(
       condition = "input.callFunction == 'Read'",
       selectInput(inputId = "callMethodReadFiles", label = "Choose method to display",
-                  choices = c("sequential", "clusterapply", "parlapply", "foreach", "all",
-                              selected = "sequential"))
-    ),
+                  choices = c("sequential", "clusterapply", "parlapply", "foreach"),
+                              selected = "sequential")),
+    
+    conditionalPanel(
+      condition = "input.callFunction == 'Pre'",
+      selectInput(inputId = "callMethodPre", label = "Choose a method to display",
+                  choices = c("Sequential", "Cluster", "DoParallelChunked", "ParallelChunked", "ClusterChunked"),
+                  selected = "Cluster"
+      )), 
     
     conditionalPanel(
       condition = "input.callFunction == 'Corpus'", 
-      selectInput(inputId= "callMethodCorpus", label = "Choose a function to display",
+      selectInput(inputId= "callMethodCorpus", label = "Choose a method to display",
                   choices = c("VCorpChunk", "VCorp", "Quan"))),
     
     
     conditionalPanel(
       condition = "input.callFunction == 'DTM'", 
-      selectInput(inputId= "callMethodDTM", label = "Choose a function to display",
+      selectInput(inputId= "callMethodDTM", label = "Choose a method to display",
                   choices = c("methods to implement"))),
     
     conditionalPanel(
       condition = "input.callFunction == 'Voc'", 
-      selectInput(inputId= "callMethodVoc", label = "Choose a function to display",
+      selectInput(inputId= "callMethodVoc", label = "Choose a method to display",
                   choices = c("methods to implement"))),
     
     conditionalPanel(
       condition = "input.callFunction == 'Cluster'", 
-      selectInput(inputId= "callMethodCluster", label = "Choose a function to display",
+      selectInput(inputId= "callMethodCluster", label = "Choose a method to display",
                   choices = c("methods to implement"))),
+    
     
     selectInput(inputId = "sizeBatch", label = "Choose a batch to calculate",
                 choices = c("mini_batch","small_batch", "medium_batch", "big_batch",
                             selected = "mini_batch")),
+    
+    
     
     #==========================#
     #excecute Button
@@ -112,6 +128,8 @@ ui <- shinyServer(fluidPage(
 
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session){
+  
+  
  
   #====================================#
   #BenchmarkForDifferenctFunctions
@@ -235,16 +253,24 @@ server <- shinyServer(function(input, output, session){
       }
     }
     
-    else if(input$callFunction == "Corpus" ){
-      if(input$callMehthodCorpus == "VCorpChunk"){
-        #future(#functie uitvoeren van CvorpChunk)
-        output$RAMoutputFunctions <- renderPlotly({
-          plot_ly()
-          
-        })
+    #conditionalPanel(
+     # condition = "input.callFunction == 'Pre'",
+    #  selectInput(inputId = "callMethodPre", label = "Choose a method to display",
+        #          choices = c("Cluster", "DoParallelChunked", "ParallelChunked", "ClusterChunked"),
+       #           selected = "Cluster"
+      #)), 
+    
+    else if(input$callFunction == "Pre" ){
+      if(input$callMethodPre == "Sequential"){
+        future(saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
+              
+                )
       }
-    }
-  })
+          
+        
+      
+      }
+    })
   
   #   benchmark_read()
    # benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
