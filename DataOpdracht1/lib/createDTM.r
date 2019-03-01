@@ -3,8 +3,8 @@ createDTM <- function() {
     #createDFMasDTM()
   #createDfmChunks()
   #createDTMC()
-  #createDFM()
-  createDfmChunksBind()
+  createDFM()
+  #createDfmChunksBind()
 }
 
 makeCreateDTMCluster <- function() {
@@ -111,7 +111,9 @@ createDFM <- function() {
   # CREATE DFM
   print("create a DFM")
   dtm_raw <- dfm(docsCorpus)
-  dtm_tfidf  <- dfm_weight(dtm_raw)
+  rowSums(dtm_raw, na.rm = FALSE)
+  # dtm_tfidf  <- dfm_weight(dtm_raw)
+  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
   return(dtm_raw)
 }
 
