@@ -1,24 +1,4 @@
 createCorpus <- function() {
-  import(
-    c(
-      "tm",
-      "SnowballC",
-      "slam",
-      "stringi",
-      "data.table",
-      "magrittr",
-      "corrplot",
-      "NLP",
-      "foreach",
-      "doParallel",
-      "microbenchmark",
-      "text2vec",
-      "doMC",
-      "quanteda",
-      "textmineR",
-      "parallel"
-    )
-  )
   
   ##### Create corpus (and define default language)
   

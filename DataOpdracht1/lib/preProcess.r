@@ -2,8 +2,6 @@
 #   load("docs.rds")
 # }
 
-import(c("stringi","parallel","snow","doSNOW"))
-
 preProcessSequential <- function() {
   #process every line sequentially
   print("#####################preProcess_seq")
@@ -42,7 +40,6 @@ preProcessCluster <- function() {
 preProcessDoparallelChunked <- function(){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
   print("#####################preProcess_DevidedInChunks_doparallel")
-  import(c("stringi","doParallel","doSNOW"))
   cluster <- makeCluster(no_cores,outfile="")
   registerDoSNOW(cluster)
   res <- foreach(chunk = createChunksObjects(no_cores), .combine = c) %dopar% 
@@ -79,7 +76,7 @@ preProcessChunk <- function(chunk){
 preProcessClusterChunked2 <- function() {
   #process every line in parallel with lapply
   cluster <- makeCluster(no_cores,outfile="")
-  result <- clusterApply(cluster,createChunksObjects(), stringi::stri_trans_general,id='Latin-ASCII')
+  result <- clusterApply(cluster,createChunksObjects(no_cores), stri_trans_general,id='Latin-ASCII')
   stopCluster(cluster)
   return(unlist(result))
 }
@@ -103,7 +100,7 @@ createChunksObjects <- function(noChunks){
 
 
 benchmarkPreProcess <- function(times = 1,display=TRUE,save=FALSE,createPlot=FALSE){
-  import("microbenchmark")
+  
   
   benchmarkResult <- microbenchmark(preProcessSequential(),
                                     preProcessParallel(createPlot=createPlot),

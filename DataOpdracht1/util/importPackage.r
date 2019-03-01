@@ -3,7 +3,7 @@ import <- function(packages) {
     if(!require(p, character.only = TRUE)){
       print(paste0("Package ", p, " is not installed."))
       install.packages(p)
-      require(p, character.only = TRUE)
+      library(p, character.only = TRUE)
     } else {
       print(paste0("Package ", p, " is installed."))
     }

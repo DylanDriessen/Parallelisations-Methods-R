@@ -1,8 +1,6 @@
 createDTM <- function() {
   # CREATE
-  import(c("glmnet", "quanteda"))
-  
-  #createDFMasDTM()
+    #createDFMasDTM()
   #createDfmChunks()
   #createDTMC()
   #createDFM()

@@ -1,10 +1,16 @@
 (.packages())
 source("util/importPackage.r")
 
+import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow", 
+         "stringi", "ff", "ffbase", "tm","SnowballC","slam","stringi","data.table",
+         "magrittr","corrplot","NLP", "foreach","doParallel","microbenchmark",
+         "text2vec","doMC","quanteda","textmineR", "parallel", "peakRAM",
+         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr"))
+
+
 ## Batches info
 ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
-import("parallel")
 no_cores <- 8#detectCores()
 
 # Issues: 

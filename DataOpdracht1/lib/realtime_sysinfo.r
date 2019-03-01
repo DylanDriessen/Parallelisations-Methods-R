@@ -1,4 +1,4 @@
-import(c("tcltk2", "pryr"))
+
 
 get_new_data <- function() {
   return(c(time = Sys.time(), ram = as.numeric(system("../scripts/my_ram_usage.sh", intern = TRUE))/1024/1024, cpu = as.numeric(system("../scripts/my_cpu_usage.sh", intern = TRUE))/8) %>% rbind %>% data.frame)
