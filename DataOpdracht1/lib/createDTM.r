@@ -5,7 +5,8 @@ createDTM <- function() {
   #createDFMasDTM()
   #createDfmChunks()
   #createDTMC()
-  createDFM()
+  #createDFM()
+  createDfmChunksBind()
 }
 
 makeCreateDTMCluster <- function() {
@@ -42,6 +43,7 @@ createDfmChunks <- function() {
       sub <- tokens_subset(dc, id >= og & id <= bg)
       dfm(sub)
     }
+  
   stopCluster(cl)
   print("cluster stopt")
   
@@ -63,6 +65,46 @@ createDfmChunks <- function() {
 
 #####################################################################
 ##
+##          Document-Feature Matrix Parallel Chunks RBIND
+##
+#####################################################################
+
+
+createDfmChunksBind <- function() {
+  print("createCluster")
+  cl <- makeCreateDTMCluster()
+  no_cores <- detectCores()
+  registerDoParallel(cl)
+  print("create List")
+  dfmList <- list()
+  print("checking limits & writing dfm's to list")
+  docrows <- nrow(docs)
+  dc <- docsCorpus
+  print("test")
+  dfmList <-
+    foreach(i = 1:no_cores, .combine = rbind) %dopar% {
+      print("in foreach loop")
+      og <- round((i - 1) * docrows / no_cores) + 1
+      print(paste(no_cores, docrows))
+      bg <- round(docrows / no_cores * i)
+      print(paste(og, bg))
+      sub <- tokens_subset(dc, id >= og & id <= bg)
+      dfm(sub)
+    }
+  
+  stopCluster(cl)
+  print("cluster stopt")
+  
+  print("remove big Corpus")
+  #rm(docsCorpus)
+  
+  return(dfmList)
+  print("returnd result")
+  
+}
+
+#####################################################################
+##
 ##                    Document-Feature Matrix
 ##
 #####################################################################
@@ -71,7 +113,7 @@ createDFM <- function() {
   # CREATE DFM
   print("create a DFM")
   dtm_raw <- dfm(docsCorpus)
-  #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  dtm_tfidf  <- dfm_weight(dtm_raw)
   return(dtm_raw)
 }
 
@@ -114,7 +156,7 @@ createDTMC <- function() {
     wordLengths = c(1, Inf)
   )
   print("dtm_raw")
-  dtm_raw <- DocumentTermMatrix(docsCorpus2, control = dtm_ctrl)
+  dtm_raw <- DocumentTermMatrix(docsCorpus, control = dtm_ctrl)
   #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   #dtm <- as.matrix(dtm_raw[1:50,1:50])
   

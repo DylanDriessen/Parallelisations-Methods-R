@@ -160,6 +160,7 @@ VCorp <- function() {
   crp <- tm_map(crp, content_transformer(tolower))
   
   ##### Stopword removal
+  print("Stopword")
   crp <- tm_map(crp, removeWords, stopwords(source = "smart"))
   
   ##### Stemming
