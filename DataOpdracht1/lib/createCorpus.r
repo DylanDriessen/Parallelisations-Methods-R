@@ -41,6 +41,17 @@ createCorpusCluster <- function() {
 ##
 #####################################################################
 
+createCRPChunks <- function(noChunks, crp){
+  crpList <- list()
+  for(i in 1:noChunks){
+    og <- round((i-1)*length(crp)/noChunks)+1
+    bg <- round(length(crp)/noChunks*i)
+    crpList[[i]] <- unlist(crp[og:bg])
+  }
+}
+
+
+
 VCorpChunk1Loop <- function() {
   print("Creating VCorpus Chunk")
   crp <-
@@ -54,28 +65,29 @@ VCorpChunk1Loop <- function() {
   
   ##### Clean unicode characters
   ##### Remove graphical characters
-  ids <- 1:length(crp)
+  # ids <- 1:length(crp)
   library(parallel)
   no_cores <- 7
-  print("split chunks")
-  chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  # print("split chunks")
+  # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  chunks <- createCRPChunks(no_cores, crp)
   registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar% {
                    print("Remove graphical")
-                   tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
+                   tm_map(chunk, crp.replacePattern, "[^[:graph:]]", " ")
                    print("To lower")
-                   tm_map(crp[chunk], content_transformer(tolower))
+                   tm_map(chunk, content_transformer(tolower))
                    print("Remove stopwords")
-                   tm_map(crp[chunk], removeWords, c(stopwords("SMART")))
+                   tm_map(chunk, removeWords, c(stopwords("SMART")))
                    print("Stem document")
-                   tm_map(crp[chunk], stemDocument, language = "porter")
+                   tm_map(chunk, stemDocument, language = "porter")
                    print("Remove numbers")
-                   tm_map(crp[chunk], removeNumbers)
+                   tm_map(chunk, removeNumbers)
                    print("Remove punctuation")
-                   tm_map(crp[chunk], removePunctuation, preserve_intra_word_dashes = TRUE)
+                   tm_map(chunk, removePunctuation, preserve_intra_word_dashes = TRUE)
                    print("Strip whitespace")
-                   tm_map(crp[chunk], stripWhitespace)
+                   tm_map(chunk, stripWhitespace)
                  }
   print("stopCluster")
   stopCluster(cl)
@@ -258,12 +270,12 @@ Quan <- function() {
   #Quanteda tokens
   print("Creating tokens, removing punctuation & numbers")
   crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
-  
-  ids <- 1:length(crpT)
-  no_cores = detectCores()
-  chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
-  
-  registerDoParallel(no_cores)
+  # 
+  # ids <- 1:length(crpT)
+  # no_cores = detectCores()
+  # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  # 
+  # registerDoParallel(no_cores)
   
   #Remove symbols
   print("Remove regex")
@@ -294,17 +306,7 @@ Quan <- function() {
   crpT <- tokens_remove(crpT, "*.*")
   crpT <- tokens_remove(crpT, "*,*")
   crpT <- tokens_remove(crpT, "*\\d*")
-  
-  ##### Numbers
-  
-  ##### All numbers (including numbers as part of a alphanumerical term) + punction + symbols
-  # print("Removing all numbers and symbols")
-  # crpT <-
-  #   tokens(crpT,
-  #          remove_numbers = TRUE,
-  #          remove_symbols = TRUE)
-  
-  stopImplicitCluster()
+  # stopImplicitCluster()
   
   # SAVE RESULTS
   print("Saving")

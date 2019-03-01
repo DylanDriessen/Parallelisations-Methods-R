@@ -2,7 +2,7 @@
 source("util/importPackage.r")
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
 
 import("parallel")
 no_cores <- 8#detectCores()
@@ -69,8 +69,8 @@ docsCorpus <- createCorpus()
 # ==============================================================================
 
 source("lib/createDTM.r")
-DFM <- createDTM()
-microbenchmark(createDFM(), createDfmChunks(), createDfmChunksBind(), times = 5)
+DFM2 <- createDTM()
+#microbenchmark(createDFM(), createDfmChunks(), createDfmChunksBind(), times = 5)
 
 # ==============================================================================
 #
@@ -83,7 +83,15 @@ microbenchmark(createDFM(), createDfmChunks(), createDfmChunksBind(), times = 5)
 source("lib/deriveVocabulary.r")
 Voca <- deriveVoc()
 
+# ==============================================================================
+#
+# 6 CREATE CLUSTER
+#
+# ==============================================================================
+
+source("lib/cluster.R")
+cluster <- clusterMatrix()
+
+
 # SAVE RESULTS
-
-
 save(voc, file="voc.RDa")
