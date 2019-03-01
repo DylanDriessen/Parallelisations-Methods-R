@@ -3,7 +3,7 @@
 # vb. : saveFunctionData(read_sequential_peakRAM, "results/readFiles/sequential")
 # Verwacht peakram functie, anders gebruik peakRAM = FALSE
 saveFunctionData <- function(f, fpath, peakRAM = TRUE) {
-  dir.create(fpath, showWarnings = FALSE) # gooi geen error als 
+  dir.create(fpath, recursive = TRUE, showWarnings = FALSE) # gooi geen error als 
   start.time <- Sys.time()
   png(paste0(fpath, '/snow_plot.png'))
   if(peakRAM) {
@@ -16,3 +16,5 @@ saveFunctionData <- function(f, fpath, peakRAM = TRUE) {
   saveRDS(microbenchmarkResult, file = paste0(fpath, '/microbenchmark.rds'))
   if (peakRAM) saveRDS(peakRAMResult, file = paste0(fpath, '/peakRAM.rds'))
 }
+
+

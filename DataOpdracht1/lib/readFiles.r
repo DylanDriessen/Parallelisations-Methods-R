@@ -70,7 +70,6 @@ read_doparallel_foreach_ffdf <- function() {
 
 ### MAIN FUNCTION : read batches and save as dataframe docs
 readFiles <- function(f = read_sequential){
-  import(c("readr","tibble","data.table"))
   print("Read Files Process started.")
   
   ## Read in files and combine to 1 dataframe
@@ -93,25 +92,20 @@ readFiles_sequential <- function() {
   return(readFiles(read_sequential))
 }
 readFiles_doparallel_foreach <- function() {
-  import(c("foreach", "doParallel"))
   return(readFiles(read_doparallel_foreach))
 }
 readFiles_clusterapply <- function() {
-  import("parallel")
   return(readFiles(read_clusterapply))
 }
 readFiles_parlapply <- function() {
-  import("parallel")
   return(readFiles(read_parlapply))
 }
 readFiles_doparallel_foreach_ffdf <- function() {
-  import(c("foreach", "doParallel", "ff", "ffbase"))
   return(readFiles(read_doparallel_foreach_ffdf))
 }
 
 ### BENCHMARK
 benchmark_read <- function() {
-  import(c("readr","tibble","data.table", "parallel", "foreach", "doParallel"))
  benchmarkReadFilesSmall <-  microbenchmark(read_clusterapply(), 
                  read_doparallel_foreach(), 
                  read_parlapply(), 
