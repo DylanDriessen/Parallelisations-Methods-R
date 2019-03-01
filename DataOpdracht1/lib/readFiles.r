@@ -1,6 +1,5 @@
 ### LOOPED METHOD : read batch for given path, filename and batch no
 
-source("lib/realtime_sysinfo.r")
 read_batch <- function(batch_nr) {
   ## Compile file name to read
   batch_no <- sprintf("%02d", batch_nr)
@@ -58,6 +57,7 @@ read_doparallel_foreach <- function() {
 read_sequential <- function() {
   return(list_to_df(lapply(1:batches, read_batch)))
 }
+
 read_doparallel_foreach_ffdf <- function() {
   cl <- makeReadFileCluster_ffdf()
   registerDoParallel(cl)
