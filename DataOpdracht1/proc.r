@@ -2,7 +2,7 @@
 source("util/importPackage.r")
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 import("parallel")
 no_cores <- 8#detectCores()
@@ -69,8 +69,8 @@ docsCorpus <- createCorpus()
 # ==============================================================================
 
 source("lib/createDTM.r")
-DTM <- createDTM()
-#microbenchmark(createDFM(), createDFMasDTM(), createDfmChunks(), times = 1)
+DFM <- createDTM()
+microbenchmark(createDfmChunks(), createDfmChunksBind(), times = 5)
 
 # ==============================================================================
 #
