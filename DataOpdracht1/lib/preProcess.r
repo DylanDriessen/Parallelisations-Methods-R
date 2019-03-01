@@ -163,7 +163,16 @@ preProcessClusterChunked <- function(createPlot=FALSE,no_cores=detectCores()-1) 
                                                    return(result)
                                                  }))))
     dev.off()
-  }else{
+  }else{ 
+    
+    ###################################################
+    #
+    #                 TODO 
+    #     Check effect tussen export
+    #     Check effect van mcapply
+    #
+    ###################################################
+    
     result <- unlist(clusterApply(cluster,
                                   chunks,
                                   preProcessChunk)) #functie niet anoniem maken heeft een groot effect op ram gebruik. Ca 58% minder ram 
