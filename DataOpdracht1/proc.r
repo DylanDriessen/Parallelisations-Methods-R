@@ -52,7 +52,7 @@ docs$text <- preProcessClusterChunked()
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
 #docsCorpus2 <- createCorpus()
-#microbenchmark(VCorp(), VCorpChunk(), Quan(), times = 1)
+#microbenchmark(VCorpChunk(), Quan(), VCorpChunk1Loop(), times = 2)
 #microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
 #microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
 #                             quanFunction = microbenchmark(Quan() ,times = 1)[,2]*10^-9, 
