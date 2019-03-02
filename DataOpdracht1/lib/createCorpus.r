@@ -2,10 +2,10 @@ createCorpus <- function() {
   
   ##### Create corpus (and define default language)
   
-  #Quan()
+  Quan()
   #VCorpChunk()
   #VCorp()
-  VCorpChunk1Loop()
+  #VCorpChunk1Loop()
 }
 
 createCorpusCluster <- function() {
@@ -61,20 +61,21 @@ VCorpChunk1Loop <- function() {
   crp <- foreach(docsChunk = docsChunks,
                  .combine = c) %dopar%{
                    crpChunk <- VCorpus(DataframeSource(docsChunk), readerControl = list(language = "en"))
+                   pid <- Sys.getpid()
                    
-                   print("Remove graphical")
+                   print(paste(pid,"   Remove graphical"))
                    tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
-                   print("To lower")
+                   print(paste(pid,"   To lower"))
                    tm_map(crpChunk, content_transformer(tolower))
-                   print("Remove stopwords")
+                   print(paste(pid,"   Remove stopwords"))
                    tm_map(crpChunk, removeWords, c(stopwords("SMART")))
-                   print("Stem document")
+                   print(paste(pid,"   Stem document"))
                    tm_map(crpChunk, stemDocument, language = "porter")
-                   print("Remove numbers")
+                   print(paste(pid,"   Remove numbers"))
                    tm_map(crpChunk, removeNumbers)
-                   print("Remove punctuation")
+                   print(paste(pid,"   Remove punctuation"))
                    tm_map(crpChunk, removePunctuation, preserve_intra_word_dashes = TRUE)
-                   print("Strip whitespace")
+                   print(paste(pid,"   Strip whitespace"))
                    tm_map(crpChunk, stripWhitespace)
                  }
   stopCluster(cl)
