@@ -2,8 +2,8 @@ createDTM <- function() {
   # CREATE
     #createDFMasDTM()
   #createDfmChunks()
-  #createDTMC()
-  createDFM()
+  createDTMC()
+  #createDFM()
   #createDfmChunksBind()
 }
 

@@ -9,7 +9,7 @@ createCorpus <- function() {
 }
 
 createCorpusCluster <- function() {
-  cl <- makeCluster(7, outfile = "")
+  cl <- makeCluster(3, outfile = "")
   print("clusterEvalQ")
   clusterEvalQ(cl, { library("tm") })
   return(cl)
@@ -53,9 +53,20 @@ VCorpChunk1Loop <- function() {
       content_transformer(function(x, pattern, replace)
         gsub(pattern, replace, x))
   
+<<<<<<< HEAD
+  ##### Clean unicode characters
+  ##### Remove graphical characters
+  # ids <- 1:length(crp)
+  library(parallel)
+  no_cores <- 3
+  # print("split chunks")
+  # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  chunks <- createCRPChunks(no_cores, crp)
+=======
   print("Create docsChunks")
   docsChunks <- createDocsChunks(no_cores)
   cl <- createCorpusCluster()
+>>>>>>> 9e56c6ccc39e2b376ea8099b8ec3548f308eba63
   registerDoParallel(cl)
   
   crp <- foreach(docsChunk = docsChunks,
