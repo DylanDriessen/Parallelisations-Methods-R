@@ -11,7 +11,7 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
 ## Batches info
 ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 1
 
-no_cores <- 8#detectCores()
+no_cores <- detectCores()
 
 # Issues: 
 #   Language dependent stop word removal
