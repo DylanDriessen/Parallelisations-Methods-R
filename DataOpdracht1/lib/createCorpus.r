@@ -28,6 +28,7 @@ createCRPChunks <- function(noChunks, crp){
     bg <- round(length(crp)/noChunks*i)
     crpList[[i]] <- unlist(crp[og:bg])
   }
+  return(crpList)
 }
 
 
