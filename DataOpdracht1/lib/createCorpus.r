@@ -83,43 +83,6 @@ VCorpChunk1Loop <- function() {
   print("Saving results")
   save(crp, file = "crp.RDa")
   return(crp)
-  
-  ##### Define general function to replace strings in corpus
-  print("Define general function to replace strings in corpus")
-  (crp.replacePattern <-
-      content_transformer(function(x, pattern, replace)
-        gsub(pattern, replace, x)))
-  
-  ##### Clean unicode characters
-  ##### Remove graphical characters
-  # ids <- 1:length(crp)
-  # print("split chunks")
-  # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
-  chunks <- createCRPChunks(no_cores, crp)
-  crp <- foreach(chunk = chunks,
-                 .combine = c) %dopar% {
-                   print("Remove graphical")
-                   tm_map(chunk, crp.replacePattern, "[^[:graph:]]", " ")
-                   print("To lower")
-                   tm_map(chunk, content_transformer(tolower))
-                   print("Remove stopwords")
-                   tm_map(chunk, removeWords, c(stopwords("SMART")))
-                   print("Stem document")
-                   tm_map(chunk, stemDocument, language = "porter")
-                   print("Remove numbers")
-                   tm_map(chunk, removeNumbers)
-                   print("Remove punctuation")
-                   tm_map(chunk, removePunctuation, preserve_intra_word_dashes = TRUE)
-                   print("Strip whitespace")
-                   tm_map(chunk, stripWhitespace)
-                 }
-  print("stopCluster")
-  stopCluster(cl)
-  
-  # SAVE RESULTS
-  print("Saving results")
-  save(crp, file = "crp.RDa")
-  return(crp)
 }
 
 
