@@ -2,10 +2,10 @@ createCorpus <- function() {
   
   ##### Create corpus (and define default language)
   
-  Quan()
+  #Quan()
   #VCorpChunk()
   #VCorp()
-  #VCorpChunk1Loop()
+  VCorpChunk1Loop()
 }
 
 createCorpusCluster <- function() {
@@ -26,18 +26,64 @@ createCRPChunks <- function(noChunks, crp){
   for(i in 1:noChunks){
     og <- round((i-1)*length(crp)/noChunks)+1
     bg <- round(length(crp)/noChunks*i)
-    crpList[[i]] <- unlist(crp[og:bg])
+    crpList[[i]] <- crp[og:bg]
   }
   return(crpList)
+}
+
+createDocsChunks <- function(noChunks){
+  docsList <- list()
+  for(i in 1:noChunks){
+    og <- round((i-1)*nrow(docs)/noChunks)+1
+    bg <- round(nrow(docs)/noChunks*i)
+    print(paste(og," --> ",bg))
+    docsList[[i]] <- docs[og:bg,]
+  }
+  
+  return(docsList)
 }
 
 
 
 VCorpChunk1Loop <- function() {
-  print("Creating VCorpus Chunk")
-  crp <-
-    VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
+  library(parallel)
+  
+  print("Define general function to replace strings in corpus")
+  crp.replacePattern <-
+      content_transformer(function(x, pattern, replace)
+        gsub(pattern, replace, x))
+  
+  print("Create docsChunks")
+  docsChunks <- createDocsChunks(no_cores)
   cl <- createCorpusCluster()
+  registerDoParallel(cl)
+  
+  crp <- foreach(docsChunk = docsChunks,
+                 .combine = c) %dopar%{
+                   crpChunk <- VCorpus(DataframeSource(docsChunk), readerControl = list(language = "en"))
+                   
+                   print("Remove graphical")
+                   tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
+                   print("To lower")
+                   tm_map(crpChunk, content_transformer(tolower))
+                   print("Remove stopwords")
+                   tm_map(crpChunk, removeWords, c(stopwords("SMART")))
+                   print("Stem document")
+                   tm_map(crpChunk, stemDocument, language = "porter")
+                   print("Remove numbers")
+                   tm_map(crpChunk, removeNumbers)
+                   print("Remove punctuation")
+                   tm_map(crpChunk, removePunctuation, preserve_intra_word_dashes = TRUE)
+                   print("Strip whitespace")
+                   tm_map(crpChunk, stripWhitespace)
+                 }
+  stopCluster(cl)
+  
+  # SAVE RESULTS
+  print("Saving results")
+  save(crp, file = "crp.RDa")
+  return(crp)
+  
   ##### Define general function to replace strings in corpus
   print("Define general function to replace strings in corpus")
   (crp.replacePattern <-
@@ -47,12 +93,9 @@ VCorpChunk1Loop <- function() {
   ##### Clean unicode characters
   ##### Remove graphical characters
   # ids <- 1:length(crp)
-  library(parallel)
-  no_cores <- 7
   # print("split chunks")
   # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   chunks <- createCRPChunks(no_cores, crp)
-  registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar% {
                    print("Remove graphical")
