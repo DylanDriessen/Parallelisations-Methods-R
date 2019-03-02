@@ -2,14 +2,14 @@ createCorpus <- function() {
   
   ##### Create corpus (and define default language)
   
-  Quan()
+  #Quan()
   #VCorpChunk()
   #VCorp()
-  #VCorpChunk1Loop()
+  VCorpChunk1Loop()
 }
 
 createCorpusCluster <- function() {
-  cl <- makeCluster(7, outfile = "")
+  cl <- makeCluster(3, outfile = "")
   print("clusterEvalQ")
   clusterEvalQ(cl, { library("tm") })
   return(cl)
@@ -26,7 +26,7 @@ createCRPChunks <- function(noChunks, crp){
   for(i in 1:noChunks){
     og <- round((i-1)*length(crp)/noChunks)+1
     bg <- round(length(crp)/noChunks*i)
-    crpList[[i]] <- unlist(crp[og:bg])
+    crpList[[i]] <- crp[og:bg]
   }
   return(crpList)
 }
@@ -48,7 +48,7 @@ VCorpChunk1Loop <- function() {
   ##### Remove graphical characters
   # ids <- 1:length(crp)
   library(parallel)
-  no_cores <- 7
+  no_cores <- 3
   # print("split chunks")
   # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   chunks <- createCRPChunks(no_cores, crp)
