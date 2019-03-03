@@ -1,17 +1,18 @@
 createCorpus <- function() {
-  
   ##### Create corpus (and define default language)
   
-  #Quan()
+  Quan()
   #VCorpChunk()
   #VCorp()
-  VCorpChunk1Loop()
+  #VCorpChunk1Loop()
 }
 
 createCorpusCluster <- function() {
   cl <- makeCluster(3, outfile = "")
   print("clusterEvalQ")
-  clusterEvalQ(cl, { library("tm") })
+  clusterEvalQ(cl, {
+    library("tm")
+  })
   return(cl)
 }
 
@@ -21,23 +22,23 @@ createCorpusCluster <- function() {
 ##
 #####################################################################
 
-createCRPChunks <- function(noChunks, crp){
+createCRPChunks <- function(noChunks, crp) {
   crpList <- list()
-  for(i in 1:noChunks){
-    og <- round((i-1)*length(crp)/noChunks)+1
-    bg <- round(length(crp)/noChunks*i)
+  for (i in 1:noChunks) {
+    og <- round((i - 1) * length(crp) / noChunks) + 1
+    bg <- round(length(crp) / noChunks * i)
     crpList[[i]] <- crp[og:bg]
   }
   return(crpList)
 }
 
-createDocsChunks <- function(noChunks){
+createDocsChunks <- function(noChunks) {
   docsList <- list()
-  for(i in 1:noChunks){
-    og <- round((i-1)*nrow(docs)/noChunks)+1
-    bg <- round(nrow(docs)/noChunks*i)
-    print(paste(og," --> ",bg))
-    docsList[[i]] <- docs[og:bg,]
+  for (i in 1:noChunks) {
+    og <- round((i - 1) * nrow(docs) / noChunks) + 1
+    bg <- round(nrow(docs) / noChunks * i)
+    print(paste(og, " --> ", bg))
+    docsList[[i]] <- docs[og:bg, ]
   }
   
   return(docsList)
@@ -50,31 +51,34 @@ VCorpChunk1Loop <- function() {
   
   print("Define general function to replace strings in corpus")
   crp.replacePattern <-
-      content_transformer(function(x, pattern, replace)
-        gsub(pattern, replace, x))
-
+    content_transformer(function(x, pattern, replace)
+      gsub(pattern, replace, x))
+  
   print("Create docsChunks")
   docsChunks <- createDocsChunks(no_cores)
   cl <- createCorpusCluster()
   registerDoParallel(cl)
   
   crp <- foreach(docsChunk = docsChunks,
-                 .combine = c) %dopar%{
-                   crpChunk <- VCorpus(DataframeSource(docsChunk), readerControl = list(language = "en"))
+                 .combine = c) %dopar% {
+                   crpChunk <-
+                     VCorpus(DataframeSource(docsChunk),
+                             readerControl = list(language = "en"))
+                   pid <- Sys.getpid()
                    
-                   print("Remove graphical")
+                   print(paste(pid, "   Remove graphical"))
                    tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
-                   print("To lower")
+                   print(paste(pid, "   To lower"))
                    tm_map(crpChunk, content_transformer(tolower))
-                   print("Remove stopwords")
+                   print(paste(pid, "   Remove stopwords"))
                    tm_map(crpChunk, removeWords, c(stopwords("SMART")))
-                   print("Stem document")
+                   print(paste(pid, "   Stem document"))
                    tm_map(crpChunk, stemDocument, language = "porter")
-                   print("Remove numbers")
+                   print(paste(pid, "   Remove numbers"))
                    tm_map(crpChunk, removeNumbers)
-                   print("Remove punctuation")
+                   print(paste(pid, "   Remove punctuation"))
                    tm_map(crpChunk, removePunctuation, preserve_intra_word_dashes = TRUE)
-                   print("Strip whitespace")
+                   print(paste(pid, "   Strip whitespace"))
                    tm_map(crpChunk, stripWhitespace)
                  }
   stopCluster(cl)
@@ -115,8 +119,8 @@ VCorpChunk <- function() {
   print("Remove graphical characters")
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar% {
-    print("test")
-    tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
+                   print("test")
+                   tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
                  }
   
   print("stopCluster")
@@ -248,7 +252,6 @@ VCorp <- function() {
 #https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 
 Quan <- function() {
-  
   quanteda_options(threads = 8)
   
   print("Creating Quanteda Corpus")
@@ -257,11 +260,11 @@ Quan <- function() {
   #Quanteda tokens
   print("Creating tokens, removing punctuation & numbers")
   crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
-  # 
+  #
   # ids <- 1:length(crpT)
   # no_cores = detectCores()
   # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
-  # 
+  #
   # registerDoParallel(no_cores)
   
   #Remove symbols
@@ -279,7 +282,8 @@ Quan <- function() {
   
   ##### Stopword removal
   print("Stopword removal")
-  crpT <- tokens_select(crpT, stopwords(source = "smart"), selection = 'remove')
+  crpT <-
+    tokens_select(crpT, stopwords(source = "smart"), selection = 'remove')
   
   ##### To lower
   print("To lower")
@@ -343,17 +347,19 @@ textvec <- function() {
   prep_fun = tolower
   tok_fun = word_tokenizer
   
-  it_train = itoken(train$text, 
-                    preprocessor = prep_fun, 
-                    tokenizer = tok_fun, 
-                    ids = train$doc_id, 
-                    progressbar = FALSE)
+  it_train = itoken(
+    train$text,
+    preprocessor = prep_fun,
+    tokenizer = tok_fun,
+    ids = train$doc_id,
+    progressbar = FALSE
+  )
   vocab = create_vocabulary(it_train)
   
-  train_tokens = train$text %>% 
-    prep_fun %>% 
+  train_tokens = train$text %>%
+    prep_fun %>%
     tok_fun
-  it_train = itoken(train_tokens, 
+  it_train = itoken(train_tokens,
                     ids = train$doc_id,
                     # turn off progressbar because it won't look nice in rmd
                     progressbar = FALSE)
