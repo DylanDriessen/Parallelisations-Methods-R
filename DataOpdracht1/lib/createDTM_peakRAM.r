@@ -1,4 +1,3 @@
-import(c("glmnet", "quanteda"))
 source("lib/createDTM.r")
 
 makeCreateDTMCluster <- function() {

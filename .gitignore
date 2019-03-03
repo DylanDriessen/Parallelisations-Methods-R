@@ -50,3 +50,5 @@ vignettes/*.pdf
 *.svg
 *.png
 *.rda
+*.Rda
+

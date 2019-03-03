@@ -2,19 +2,21 @@
 #   load("docs.rds")
 # }
 
-import(c("stringi","parallel","snow","doSNOW"))
+preProcess <- function(){
+  return(preProcessClusterChunked())
+}
 
 preProcessSequential <- function() {
   #process every line sequentially
   print("#####################preProcess_seq")
-  return(stringi::stri_trans_general(docs$text, 'Latin-ASCII'))
+  return(preProcessChunk(docs$text))
 }
 
 preProcessParallel <- function() {
   #process every line in parallel with lapply
   print("#####################preProcess_parallel")
   cluster <- makeCluster(no_cores, outfile = "")
-  result <- parLapply(cluster,docs$text,stringi::stri_trans_general,id="Latin-ASCII")
+  result <- parLapply(cluster,docs$text,preProcessChunk)
   stopCluster(cluster)
   return(unlist(result))
 }
@@ -23,9 +25,11 @@ preProcessDoparallel <- function() {
   #process every line sequentially with foreach
   print("#####################preProcess_doparallel")
   cluster <- makeCluster(no_cores, outfile = "")
-  registerDoSNOW(cluster)
-  result <- foreach(str = docs$text, .combine = c) %dopar% 
-    stringi::stri_trans_general(str,id="Latin-ASCII")
+  registerDoParallel(cluster)
+  result <- foreach(doc = docs$text, 
+                    .combine = c,
+                    .export="preProcessChunk") %dopar%
+    preProcessChunk(doc)
   stopCluster(cluster)
   return(result)
 }
@@ -34,7 +38,7 @@ preProcessCluster <- function() {
   #process every line in parallel with lapply
   print("#####################preProcess_cluster")
   cluster <- makeCluster(no_cores, outfile = "" )
-  result <- clusterApply(cl = cluster,x=docs$text,stringi::stri_trans_general,id="Latin-ASCII")
+  result <- clusterApply(cl = cluster,x=docs$text,preProcessChunk)
   stopCluster(cluster)
   return(unlist(result))
 }
@@ -42,11 +46,10 @@ preProcessCluster <- function() {
 preProcessDoparallelChunked <- function(){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
   print("#####################preProcess_DevidedInChunks_doparallel")
-  import(c("stringi","doParallel","doSNOW"))
   cluster <- makeCluster(no_cores,outfile="")
   registerDoSNOW(cluster)
-  res <- foreach(chunk = createChunksObjects(no_cores), .combine = c) %dopar% 
-    stringi::stri_trans_general(chunk, 'Latin-ASCII')
+  res <- foreach(chunk = createChunksObjects(no_cores), .combine = c,.export = "preProcessChunk") %dopar% 
+    preProcessChunk(chunk)
   stopCluster(cluster)
   return(res)
 }
@@ -54,34 +57,31 @@ preProcessDoparallelChunked <- function(){
 preProcessParallelChunked <- function(){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
   print("#####################preProcess_DevidedInChunks_parallel")
+  
   cluster <- makeCluster(no_cores,outfile="")
-  res <- parLapply(cluster,createChunksObjects(no_cores),stringi::stri_trans_general,id='Latin-ASCII')
+  res <- parLapply(cluster,createChunksObjects(no_cores),preProcessChunk)
   stopCluster(cluster)
   return(unlist(res))
 }
 
 preProcessClusterChunked <- function() {
-  #process every line in parallel with lapply
+  ###################################################
+  #
+  #                 TODO 
+  #     Check effect tussen export
+  #     Check effect van mcapply
+  #
+  ###################################################
+  print("preProcess_DevidedInChunks_cluster")
   cluster <- makeCluster(no_cores,outfile="")
-  result <- unlist(clusterApply(cluster, createChunksObjects(no_cores),preProcessChunk)) 
-  #functie niet anoniem maken heeft een groot effect op ram gebruik. Ca 58% minder ram 
+  result <- unlist(clusterApply(cluster, createChunksObjects(no_cores),preProcessChunk)) #Named function gebruikt ca 58% minder ram
   stopCluster(cluster)
   return(result)
 }
 
 preProcessChunk <- function(chunk){
-  print("PreProcessing chunk")
   chunk <- stringi::stri_trans_general(chunk, 'Latin-ASCII')
-  print("preProcess chunk done")
   return(chunk)
-}
-
-preProcessClusterChunked2 <- function() {
-  #process every line in parallel with lapply
-  cluster <- makeCluster(no_cores,outfile="")
-  result <- clusterApply(cluster,createChunksObjects(), stringi::stri_trans_general,id='Latin-ASCII')
-  stopCluster(cluster)
-  return(unlist(result))
 }
 
 createChunksIds <- function(noChunks){
@@ -102,22 +102,17 @@ createChunksObjects <- function(noChunks){
 }
 
 
-benchmarkPreProcess <- function(times = 1,display=TRUE,save=FALSE,createPlot=FALSE){
-  import("microbenchmark")
+benchmarkPreProcess <- function(times = 1,display=TRUE,save=TRUE){
   
   benchmarkResult <- microbenchmark(preProcessSequential(),
-                                    preProcessParallel(createPlot=createPlot),
-                                    preProcessParallelChunked(createPlot=createPlot),
-                                    preProcessDoparallel(createPlot=createPlot),
-                                    preProcessDoparallelChunked(createPlot=createPlot),
-                                    preProcessCluster(createPlot = createPlot),
-                                    preProcessClusterChunked(createPlot = createPlot),
+                                    #preProcessParallel(),
+                                    #preProcessParallelChunked(),
+                                    #preProcessDoparallel(),
+                                    preProcessDoparallelChunked(),
+                                    #preProcessCluster(),
+                                    preProcessClusterChunked(),
                                     times=times)
-  if(save){
-    save(benchmarkResult,file="doc/preProcessBenchmarkResult.rda")
-  }
-  
-  if(display){
-    return(benchmarkResult)  
+  if(save){save(benchmarkResult,file="result.Rda")}
+  if(display){return(benchmarkResult)  
   }
 }

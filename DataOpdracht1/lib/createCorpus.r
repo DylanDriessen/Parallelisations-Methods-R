@@ -1,38 +1,94 @@
 createCorpus <- function() {
-  import(
-    c(
-      "tm",
-      "SnowballC",
-      "slam",
-      "stringi",
-      "data.table",
-      "magrittr",
-      "corrplot",
-      "NLP",
-      "foreach",
-      "doParallel",
-      "microbenchmark",
-      "text2vec",
-      "doMC",
-      "quanteda",
-      "textmineR",
-      "parallel"
-    )
-  )
-  
   ##### Create corpus (and define default language)
   
   Quan()
   #VCorpChunk()
   #VCorp()
+  #VCorpChunk1Loop()
 }
 
 createCorpusCluster <- function() {
-  cl <- makeCluster(4, outfile = "")
+  cl <- makeCluster(3, outfile = "")
   print("clusterEvalQ")
-  clusterEvalQ(cl, { library("tm") })
+  clusterEvalQ(cl, {
+    library("tm")
+  })
   return(cl)
 }
+
+#####################################################################
+##
+##              TM Package Parallel 1 Loop
+##
+#####################################################################
+
+createCRPChunks <- function(noChunks, crp) {
+  crpList <- list()
+  for (i in 1:noChunks) {
+    og <- round((i - 1) * length(crp) / noChunks) + 1
+    bg <- round(length(crp) / noChunks * i)
+    crpList[[i]] <- crp[og:bg]
+  }
+  return(crpList)
+}
+
+createDocsChunks <- function(noChunks) {
+  docsList <- list()
+  for (i in 1:noChunks) {
+    og <- round((i - 1) * nrow(docs) / noChunks) + 1
+    bg <- round(nrow(docs) / noChunks * i)
+    print(paste(og, " --> ", bg))
+    docsList[[i]] <- docs[og:bg, ]
+  }
+  
+  return(docsList)
+}
+
+
+
+VCorpChunk1Loop <- function() {
+  library(parallel)
+  
+  print("Define general function to replace strings in corpus")
+  crp.replacePattern <-
+    content_transformer(function(x, pattern, replace)
+      gsub(pattern, replace, x))
+  
+  print("Create docsChunks")
+  docsChunks <- createDocsChunks(no_cores)
+  cl <- createCorpusCluster()
+  registerDoParallel(cl)
+  
+  crp <- foreach(docsChunk = docsChunks,
+                 .combine = c) %dopar% {
+                   crpChunk <-
+                     VCorpus(DataframeSource(docsChunk),
+                             readerControl = list(language = "en"))
+                   pid <- Sys.getpid()
+                   
+                   print(paste(pid, "   Remove graphical"))
+                   tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
+                   print(paste(pid, "   To lower"))
+                   tm_map(crpChunk, content_transformer(tolower))
+                   print(paste(pid, "   Remove stopwords"))
+                   tm_map(crpChunk, removeWords, c(stopwords("SMART")))
+                   print(paste(pid, "   Stem document"))
+                   tm_map(crpChunk, stemDocument, language = "porter")
+                   print(paste(pid, "   Remove numbers"))
+                   tm_map(crpChunk, removeNumbers)
+                   print(paste(pid, "   Remove punctuation"))
+                   tm_map(crpChunk, removePunctuation, preserve_intra_word_dashes = TRUE)
+                   print(paste(pid, "   Strip whitespace"))
+                   tm_map(crpChunk, stripWhitespace)
+                 }
+  stopCluster(cl)
+  
+  # SAVE RESULTS
+  print("Saving results")
+  save(crp, file = "crp.RDa")
+  return(crp)
+}
+
 
 #####################################################################
 ##
@@ -55,7 +111,7 @@ VCorpChunk <- function() {
   ##### Remove graphical characters
   ids <- 1:length(crp)
   library(parallel)
-  no_cores <- 4
+  no_cores <- 7
   print("split chunks")
   chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   
@@ -63,63 +119,63 @@ VCorpChunk <- function() {
   print("Remove graphical characters")
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar% {
-    print("test")
-    tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
+                   print("test")
+                   tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
                  }
   
   print("stopCluster")
-  stopCluster(cl)
+  # stopCluster(cl)
   
   ##### To lower
   print("To lower")
-  registerDoParallel(cl)
+  # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], content_transformer(tolower))
   
-  stopCluster(cl)
+  # stopCluster(cl)
   
   ##### Stopword removal
   print("Stopword removal")
-  registerDoParallel(cl)
+  # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
-    tm_map(crp[chunk], removeWords, stopwords(source = "snowball"))
+    tm_map(crp[chunk], removeWords, c(stopwords("SMART")))
   
-  stopCluster(cl)
+  # stopCluster(cl)
   
   ##### Stemming
   print("Stemming")
-  registerDoParallel(cl)
+  # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], stemDocument, language = "porter")
   
-  stopCluster(cl)
+  # stopCluster(cl)
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term)
   print("Removing all numbers")
-  registerDoParallel(cl)
+  # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removeNumbers)
   
-  stopCluster(cl)
+  # stopCluster(cl)
   
   ##### Punctuation
   print("remove Puncuation")
-  registerDoParallel(no_cores)
+  # registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], removePunctuation, preserve_intra_word_dashes = TRUE)
   
-  stopCluster(cl)
+  # stopCluster(cl)
   
   ##### Whitespace
   print("Remove whitespace")
-  registerDoParallel(cl)
+  # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
     tm_map(crp[chunk], stripWhitespace)
@@ -161,7 +217,7 @@ VCorp <- function() {
   
   ##### Stopword removal
   print("Stopword")
-  crp <- tm_map(crp, removeWords, stopwords(source = "smart"))
+  crp <- tm_map(crp, removeWords, c(stopwords("SMART")))
   
   ##### Stemming
   print("Stemming")
@@ -196,7 +252,6 @@ VCorp <- function() {
 #https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 
 Quan <- function() {
-  
   quanteda_options(threads = 8)
   
   print("Creating Quanteda Corpus")
@@ -205,12 +260,12 @@ Quan <- function() {
   #Quanteda tokens
   print("Creating tokens, removing punctuation & numbers")
   crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
-  
-  ids <- 1:length(crpT)
-  no_cores = detectCores()
-  chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
-  
-  registerDoParallel(no_cores)
+  #
+  # ids <- 1:length(crpT)
+  # no_cores = detectCores()
+  # chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  #
+  # registerDoParallel(no_cores)
   
   #Remove symbols
   print("Remove regex")
@@ -227,7 +282,8 @@ Quan <- function() {
   
   ##### Stopword removal
   print("Stopword removal")
-  crpT <- tokens_select(crpT, stopwords(source = "smart"), selection = 'remove')
+  crpT <-
+    tokens_select(crpT, stopwords(source = "smart"), selection = 'remove')
   
   ##### To lower
   print("To lower")
@@ -241,17 +297,7 @@ Quan <- function() {
   crpT <- tokens_remove(crpT, "*.*")
   crpT <- tokens_remove(crpT, "*,*")
   crpT <- tokens_remove(crpT, "*\\d*")
-  
-  ##### Numbers
-  
-  ##### All numbers (including numbers as part of a alphanumerical term) + punction + symbols
-  # print("Removing all numbers and symbols")
-  # crpT <-
-  #   tokens(crpT,
-  #          remove_numbers = TRUE,
-  #          remove_symbols = TRUE)
-  
-  stopImplicitCluster()
+  # stopImplicitCluster()
   
   # SAVE RESULTS
   print("Saving")
@@ -301,17 +347,19 @@ textvec <- function() {
   prep_fun = tolower
   tok_fun = word_tokenizer
   
-  it_train = itoken(train$text, 
-                    preprocessor = prep_fun, 
-                    tokenizer = tok_fun, 
-                    ids = train$doc_id, 
-                    progressbar = FALSE)
+  it_train = itoken(
+    train$text,
+    preprocessor = prep_fun,
+    tokenizer = tok_fun,
+    ids = train$doc_id,
+    progressbar = FALSE
+  )
   vocab = create_vocabulary(it_train)
   
-  train_tokens = train$text %>% 
-    prep_fun %>% 
+  train_tokens = train$text %>%
+    prep_fun %>%
     tok_fun
-  it_train = itoken(train_tokens, 
+  it_train = itoken(train_tokens,
                     ids = train$doc_id,
                     # turn off progressbar because it won't look nice in rmd
                     progressbar = FALSE)
