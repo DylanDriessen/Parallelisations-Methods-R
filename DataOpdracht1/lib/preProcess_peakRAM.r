@@ -2,7 +2,7 @@
 #   load("docs.rds")
 # }
 
-import(c("peakRAM","stringi","parallel", "doParallel"))
+import(c("peakRAM","stringi","parallel", "doSNOW" ))
 
 list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 
@@ -28,6 +28,7 @@ get_result_as_vector_from_list <- function (l) {
 
 ### call functies
 preProcessSequential_peakRAM <- function() {
+  print("CHECK")
   return(stringi_peakRAM(docs$text)[[1]])
 }
 

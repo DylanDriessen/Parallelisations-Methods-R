@@ -19,7 +19,7 @@ read_batch_peakRAM <- function(x) {
 ### LOOPS
 read_doparallel_foreach_peakRAM <- function() {
   cl <- makeReadFileClusterPeakRAM()
-  registerDoSNOW(cluster)
+  registerDoSNOW(cl)
   on.exit(stopCluster(cl))
   return(foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% read_batch_peakRAM(batch_nr))
 }

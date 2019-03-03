@@ -5,16 +5,18 @@
 saveFunctionData <- function(f, fpath, peakRAM = TRUE) {
   dir.create(fpath, recursive = TRUE, showWarnings = FALSE) # gooi geen error als 
   start.time <- Sys.time()
-  png(paste0(fpath, '/snow_plot.png'))
+  #png(paste0(fpath, '/snow_plot.png'))
   if(peakRAM) {
     plot(snow.time(microbenchmarkResult <- microbenchmark(peakRAMResult <- f(), times = 1)))
   } else {
     plot(snow.time(microbenchmarkResult <- microbenchmark(f(), times = 1)))
   }
-  dev.off()
+  #dev.off()
   saveRDS(my_data[!(my_data$time < start.time),], file = paste0(fpath, '/resources.rds'))
   saveRDS(microbenchmarkResult, file = paste0(fpath, '/microbenchmark.rds'))
   if (peakRAM) saveRDS(peakRAMResult, file = paste0(fpath, '/peakRAM.rds'))
 }
+
+
 
 
