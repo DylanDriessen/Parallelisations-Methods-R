@@ -11,8 +11,9 @@ monitor <- function() {
 }
 
 start_monitor <- function() {
+  if(is.null(tclTaskGet(id="monitor"))) 
+    tclTaskSchedule(1000, monitor(), id = "monitor", redo = TRUE)
   my_data <<- get_new_data()
-  tclTaskSchedule(1000, monitor(), id = "monitor", redo = TRUE)
 }
 
 end_monitor <- function() {
