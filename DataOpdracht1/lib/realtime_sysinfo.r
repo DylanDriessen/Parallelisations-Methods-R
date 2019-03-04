@@ -1,3 +1,5 @@
+import(c("tcltk2", "pryr", "dplyr", "microbenchmark"))
+
 
 
 get_new_data <- function() {

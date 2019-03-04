@@ -2,7 +2,7 @@
 #   load("docs.rds")
 # }
 
-import(c("peakRAM","stringi","parallel", "doParallel"))
+import(c("peakRAM","stringi","parallel", "doSNOW" ))
 
 list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 
@@ -28,10 +28,13 @@ get_result_as_vector_from_list <- function (l) {
 
 ### call functies
 preProcessSequential_peakRAM <- function() {
+  print("CHECK")
   return(stringi_peakRAM(docs$text)[[1]])
 }
 
 preProcessParallel_peakRAM <- function() {
+  print("CHECK")
+  
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
   result <- parLapply(cluster,docs$text,stringi_peakRAM)
@@ -42,6 +45,8 @@ preProcessParallel_peakRAM <- function() {
 preProcessDoparallel_peakRAM <- function(createPlot=FALSE,no_cores=detectCores()-1) {
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
+  clusterExport(cluster, c("stringi_peakRAM"))
+  
   registerDoSNOW(cluster)
   result <- foreach(str = docs$text, .combine = rbind) %dopar% stringi_peakRAM(str)
   stopCluster(cluster)
@@ -51,6 +56,8 @@ preProcessDoparallel_peakRAM <- function(createPlot=FALSE,no_cores=detectCores()
 preProcessCluster_peakRAM <- function() {
   cluster <- makeCluster(no_cores)
   clusterEvalQ(cluster, library("peakRAM"))
+  clusterExport(cluster, c("stringi_peakRAM"))
+  
   result <- clusterApply(cl = cluster,x=docs$text,stringi_peakRAM)
   stopCluster(cluster)
   return(get_pram_from_list(result))
@@ -59,23 +66,26 @@ preProcessCluster_peakRAM <- function() {
 preProcessDoparallelChunked_peakRAM <- function(){
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
+  clusterExport(cluster, c("stringi_peakRAM"))
   registerDoSNOW(cluster)
   res <- foreach(chunk = createChunksObjects(no_cores)) %dopar% stringi_peakRAM(chunk)
   stopCluster(cluster)
-  return(get_pram_from_list(result))
+  return(get_pram_from_list(res))
 }
 
 preProcessParallelChunked_peakRAM <- function(){
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
+  clusterExport(cluster, c("stringi_peakRAM"))
   res <- parLapply(cluster,createChunksObjects(no_cores),stringi_peakRAM)
   stopCluster(cluster)
-  return(get_pram_from_list(result))
+  return(get_pram_from_list(res))
 }
 
 preProcessClusterChunked_peakRAM <- function() {
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
+  clusterExport(cluster, c("stringi_peakRAM"))
   result <- clusterApply(cluster,createChunksObjects(no_cores),stringi_peakRAM)
   stopCluster(cluster)
   return(get_pram_from_list(result))

@@ -1,11 +1,6 @@
 source("lib/createDTM.r")
 
-makeCreateDTMCluster <- function() {
-  cl <- makeCluster(no_cores, outfile = "")
-  print("clusterEvalQ")
-  clusterEvalQ(cl, { library("quanteda") })
-  return(cl)
-}
+
 
 #####################################################################
 ##
@@ -16,8 +11,9 @@ makeCreateDTMCluster <- function() {
 createDfmChunks_peakRAM <- function() {
   print("createCluster")
   cl <- makeCreateDTMCluster()
-  no_cores <- detectCores()
-  registerDoParallel(cl)
+  clusterEvalQ(cl, library("peakRAM"))
+  clusterExport(cl, c("no_cores"))
+  registerDoSNOW(cl)
   print("create List")
   dfmList <- list()
   print("checking limits & writing dfm's to list")
@@ -35,6 +31,7 @@ createDfmChunks_peakRAM <- function() {
       })
       list(cbind(Process_Id = Sys.getpid(), pram[,2:4], Start_Time = t, End_Time = Sys.time()), res)
     }
+  
   stopCluster(cl)
   
   #get peakram from result list

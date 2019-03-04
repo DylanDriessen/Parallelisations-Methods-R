@@ -5,7 +5,7 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
          "stringi", "ff", "ffbase", "tm","SnowballC","slam","stringi","data.table",
          "magrittr","corrplot","NLP", "foreach","doParallel","microbenchmark",
          "text2vec","doMC","quanteda","textmineR", "parallel", "peakRAM",
-         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr"))
+         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr", "stopwords"))
 
 
 ## Batches info
@@ -28,7 +28,7 @@ no_cores <- detectCores()
 ################################################################################
 
 source("lib/readFiles.r")
-#docs <- readFiles_doparallel_foreach_ffdf()
+#docs <- read_doparallel_foreach_ffdf()     ### Ik denk dat ffdf aleen goed werk voor data die wederkerend is zoals bv de data in de taal col. dit zijn 4 verschillende waardes die steeds herbruikt worden. in de text col staat telkens een andere waarde
 docs <- readFiles_doparallel_foreach()
 docs$id <- 1:nrow(docs)
 #benchmark_read()
