@@ -191,23 +191,32 @@ createDTMCChunked <- function() {
     wordLengths = c(1, Inf)
   )
   
+  chunks <- createCorpusChunks(no_chunks = no_cores)
+  
   cluster <- makeCluster(no_cores,outfile="")
   registerDoParallel(cluster)
-  corpusLenght <- length(docsCorpus)
   
-  dtmList <-
-    foreach(i=1:no_cores,
-            .packages = "tm",
-            .export = c("no_cores","docsCorpus")) %dopar% {
-            og <- round((i -1) * corpusLenght / no_cores) + 1
-            bg <- round(corpusLenght / no_cores * i) 
-            print(paste0(og," ---> ",bg))
-            DocumentTermMatrix(docsCorpus[og:bg],control=dtm_ctrl)
-          }
+  dtmList <- 
+    foreach(chunk = chunks,
+            .packages = "tm") %dopar% {
+              DocumentTermMatrix(chunk,control=dtm_ctrl)
+            }
   
   stopCluster(cluster)
   
   dtm <- do.call(tm:::c.DocumentTermMatrix,dtmList)
   
   return(dtm)
+}
+
+createCorpusChunks <- function(no_chunks){
+  corpusLenght <- length(docsCorpus)
+  
+  return(foreach(i=1:no_chunks ) %do% {
+            og <- round((i -1) * corpusLenght / no_chunks) + 1
+            bg <- round(corpusLenght / no_chunks * i) 
+            print(paste0(og," ---> ",bg))
+            docsCorpus[og:bg]
+          })
+  
 }
