@@ -9,7 +9,7 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 3
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 no_cores <- detectCores()
 
