@@ -26,11 +26,11 @@ saveFunctionData <- function(f, fpath) {
   benchmarkpath <- paste0(splitpath[1], '/microbenchmark.rds')
   ## als file exists, load file. anders maak nieuwe lege dataframe
   if(file.exists(benchmarkpath))
-    microbenchmark <- loadRDS(benchmarkpath)
+    microbenchmark <- readRDS(benchmarkpath)
   else
-    microbenchmark <- data.frame(time = as.numeric(character()))
+    microbenchmark <- data.frame(expr = character(), time = as.numeric(character()), stringsAsFactors = FALSE)
   ## slaag microbenchmarkresult op als nieuwe rij, of overschrijf rij
-  microbenchmark[splitpath[2], "time"] <- microbenchmarkResult[1,1]
+  microbenchmark[splitpath[2],] <- c(expr = splitpath[2], time = microbenchmarkResult[1,2])
   ## slaag op in file
   saveRDS(microbenchmark, benchmarkpath)
   
@@ -43,9 +43,9 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
 
 
-#saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
-#saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
-saveFunctionData(createDFMasDTM, "results/createDTM/dfmASdtm")
+saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
+saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
+saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
 
 
 #saveFunctionData(read_doparallel_foreach_peakRAM, "results/preProcess/test" )
