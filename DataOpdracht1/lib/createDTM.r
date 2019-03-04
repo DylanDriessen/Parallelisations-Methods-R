@@ -201,21 +201,13 @@ createDTMCChunked <- function() {
             .export = c("no_cores","docsCorpus")) %dopar% {
             og <- round((i -1) * corpusLenght / no_cores) + 1
             bg <- round(corpusLenght / no_cores * i) 
-            print(paste0(og,"----->",bg))
+            print(paste0(og," ---> ",bg))
             DocumentTermMatrix(docsCorpus[og:bg],control=dtm_ctrl)
           }
   
   stopCluster(cluster)
   
   dtm <- do.call(tm:::c.DocumentTermMatrix,dtmList)
-  
-  
-  #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
-  #dtm <- as.matrix(dtm_raw[1:50,1:50])
-  
-  # SAVE RESULTS
-  #save(dtm_raw, dtm_ctrl, file = "dtm_raw.RDa")
-  #save(dtm_tfidf, dtm_ctrl, file = "dtm_tfidf.RDa")
   
   return(dtm)
 }
