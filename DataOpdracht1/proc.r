@@ -9,7 +9,7 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 1
 
 no_cores <- detectCores()
 
@@ -34,7 +34,7 @@ docs$id <- 1:nrow(docs)
 #benchmark_read()
 
 ################################################################################
-#p
+#
 # 2 PREPROCESS
 #
 # 18/02/2019 Tom Magerman
@@ -96,7 +96,7 @@ Voca <- deriveVoc()
 # ==============================================================================
 
 source("lib/cluster.R")
-cluster <- clusterMatrix()
+cluster2 <- clusterMatrix()
 
 
 # SAVE RESULTS
