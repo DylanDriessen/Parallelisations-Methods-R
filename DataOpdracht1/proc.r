@@ -5,11 +5,11 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
          "stringi", "ff", "ffbase", "tm","SnowballC","slam","stringi","data.table",
          "magrittr","corrplot","NLP", "foreach","doParallel","microbenchmark",
          "text2vec","doMC","quanteda","textmineR", "parallel", "peakRAM",
-         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr"))
+         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr", "stopwords"))
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/"; ofn <- "ps18b_abstr"; batches <- 3
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 no_cores <- detectCores()
 
