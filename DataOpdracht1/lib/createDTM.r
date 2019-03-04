@@ -3,6 +3,7 @@ createDTM <- function() {
   createDFMasDTM()
   #createDfmChunks()
   #createDTMC()
+  #createDTMCChunked()
   #createDFM()
   #createDfmChunksBind()
 }
@@ -165,4 +166,57 @@ createDTMC <- function() {
   #save(dtm_tfidf, dtm_ctrl, file = "dtm_tfidf.RDa")
   
   return(dtm_raw)
+}
+
+#####################################################################
+##
+##                     Document-Term Matrix Chunked
+##
+#####################################################################
+
+createDTMCChunked <- function() {
+  # CREATE DTM (RAW AND WEIGHTED)
+
+  print("create a DTM")
+  dtm_ctrl <- list(
+    tokenize = "words",
+    tolower = FALSE,
+    removePunctuation = FALSE,
+    removeNumbers = FALSE,
+    stopwords = FALSE,
+    stemming = FALSE,
+    dictionary = NULL,
+    bounds = list(global = c(1, Inf)),
+    weighting = weightTf,
+    wordLengths = c(1, Inf)
+  )
+  
+  chunks <- createCorpusChunks(no_chunks = no_cores)
+  
+  cluster <- makeCluster(no_cores,outfile="")
+  registerDoParallel(cluster)
+  
+  dtmList <- 
+    foreach(chunk = chunks,
+            .packages = "tm") %dopar% {
+              DocumentTermMatrix(chunk,control=dtm_ctrl)
+            }
+  
+  stopCluster(cluster)
+  
+  dtm <- do.call(tm:::c.DocumentTermMatrix,dtmList)
+  
+  return(dtm)
+}
+
+createCorpusChunks <- function(no_chunks){
+  corpusLenght <- length(docsCorpus)
+  
+  return(foreach(i=1:no_chunks ) %do% {
+            og <- round((i -1) * corpusLenght / no_chunks) + 1
+            bg <- round(corpusLenght / no_chunks * i) 
+            print(paste0(og," ---> ",bg))
+            docsCorpus[og:bg]
+          })
+  
 }

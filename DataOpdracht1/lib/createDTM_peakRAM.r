@@ -66,7 +66,7 @@ createDFM_peakRAM <- function() {
 ##
 #####################################################################
 
-createDFMasDTM <- function() {
+createDFMasDTM_peakRAM <- function() {
   t <- Sys.time()
   df <- peakRAM(createDFMasDTM())
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
