@@ -1,68 +1,89 @@
 clusterMatrix <- function() {
   import(c("biganalytics", "cluster", "skmeans", "kmndirs"))
   
-  skmeansCluster()
-  # kmeansSparseCluster()
+  # skmeansCluster()
+  skmeansClusterPar10()
+  # skmeansClusterPar100()
+  # 1000 is teveel momenteel -> crash
+  # skmeansClusterPar1000()
   
 }
 
 # ==============================================================================
 #
-#                                 SKMEANS
+#                                 SKMEANS Sequential
 #
 # ==============================================================================
 
-skmeansCluster <- function() {
+skmeansCluster <- function(){
+  result <- skmeans(DFM2, 50 ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
+  return(result)
+}
+
+# ==============================================================================
+#
+#                                 SKMEANS Parallel 10
+#
+# ==============================================================================
+
+skmeansClusterPar10 <- function() {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
   clusterExport(cl, "skmeans")
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 10
+  nstart <- 8
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)
-  result2 <-
+  result <-
     clusterApply(cl, nstartv, function(n, x)
-      skmeans(x,5,method = "genetic",control = list(nstart = n,maxiter = 10,verbose = TRUE)), DFM2)
+      skmeans(x,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
   stopCluster(cl)
-  return(result2)
-  
-  # library (vegan)
-  # library (cluster)
-  # 
-  # dis = dist(DFM2)^2
-  # sil = silhouette (result2$cluster, dis)
-  # windows() 
-  # plot(sil)
-  
-  # i <- sapply(result, function(result) kfitSK2$
-  
-  
-  # cl <- makeCluster(7, outfile = "")
-  # registerDoParallel(cl)
-  # kfitSK3 <- foreach(i = 1:7, .export = "skmeans") %dopar%
-  #   skmeans(DFM2, 5, method = "pclust", control = list(nruns = i, verbose = TRUE))
-  # stopCluster(cl)
-  
-  # kfit2 <- skmeans(DFM2, 5, m = 1.1,
-  #         control = list(nruns = 5, verbose = TRUE))
-  # ## Hard partition into 5 clusters.
-  # hparty <- skmeans(DFM2, 5, control = list(verbose = TRUE))
-  # ## Criterion value obtained:
-  # hparty$value
-  # ## Compare with "true" classifications:
-  # class_ids <- attr(DFM2, "rclass")
-  # table(class_ids, hparty$cluster)
-  # require("cluster")
-  # plot(silhouette(hparty))
+  return(result)
 }
 
 # ==============================================================================
 #
-#                            KMeansSparseCluster
+#                                 SKMEANS Parallel 100
 #
 # ==============================================================================
 
-kmeansSparseCluster <- function() {
-  
+skmeansClusterPar100 <- function() {
+  #genetic
+  set.seed(125)
+  cl <- makeCluster(no_cores, outfile = "")
+  clusterExport(cl, "skmeans")
+  registerDoParallel(cl)
+  clusterSetRNGStream(cl, iseed = 1236)
+  nstart <- 8
+  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  result <-
+    clusterApply(cl, nstartv, function(n, x)
+      skmeans(x,100,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+  stopCluster(cl)
+  return(result)
+}
+
+# ==============================================================================
+#
+#                           SKMEANS Parallel 1000
+#
+# ==============================================================================
+
+# 1000 is teveel momenteel -> crash
+
+skmeansClusterPar1000 <- function() {
+  #genetic
+  set.seed(125)
+  cl <- makeCluster(no_cores, outfile = "")
+  clusterExport(cl, "skmeans")
+  registerDoParallel(cl)
+  clusterSetRNGStream(cl, iseed = 1236)
+  nstart <- 8
+  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  result <-
+    clusterApply(cl, nstartv, function(n, x)
+      skmeans(x,1000,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+  stopCluster(cl)
+  return(result)
 }

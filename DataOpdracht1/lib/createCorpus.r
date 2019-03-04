@@ -2,6 +2,7 @@ createCorpus <- function() {
   ##### Create corpus (and define default language)
   
   Quan()
+  # Quan2()
   #VCorpChunk()
   #VCorp()
   #VCorpChunk1Loop()
@@ -252,7 +253,7 @@ VCorp <- function() {
 #https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 
 Quan <- function() {
-  quanteda_options(threads = 8)
+  quanteda_options(threads = parallel::detectCores() - 1, verbose = TRUE)
   
   print("Creating Quanteda Corpus")
   crpT <- corpus(docs)
@@ -306,78 +307,35 @@ Quan <- function() {
   return(crpT)
 }
 
-#####################################################################
-##
-##                            text2vec
-##
-#####################################################################
-
-textvec <- function() {
-  # preprocessor = function(x) {
-  #   gsub("[^[:alnum:]\\s]", replacement = " ", tolower(x))
-  # }
-  # sample_ind = 1:100
-  # #tokens = word_tokenizer(preprocessor(movie_review$review[sample_ind]))
-  # tokens = word_tokenizer(preprocessor(docs$text[sample_ind]))
-  # it = itoken(tokens, ids = docs$doc_id[sample_ind])
-  # system.time(v <- create_vocabulary(it))
-  # v = prune_vocabulary(v, term_count_min = 5)
-  # model = Collocations$new(collocation_count_min = 5, pmi_min = 5)
-  # model$fit(it, n_iter = 2)
-  # model$collocation_stat
-  # it2 = model$transform(it)
-  # v2 = create_vocabulary(it2)
-  # v2 = prune_vocabulary(v2, term_count_min = 5)
-  # # check what phrases model has learned
-  # setdiff(v2$term, v$term)
-  # # and same way we can create document-term matrix which contains
-  # # words and phrases!
-  # dtm = create_dtm(it, vocab_vectorizer(v2))
-  
-  setDT(docs)
-  setkey(docs, doc_id)
-  set.seed(2017L)
-  all_ids = docs$doc_id
-  train_ids = sample(all_ids, 4000)
-  test_ids = setdiff(all_ids, train_ids)
-  train = docs[J(train_ids)]
-  test = docs[J(test_ids)]
-  
-  # define preprocessing function and tokenization function
-  prep_fun = tolower
-  tok_fun = word_tokenizer
-  
-  it_train = itoken(
-    train$text,
-    preprocessor = prep_fun,
-    tokenizer = tok_fun,
-    ids = train$doc_id,
-    progressbar = FALSE
-  )
-  vocab = create_vocabulary(it_train)
-  
-  train_tokens = train$text %>%
-    prep_fun %>%
-    tok_fun
-  it_train = itoken(train_tokens,
-                    ids = train$doc_id,
-                    # turn off progressbar because it won't look nice in rmd
-                    progressbar = FALSE)
-  
-  vocab = create_vocabulary(it_train)
-  vocab
-  
-  vectorizer = vocab_vectorizer(vocab)
-  t1 = Sys.time()
-  dtm_train = create_dtm(it_train, vectorizer)
-  print(difftime(Sys.time(), t1, units = 'sec'))
-  dim(dtm_train)
-  identical(rownames(dtm_train), train$doc_id)
-  
-  t1 = Sys.time()
-  vocab = create_vocabulary(it_train, stopwords = stopwords(source = "snowball"))
-  print(difftime(Sys.time(), t1, units = 'sec'))
-  
-  dim(dtm_train)
-  
-}
+# 
+# 
+# Quan2 <- function() {
+#   quanteda_options(threads = parallel::detectCores() - 1, verbose = TRUE)
+#   
+#   print("Creating Quanteda Corpus")
+#   crpT <- corpus(docs)
+#   
+#   #Quanteda tokens
+#   print("Creating tokens, removing punctuation & numbers")
+#   crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE) %>%
+#     print("Remove regex") %>%
+#     # tokens_remove(crpT, "\\p{Z}", valuetype = "regex") %>%
+#     print("Stemming") %>%
+#     tokens_wordstem(crpT) %>%
+#     print("Stopword removal")
+#     tokens_select(crpT, stopwords(source = "smart"), selection = 'remove') %>%
+#     print("To lower") %>%
+#     tokens_tolower(crpT) %>%
+#     print("Remove numbers") %>%
+#     tokens_remove(crpT, "*\\d*") %>%
+#       tokens_remove(crpT, "*#*") %>%
+#       tokens_remove(crpT, "*-*") %>%
+#       tokens_remove(crpT, "*.*") %>%
+#       tokens_remove(crpT, "*,*")
+#   
+#   # SAVE RESULTS
+#   print("Saving")
+#   save(crpT, file = "crpT.RDa")
+#   print("Return result")
+#   return(crpT)
+# }

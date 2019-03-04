@@ -57,6 +57,10 @@ createDfmChunks <- function() {
     dfmTotal <- rbind(dfmTotal, dfmList[[i]])
   }
   print("done binding")
+  
+  print("Remove zero rows")
+  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+  
   return(dfmTotal)
   print("returnd result")
   
@@ -97,6 +101,9 @@ createDfmChunksBind <- function() {
   print("remove big Corpus")
   #rm(docsCorpus)
   
+  print("Remove zero rows")
+  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+  
   return(dfmList)
   print("returnd result")
   
@@ -114,6 +121,7 @@ createDFM <- function() {
   dtm_raw <- dfm(docsCorpus)
   rowSums(dtm_raw, na.rm = FALSE)
   # dtm_tfidf  <- dfm_weight(dtm_raw)
+  print("Remove zero rows")
   dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
   return(dtm_raw)
 }
@@ -128,10 +136,15 @@ createDFMasDTM <- function() {
   # CREATE DFM
   print("create a DFM")
   dtm_raw <- dfm(docsCorpus)
+  
   #as dtm now
+  print("Remove zero rows")
+  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+  
   print("convert to DTM")
   dtm_raw <- convert(dtm_raw, to = "tm")
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  
   return(dtm_raw)
 }
 

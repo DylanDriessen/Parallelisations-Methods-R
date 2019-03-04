@@ -9,7 +9,7 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/medium/"; ofn <- "ps18b_abstr"; batches <- 1
 
 no_cores <- detectCores()
 
@@ -96,8 +96,8 @@ Voca <- deriveVoc()
 # ==============================================================================
 
 source("lib/cluster.R")
-cluster2 <- clusterMatrix()
-
+cluster <- clusterMatrix()
+microbenchmark(skmeansCluster(), skmeansClusterPar10(), skmeansClusterPar100(), times = 1)
 
 # SAVE RESULTS
 save(voc, file="voc.RDa")
