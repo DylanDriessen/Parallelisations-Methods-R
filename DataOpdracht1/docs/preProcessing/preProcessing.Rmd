@@ -37,6 +37,12 @@ preProcessCluster <- function() {
 
 #![ClusterApplyPlot](./resources/ClusterApply.png)
 
+[
+**Fig. 1:** *Uitvoeren van commando's en communicatie tussen master en slaves wanneer de data niet opgedeeld is.*
+]
+
+***
+
 ### clusterApplyChunked
 Een oplossing voor de overhead is om eerst de vector in een aantal chunks te gaan verdelen gelijk aan het aantal cores die we te beschikking hebben. Eerst deden we dit door een vector aan te maken van 1 tot het aantal rijen in docs en dan een lijst te maken met subsets van deze vector. op deze manier werd onze code sneller uitgevoerd maar was het geheugen gebruik niet optimaal.  
 
@@ -71,6 +77,11 @@ preProcessClusterChunked <- function() {
 ```
 
 #![ClusterApplyChunkedPlot](./resources/ClusterApplyChunked.png)
+[
+**Fig. 2:** *Uitvoeren van commando's en communicatie tussen master en slaves wanneer de data wel opgedeeld is.*
+]
+
+***
 
 ##Microbenchmark op elke functie
 
@@ -90,6 +101,8 @@ microbenchmark(preProcessSequential(),
 * Wanneer we parLappy gaan gebruiken zonder de vector eerst te verdelen in chunks, zien we dat er geen overhead is op vlak van communicatie. Toch is de functie waar we de vector eerst gaan verdelen in chunks een beetje sneller. 
 
 #![parLapplyPlot](./resources/parLapply.png)
+[
+**Fig. 3:** *Uivoeren van commando's en communicatie tussen master en slaves bij parlapply zonder te verdelen in chunks*
+]
 
-
-
+***
