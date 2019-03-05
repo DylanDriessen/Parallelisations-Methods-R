@@ -49,21 +49,22 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
 
 
-saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
-saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
-saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
+# saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
+# saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
+# saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
 
 
 
 
-#saveFunctionData(read_doparallel_foreach_peakRAM, "results/preProcess/test" )
 #saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
-#saveFunctionData(preProcessParallel_peakRAM, "results/preProcess/parallel")
-#saveFunctionData(preProcessDoparallel_peakRAM, "results/preProcess/doparallel")
-#saveFunctionData(preProcessCluster_peakRAM,"results/preProcess/cluster" )
+#saveFunctionData(preProcessParallel_peakRAM, "results/preProcess/parallel") niet uitvoeren
+#saveFunctionData(preProcessDoparallel_peakRAM, "results/preProcess/doparallel") niet uitvoeren
+#saveFunctionData(preProcessCluster_peakRAM,"results/preProcess/cluster" ) niet uitvoeren
 #saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
 #saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
 #saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
+
+
 
 # saveFunctionData_doSNOW <- function(f, fpath) {
 #   dir.create(fpath, recursive = TRUE, showWarnings = FALSE) # gooi geen error als 

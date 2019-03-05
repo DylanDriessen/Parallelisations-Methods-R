@@ -24,7 +24,7 @@ Aangezien lijnen onafhankelijk van elkaar geprocessed kunnen worden, kunnen we h
 
 
 ### clusterApply
-De eerste manier die we geprobeerd hebben was om lijn per lijn te verdelen naar de cores. Dit bleek behoorlijk inneficient te zijn aangezien er een grote overhead bestond die te wijten was aan communicatie tussen master en slaves. 
+De eerste manier die we geprobeerd hebben was om lijn per lijn te verdelen naar de cores. Dit bleek behoorlijk inefficient te zijn aangezien er een grote overhead bestond die te wijten was aan communicatie tussen master en slaves. 
 
 ```{r}
 preProcessCluster <- function() {
@@ -37,10 +37,16 @@ preProcessCluster <- function() {
 
 #![ClusterApplyPlot](./resources/ClusterApply.png)
 
+[
+**Fig. 1:** *Uitvoeren van commando's en communicatie tussen master en slaves wanneer de data niet opgedeeld is.*
+]
+
+***
+
 ### clusterApplyChunked
 Een oplossing voor de overhead is om eerst de vector in een aantal chunks te gaan verdelen gelijk aan het aantal cores die we te beschikking hebben. Eerst deden we dit door een vector aan te maken van 1 tot het aantal rijen in docs en dan een lijst te maken met subsets van deze vector. op deze manier werd onze code sneller uitgevoerd maar was het geheugen gebruik niet optimaal.  
 
-Oms ons geheugen verbruik te verbeteren zijn we overgeschakeld naar het opslitsten van de text vector in chunks en deze dan te verdelen over de cores. Op deze manier wordt theoretisch gezien de vector maar 3 keer in geheugen gezet, 1 keer in de originele dataframe, 1 keer in de lijst van chunks en elke core laad nog een chunk in memory.
+Oms ons geheugen verbruik te verbeteren zijn we overgeschakeld naar het opsplitsen van de text vector in chunks en deze dan te verdelen over de cores. Op deze manier wordt theoretisch gezien de vector maar 3 keer in geheugen gezet, 1 keer in de originele dataframe, 1 keer in de lijst van chunks en elke core laad nog een chunk in memory.
 
 ####Creating chunks
 
@@ -71,6 +77,11 @@ preProcessClusterChunked <- function() {
 ```
 
 #![ClusterApplyChunkedPlot](./resources/ClusterApplyChunked.png)
+[
+**Fig. 2:** *Uitvoeren van commando's en communicatie tussen master en slaves wanneer de data wel opgedeeld is.*
+]
+
+***
 
 ##Microbenchmark op elke functie
 
@@ -87,9 +98,11 @@ microbenchmark(preProcessSequential(),
 
 ##Bevindingen
 * Het parallel uitvoeren van named functions gebruikt minder ram dan wanneer we ze anonymous maken.
-* Wanneer we parLappy gaan gebruiken zonder de vector eerst te verdelen in chunks, zien we dat er geen overhead is op vlak van communicatie. Toch is de functie waar we de vector eerst gaan verdelen in chunks een beejte sneller. 
+* Wanneer we parLappy gaan gebruiken zonder de vector eerst te verdelen in chunks, zien we dat er geen overhead is op vlak van communicatie. Toch is de functie waar we de vector eerst gaan verdelen in chunks een beetje sneller. 
 
 #![parLapplyPlot](./resources/parLapply.png)
+[
+**Fig. 3:** *Uivoeren van commando's en communicatie tussen master en slaves bij parlapply zonder te verdelen in chunks*
+]
 
-
-
+***
