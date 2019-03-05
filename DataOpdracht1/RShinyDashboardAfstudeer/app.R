@@ -27,24 +27,7 @@ ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ra
 # Define UI for application that draws a histogram
 ui <- shinyServer(fluidPage(
   
-  #=======================#
-  #conditions to adapt the selectInput to userInput
-  #==========================#
-  
-  
-  
-    
-    
-    
-    #==========================#
-    #excecute Button
-    #==========================#
-    
-
- 
-    
-    
-    navbarPage("Choose your tab",
+  navbarPage("Choose your tab",
                tabPanel("Overzicht",
                         sidebarPanel(
                           helpText("Select wich function"),
@@ -785,21 +768,6 @@ server <- shinyServer(function(input, output, session){
           alt = "Face"
         ))
       },deleteFile = FALSE)
-      
-      resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
-      
-      
-      
-      output$RamUsagePlot <- renderPlotly({
-        plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                mode = "lines")
-      })
-      
-      output$CPUusagePlot <- renderPlotly({
-        plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                mode = "lines")
-        
-      })
     }
     else if(input$callMethodReadFiles == "clusterapply"){
       #future(read_clusterapply_peakRAM())
@@ -816,24 +784,9 @@ server <- shinyServer(function(input, output, session){
         ))
       },deleteFile = FALSE)
       
-      resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/clusterapply/resources.rds")
-      
-      
-      output$RamUsagePlot <- renderPlotly({
-        invalidateLater(2000, session)
-        plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                mode = "lines")
-      })
-      
-      output$CPUusagePlot <- renderPlotly({
-        plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                mode = "lines")
-        
-      })
       
     }
     else if(input$callMethodReadFiles == "parlapply"){
-      future(read_parlapply_peakRAM())
       parlapplyData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/peakRAM.rds")
       output$RAMoutputFunctions <- renderPlotly({
         plot_ly(data = parlapplyData, x = parlapplyData$Elapsed_Time_sec , y = parlapplyData$Process_id, type = 'bar' ,
@@ -847,26 +800,12 @@ server <- shinyServer(function(input, output, session){
         ))
       },deleteFile = FALSE)
       
-      resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/resources.rds")
       
-      
-      output$RamUsagePlot <- renderPlotly({
-        invalidateLater(2000, session)
-        plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                mode = "lines")
-      })
-      
-      output$CPUusagePlot <- renderPlotly({
-        plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                mode = "lines")
-        
-      })
     }
     else if(input$callMethodReadFiles == "foreach"){
       
-      future(read_doparallel_foreach_peakRAM())
       #future(saveFunctionData(read_doparallel_foreach_peakRAM,"results/read/foreach"))
-      foreachData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/read_doparallel_foreach_peakRAM.rds")
+      foreachData <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/foreach/peakRAM.rds")
       output$RAMoutputFunctions <- renderPlotly({
         plot_ly(data = foreachData, x = foreachData$Elapsed_Time_sec , y = foreachData$Process_id , type = 'bar' ,
                 mode = 'markers' ) %>% layout(xaxis = Elapsed, yaxis = Process)
@@ -874,7 +813,7 @@ server <- shinyServer(function(input, output, session){
       
       output$CPUusage <- renderImage({
         return(list(
-          src = "~/R/Afstudeerwerk/DataOpdracht1/docs/read_doparallel_foreach_PNG.png",
+          src = "~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/foreach/snow_plot.png",
           contentType = "image/png",
           alt = "Face"
         ))
@@ -1197,7 +1136,7 @@ server <- shinyServer(function(input, output, session){
   })
   
   #==========================#
-  #CoreInfoEachFunction   
+  #ResourceInfoEachFunction   
   #==========================#
   
   observeEvent(input$showResultResources,{
@@ -1208,12 +1147,8 @@ server <- shinyServer(function(input, output, session){
       if(input$callMethodReadFiles == "sequential"){
         
       
-        
-        resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
-        
-        
-        
-        output$RamUsagePlot <- renderPlotly({
+       resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
+         output$RamUsagePlot <- renderPlotly({
           plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
                   mode = "lines")
         })
@@ -1227,8 +1162,6 @@ server <- shinyServer(function(input, output, session){
       else if(input$callMethodReadFiles == "clusterapply"){
         
         resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/clusterapply/resources.rds")
-        
-        
         output$RamUsagePlot <- renderPlotly({
           invalidateLater(2000, session)
           plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
@@ -1244,8 +1177,6 @@ server <- shinyServer(function(input, output, session){
       }
       else if(input$callMethodReadFiles == "parlapply"){
         resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/resources.rds")
-        
-        
         output$RamUsagePlot <- renderPlotly({
           invalidateLater(2000, session)
           plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
