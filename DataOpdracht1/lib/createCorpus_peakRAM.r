@@ -1,23 +1,90 @@
-import(c("tm","SnowballC","slam","stringi","data.table","magrittr","corrplot","NLP",
-    "foreach","doParallel","microbenchmark","text2vec","doMC","quanteda","textmineR",
-    "parallel", "peakRAM"))
-
 source("lib/createCorpus.r")
 
-createCorpusCluster_peakRAM <- function() {
-  cl <- makeCluster(4, outfile = "")
-  clusterEvalQ(cl, { library("tm"); library("peakRAM") })
-  return(cl)
+#####################################################################
+##
+##              TM Package Parallel 1 Loop
+##
+#####################################################################
+
+TMCorpusChunk1Loop_peakRAM <- function() {
+  # print("Define general function to replace strings in corpus")
+  crp.replacePattern <-
+    content_transformer(function(x, pattern, replace)
+      gsub(pattern, replace, x))
+  
+  # print("Create docsChunks")
+  docsChunks <- createDocsChunks(no_cores)
+  cl <- createCorpusCluster()
+  clusterEvalQ(cl, library("peakRAM"))
+  registerDoParallel(cl)
+  
+  crp <- foreach(docsChunk = docsChunks,
+                 .combine = rbind) %dopar% {
+                   t <- Sys.time()
+                   df <- peakRAM({
+                   
+                   
+                   crpChunk <-
+                     VCorpus(DataframeSource(docsChunk),
+                             readerControl = list(language = "en"))
+                   pid <- Sys.getpid()
+                   
+                   # print(paste(pid, "   Remove graphical"))
+                   tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
+                   # print(paste(pid, "   To lower"))
+                   tm_map(crpChunk, content_transformer(tolower))
+                   # print(paste(pid, "   Remove stopwords"))
+                   tm_map(crpChunk, removeWords, c(stopwords("SMART")))
+                   # print(paste(pid, "   Stem document"))
+                   tm_map(crpChunk, stemDocument, language = "porter")
+                   # print(paste(pid, "   Remove numbers"))
+                   tm_map(crpChunk, removeNumbers)
+                   # print(paste(pid, "   Remove punctuation"))
+                   tm_map(crpChunk, removePunctuation, preserve_intra_word_dashes = TRUE)
+                   # print(paste(pid, "   Strip whitespace"))
+                   tm_map(crpChunk, stripWhitespace)
+                   })
+                   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
+                 }
+  stopCluster(cl)
+  return(crp)
 }
 
-VCorpChunk_peakRAM <- function() {
-  #TODO?
+
+#####################################################################
+##
+##                           TM Package Parallel
+##
+#####################################################################
+
+TMCorpusChunk <- function() {
+  t <- Sys.time()
+  df <- peakRAM(TMCorpusChunk())
+  cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
 }
 
-VCorp_peakRAM <- function() {
-  return(peakRAM(VCorp()))
+
+#####################################################################
+##
+##                           TM Package
+##
+#####################################################################
+
+TMCorpus <- function() {
+  t <- Sys.time()
+  df <- peakRAM(TMCorpus())
+  cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
 }
 
-Quan_peakRAM <- function() {
-  return(peakRAM(Quan()))
+#####################################################################
+##
+##                            Quanteda
+##
+#####################################################################
+#https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
+
+QuantedaCorpus_peakRAM <- function() {
+  t <- Sys.time()
+  df <- peakRAM(QuantedaCorpus())
+  cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
 }
