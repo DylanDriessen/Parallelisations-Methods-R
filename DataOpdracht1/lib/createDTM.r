@@ -12,7 +12,7 @@ createDTM <- function() {
   createDTMChunked()
 }
 
-makeCreateDTMCluster <- function() {
+makeCreateDFMCluster <- function() {
   cl <- makeCluster(no_cores, outfile = "")
   print("clusterEvalQ")
   clusterEvalQ(cl, { library("quanteda") })
@@ -27,7 +27,7 @@ makeCreateDTMCluster <- function() {
 
 createDFMChunks <- function() {
   print("createCluster")
-  cl <- makeCreateDTMCluster()
+  cl <- makeCreateDFMCluster()
   no_cores <- detectCores()
   registerDoParallel(cl)
   print("create List")
@@ -79,7 +79,7 @@ createDFMChunks <- function() {
 
 createDFMChunksBind <- function() {
   print("createCluster")
-  cl <- makeCreateDTMCluster()
+  cl <- makeCreateDFMCluster()
   no_cores <- detectCores()
   registerDoParallel(cl)
   print("create List")

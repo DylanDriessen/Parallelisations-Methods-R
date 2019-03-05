@@ -1,15 +1,19 @@
 ---
 title: "Create a Document Term/Feature Matrix"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 In deze documentatie gaan we bekijken hoe we efficiënter een Document Term Matrix (DTM) en een Document Feature Matrix (DFM) kunnen creëren.
 
-Voor een DTM te creëren maken we gebruiken van het tm-package, en hebben we als input een corpus die ook is opgebouwd met de tm-package.
+## **DTM**
 
+### DTM Sequentieel
+Voor een DTM te creëren maken we gebruiken van het tm-package, en hebben we als input een corpus die ook is opgebouwd met de tm-package.
 ```{r}
-createDTMC <- function() {
-  # CREATE DTM (RAW AND WEIGHTED)
+createDTM <- function() {
+
   dtm_ctrl <- list(
     tokenize = "words",
     tolower = FALSE,
@@ -22,12 +26,162 @@ createDTMC <- function() {
     weighting = weightTf,
     wordLengths = c(1, Inf)
   )
+  print("dtm_raw")
   dtm_raw <- DocumentTermMatrix(docsCorpus, control = dtm_ctrl)
+  #save(dtm_raw, dtm_ctrl, file = "dtm_raw.RDa")
+  return(dtm_raw)
+}
+```
+
+### DTM Parallel
+Bovenstaande code hebben we geparallelliseerd, door behulp van onze corpus op te delen in chunks met onderstaande code.
+```{r}
+createCorpusChunks <- function(no_chunks){
   
-  # SAVE RESULTS
-  save(dtm_raw, dtm_ctrl, file = "dtm_raw.RDa")
+  corpusLenght <- length(docsCorpus)
+  return(foreach(i=1:no_chunks ) %do% {
+            og <- round((i -1) * corpusLenght / no_chunks) + 1
+            bg <- round(corpusLenght / no_chunks * i) 
+            print(paste0(og," ---> ",bg))
+            docsCorpus[og:bg]
+          })
+  
+}
+```
+
+Hier gaan we op basis van de lengte van onze corpus chunks aanmaken zoals te zien in *createCorpusChunks*. We verdelen de corpus op basis van het argument dat we met de functie zullen meegeven. Deze zal het aantal cores representeren.
+```{r}
+createDTMChunked <- function() {
+
+  dtm_ctrl <- list(
+    tokenize = "words",
+    tolower = FALSE,
+    removePunctuation = FALSE,
+    removeNumbers = FALSE,
+    stopwords = FALSE,
+    stemming = FALSE,
+    dictionary = NULL,
+    bounds = list(global = c(1, Inf)),
+    weighting = weightTf,
+    wordLengths = c(1, Inf)
+  )
+  chunks <- createCorpusChunks(no_chunks = no_cores)
+  cluster <- makeCluster(no_cores,outfile="")
+  registerDoParallel(cluster)
+  dtmList <- 
+    foreach(chunk = chunks,
+            .packages = "tm") %dopar% {
+              DocumentTermMatrix(chunk,control=dtm_ctrl)
+            }
+  stopCluster(cluster)
+  dtm <- do.call(tm:::c.DocumentTermMatrix,dtmList)
+  return(dtm)
+}
+```
+
+## **DFM**
+
+### DFM Sequentieel
+Onderstaande code toont de creatie van een Document-Feature Matrix, deze kan enkel gecreërd worden op een corpus van *Quanteda*.
+Doordat onze cleaning op de Quanteda Corpus streng geweest kan zijn gaan we hier kijken of er zich geen zero rows bevinden => Rijen met enkel nullen in.
+Deze gaan we dan verwijderen voor verdere problemen te voorkomen.
+Cosine clustering zal een fout geven als er zero rows zouden zijn in de DFM, doordat deze geen cosine bewerking kan doen op een zero vector.
+```{r}
+createDFMnormal <- function() {
+  dtm_raw <- dfm(docsCorpusQuan)
+  rowSums(dtm_raw, na.rm = FALSE)
+  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
   
   return(dtm_raw)
+}
+```
+
+### DFM naar DTM
+Onze DFM kan ook omgezet worden naar een DTM voor moest dit handig zijn.
+Zo kunnen er ook functies van de tm-package op de originele DFM uitgevoerd worden.
+```{r}
+createDFMasDTM <- function() {
+  dtm_raw <- dfm(docsCorpusQuan)
+  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+  dtm_raw <- convert(dtm_raw, to = "tm")
+
+  return(dtm_raw)
+}
+```
+
+### DFM Parallel in chunks
+```{r}
+makeCreateDFMCluster <- function() {
+  cl <- makeCluster(no_cores, outfile = "")
+  clusterEvalQ(cl, { library("quanteda") })
+  return(cl)
+}
+```
+
+Voor de DFM parallel te creëren gaan we onze corpus opsplitsen in chunks.
+Dit gaan we doen aan de hand van het aantal rijen in onze doc, die we dan gaan onderverdelen in dezelfde hoeveelheid chunks als dat we cores hebben.
+
+deze subsets gaan we bijhouden in een list, die we achteraf pas gaan samenvoegen.
+Dit is niet de beste manier om te doen, hier kom ik later op terug.
+
+rbind op een DFM zal dus de document ID's gaan samenvoegen op rijen, het voordeel bij DFM is dat als er reeds een bepaalde *feature* in de kolommen staat, dat deze er niet nog is bijgezet zal worden. Hij gaat enkel nieuwe *features* toevoegen als kolommen.
+```{r}
+createDFMChunks <- function() {
+  cl <- makeCreateDFMCluster()
+  no_cores <- detectCores()
+  registerDoParallel(cl)
+  dfmList <- list()
+  docrows <- nrow(docs)
+  dc <- docsCorpusQuan
+  dfmList <-
+    foreach(i = 1:no_cores) %dopar% {
+      og <- round((i - 1) * docrows / no_cores) + 1
+      print(paste(no_cores, docrows))
+      bg <- round(docrows / no_cores * i)
+      print(paste(og, bg))
+      sub <- tokens_subset(dc, id >= og & id <= bg)
+      dfm(sub)
+    }
+  
+  stopCluster(cl)
+  dfmTotal <- dfmList[[1]]
+  
+  for (i in 2:length(dfmList)) {
+    dfmTotal <- rbind(dfmTotal, dfmList[[i]])
+  }
+  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+  
+  return(dfmTotal)
+}
+```
+
+### DTM Parallel in chunks met RBIND
+Zoals hierboven besproken is achteraf alles binden niet de beste methode. Dit is ontzettend traag. 
+Als we rbind meteen meegeven in de foreach zal dit al veel sneller verlopen.
+Hierdoor moeten we geen extra lijst bijhouden.
+DFM blijft hetzelfde werken zoals hierboven uitgelegd.
+```{r}
+createDFMChunksBind <- function() {
+  cl <- makeCreateDFMCluster()
+  no_cores <- detectCores()
+  registerDoParallel(cl)
+  dfmList <- list()
+  docrows <- nrow(docs)
+  dc <- docsCorpusQuan
+  dfmList <-
+    foreach(i = 1:no_cores, .combine = rbind) %dopar% {
+      og <- round((i - 1) * docrows / no_cores) + 1
+      print(paste(no_cores, docrows))
+      bg <- round(docrows / no_cores * i)
+      print(paste(og, bg))
+      sub <- tokens_subset(dc, id >= og & id <= bg)
+      dfm(sub)
+    }
+  
+  stopCluster(cl)
+  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+  
+  return(dfmList)
 }
 ```
 
