@@ -56,13 +56,20 @@ saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
 
 
 
-saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
+# saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
 #saveFunctionData(preProcessParallel_peakRAM, "results/preProcess/parallel") niet uitvoeren
 #saveFunctionData(preProcessDoparallel_peakRAM, "results/preProcess/doparallel") niet uitvoeren
 #saveFunctionData(preProcessCluster_peakRAM,"results/preProcess/cluster" ) niet uitvoeren
-saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
-saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
-saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
+
+# saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
+# saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
+# saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
+
+#saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
+#saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
+#saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
+#saveFunctionData(createDTMChunked_peakRAM, "test/test")
+#saveFunctionData(createDTM_peakRAM, "test/test/test")
 
 
 
