@@ -49,9 +49,11 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
 
 
-#saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
-#saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
-#saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
+saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
+saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
+saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
+
+
 
 
 #saveFunctionData(read_doparallel_foreach_peakRAM, "results/preProcess/test" )

@@ -654,9 +654,15 @@ server <- shinyServer(function(input, output, session){
       }
     }
     else if(input$callFunction == "Corpus"){
-     
+      
+      output$benchMarkSummary <- renderPlotly({
+        benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/microbenchmark.rds")
+        plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9)
+      
+      })
+      
       if(input$callMethodCorpus == "VCorpChunk"){
-         saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
+         #saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
          result <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/Vcorp/peakRAM.rds")
          output$RAMoutputFunctions <- renderPlotly({
            plot_ly(data = result, x = result$Elapsed_Time_sec , y = result$Process_id , type = 'bar' ,
