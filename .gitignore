@@ -52,4 +52,4 @@ vignettes/*.pdf
 *.rda
 *.Rda
 
-
+/DataOpdracht1/results/*
