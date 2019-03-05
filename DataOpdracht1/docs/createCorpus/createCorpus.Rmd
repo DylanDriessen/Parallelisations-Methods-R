@@ -1,15 +1,17 @@
 ---
 title: "Create a corpus"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
-In deze documentatie zal aangetoond worden dat de klassieke TM package sneller kan verlopen door middel van parallellisatie. Hiernaast gaan we gebruik maken van een andere package "Quanteda". 
+In deze documentatie zal aangetoond worden dat de klassieke [tm-package]() sneller kan verlopen door middel van parallellisatie. Hiernaast gaan we gebruik maken van een andere package [Quanteda](https://cran.r-project.org/web/packages/quanteda/quanteda.pdf). 
 
-Quanteda is een multithreaded package dat gebouwd is bovenop stringi, data.table en Matrix.
+[Quanteda](https://cran.r-project.org/web/packages/quanteda/quanteda.pdf) is een multithreaded package dat gebouwd is bovenop [stringi](), [data.table]() en [Matrix]().
 Het is ontworpen voor een snelle methode te zijn voor het gaan naar een corpus van tekst, naar een document by features matrix.
 Quanteda zal gebruik maken van zijn eigen ingebouwde methodes voor het cleanen van de gecreërde tokens in de document by features matrix.
 
-Hieronder ziet u de sequentiele code voor het creëren van een corpus van het document *docs* met behulp van de TM-package.
+Hieronder ziet u de sequentiele code voor het creëren van een corpus van het document *docs* met behulp van de tm-package.
 Hierbij zal ook de nodige cleaning gedaan worden met behulp van tm_map.
 ```{r}
 TMCorpus <- function() {
@@ -175,12 +177,7 @@ Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan als bij tm.
 In *quanteda_options* geven we mee over hoeveel cores hij threads kan gebruiken.
 Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met *quanteda_options()* in de console.
 
-```{r}
-quanteda_options()
-```
 
-
-https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 ```{r}
 QuantedaCorpus <- function() {
   ##### Set Quanteda options
@@ -219,9 +216,5 @@ QuantedaCorpus <- function() {
 }
 ```
 
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-microbenchmark(TMCorpus(), TMCorpusChunk(), TMCorpusChunk1Loop(), QuantedaCorpus(), times = 3)
-```
 
 

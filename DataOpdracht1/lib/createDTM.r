@@ -13,8 +13,7 @@ createDTM <- function() {
 }
 
 makeCreateDFMCluster <- function() {
-  cl <- makeCluster(no_cores, outfile = "")
-  print("clusterEvalQ")
+  cl <- makeCluster(no_cores)
   clusterEvalQ(cl, { library("quanteda") })
   return(cl)
 }
@@ -26,19 +25,14 @@ makeCreateDFMCluster <- function() {
 #####################################################################
 
 createDFMChunks <- function() {
-  print("createCluster")
   cl <- makeCreateDFMCluster()
   no_cores <- detectCores()
   registerDoParallel(cl)
-  print("create List")
   dfmList <- list()
-  print("checking limits & writing dfm's to list")
   docrows <- nrow(docs)
   dc <- docsCorpusQuan
-  print("test")
   dfmList <-
     foreach(i = 1:no_cores) %dopar% {
-      print("in foreach loop")
       og <- round((i - 1) * docrows / no_cores) + 1
       print(paste(no_cores, docrows))
       bg <- round(docrows / no_cores * i)
@@ -48,26 +42,14 @@ createDFMChunks <- function() {
     }
   
   stopCluster(cl)
-  print("cluster stopt")
-  
-  print("remove big Corpus")
-  #rm(docsCorpus)
-  
-  print("write first dfm to total")
   dfmTotal <- dfmList[[1]]
-  
-  print("binding DFM's")
+
   for (i in 2:length(dfmList)) {
     dfmTotal <- rbind(dfmTotal, dfmList[[i]])
   }
-  print("done binding")
   
-  print("Remove zero rows")
   dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
-  
   return(dfmTotal)
-  print("returnd result")
-  
 }
 
 #####################################################################
@@ -78,19 +60,14 @@ createDFMChunks <- function() {
 
 
 createDFMChunksBind <- function() {
-  print("createCluster")
   cl <- makeCreateDFMCluster()
   no_cores <- detectCores()
   registerDoParallel(cl)
-  print("create List")
   dfmList <- list()
-  print("checking limits & writing dfm's to list")
   docrows <- nrow(docs)
   dc <- docsCorpusQuan
-  print("test")
   dfmList <-
     foreach(i = 1:no_cores, .combine = rbind) %dopar% {
-      print("in foreach loop")
       og <- round((i - 1) * docrows / no_cores) + 1
       print(paste(no_cores, docrows))
       bg <- round(docrows / no_cores * i)
@@ -100,16 +77,9 @@ createDFMChunksBind <- function() {
     }
   
   stopCluster(cl)
-  print("cluster stopt")
-  
-  print("remove big Corpus")
-  #rm(docsCorpus)
-  
-  print("Remove zero rows")
   dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
   
   return(dfmList)
-  print("returnd result")
   
 }
 
@@ -120,12 +90,9 @@ createDFMChunksBind <- function() {
 #####################################################################
 
 createDFMnormal <- function() {
-  # CREATE DFM
-  print("create a DFM")
   dtm_raw <- dfm(docsCorpusQuan)
   rowSums(dtm_raw, na.rm = FALSE)
   # dtm_tfidf  <- dfm_weight(dtm_raw)
-  print("Remove zero rows")
   dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
   return(dtm_raw)
 }
@@ -137,15 +104,8 @@ createDFMnormal <- function() {
 #####################################################################
 
 createDFMasDTM <- function() {
-  # CREATE DFM
-  print("create a DFM")
   dtm_raw <- dfm(docsCorpusQuan)
-  
-  #as dtm now
-  print("Remove zero rows")
   dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
-  
-  print("convert to DTM")
   dtm_raw <- convert(dtm_raw, to = "tm")
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   
@@ -159,8 +119,6 @@ createDFMasDTM <- function() {
 #####################################################################
 
 createDTM <- function() {
-  # CREATE DTM (RAW AND WEIGHTED)
-  print("create a DTM")
   dtm_ctrl <- list(
     tokenize = "words",
     tolower = FALSE,
@@ -173,10 +131,8 @@ createDTM <- function() {
     weighting = weightTf,
     wordLengths = c(1, Inf)
   )
-  print("dtm_raw")
   dtm_raw <- DocumentTermMatrix(docsCorpus, control = dtm_ctrl)
   #dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
-  #dtm <- as.matrix(dtm_raw[1:50,1:50])
   
   # SAVE RESULTS
   #save(dtm_raw, dtm_ctrl, file = "dtm_raw.RDa")
@@ -192,9 +148,6 @@ createDTM <- function() {
 #####################################################################
 
 createDTMChunked <- function() {
-  # CREATE DTM (RAW AND WEIGHTED)
-
-  print("create a DTM")
   dtm_ctrl <- list(
     tokenize = "words",
     tolower = FALSE,

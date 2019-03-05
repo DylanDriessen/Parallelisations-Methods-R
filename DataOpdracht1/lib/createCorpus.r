@@ -13,8 +13,7 @@ createCorpusQuan <- function() {
 
 createCorpusCluster <- function() {
   no_cores <- detectCores() - 1 
-  cl <- makeCluster(no_cores, outfile = "")
-  print("clusterEvalQ")
+  cl <- makeCluster(no_cores)
   clusterEvalQ(cl, {
     library("tm")
   })

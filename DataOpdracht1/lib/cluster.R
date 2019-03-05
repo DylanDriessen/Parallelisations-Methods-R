@@ -16,7 +16,7 @@ clusterMatrix <- function() {
 # ==============================================================================
 
 skmeansCluster <- function(){
-  result <- skmeans(DFM2, 50 ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
+  result <- skmeans(DFM, 10 ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
   return(result)
 }
 
@@ -29,15 +29,17 @@ skmeansCluster <- function(){
 skmeansClusterPar10 <- function() {
   #genetic
   set.seed(125)
+  no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores, outfile = "")
   clusterExport(cl, "skmeans")
-  registerDoParallel(cl)
+  clusterEvalQ(cl, library("quanteda"))
   clusterSetRNGStream(cl, iseed = 1236)
+  registerDoParallel(cl)
   nstart <- 8
-  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  nstartv <- rep(floor(nstart / no_cores), no_cores)
   result <-
     clusterApply(cl, nstartv, function(n, x)
-      skmeans(x,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+      skmeans(x, 10, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
   stopCluster(cl)
   return(result)
 }
@@ -59,7 +61,7 @@ skmeansClusterPar100 <- function() {
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)
   result <-
     clusterApply(cl, nstartv, function(n, x)
-      skmeans(x,100,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+      skmeans(x,100,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
   stopCluster(cl)
   return(result)
 }
@@ -83,7 +85,7 @@ skmeansClusterPar1000 <- function() {
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)
   result <-
     clusterApply(cl, nstartv, function(n, x)
-      skmeans(x,1000,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+      skmeans(x,1000,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
   stopCluster(cl)
   return(result)
 }
