@@ -44,6 +44,11 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(read_parlapply_peakRAM , "results/readFiles/parlapply")
 #saveFunctionData(read_sequential_peakRAM, "results/readFiles/sequential")
 
+#saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
+#saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
+#saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
+#saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
+
 #saveFunctionData(createCorpusCluster_peakRAM, "results/createCorpus/Cluster")
 #saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
 #saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
@@ -52,19 +57,17 @@ saveFunctionData <- function(f, fpath) {
 # saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
 # saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
 # saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
-
-
-
-
-#saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
-#saveFunctionData(preProcessParallel_peakRAM, "results/preProcess/parallel") niet uitvoeren
-#saveFunctionData(preProcessDoparallel_peakRAM, "results/preProcess/doparallel") niet uitvoeren
-#saveFunctionData(preProcessCluster_peakRAM,"results/preProcess/cluster" ) niet uitvoeren
-#saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
-#saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
-#saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
 #saveFunctionData(createDTMChunked_peakRAM, "test/test")
 #saveFunctionData(createDTM_peakRAM, "test/test/test")
+
+
+#saveFunctionData(skmeansCluster_peakRAM, "test/cluster")
+#saveFunctionData(skmeansClusterPar_peakRAM, "test/clusterPar")
+#saveFunctionData(skmeansClusterDoPar_peakRAM, "test/clusterDoPar")
+#saveFunctionData(skmeansClusterParIter, "test/clusterParIter")
+#saveFunctionData(skmeansClusterDoParIter, "test/DoParIter")
+
+
 
 
 
