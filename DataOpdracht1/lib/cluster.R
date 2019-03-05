@@ -118,7 +118,8 @@ skmeansClusterDoParIter <- function(k) {
   result <- 
     foreach(n=nstartv,
             #.export= "DFM",
-            .packages = c("skmeans","quanteda")) %dopar% {
+            .packages = c("skmeans","quanteda"),
+            .export = "DFM") %dopar% {
               skmeans(DFM, k ,method = "pclust",control = list(nruns = 8 ,maxiter = n,verbose = TRUE))
             }
   
