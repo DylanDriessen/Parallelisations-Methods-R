@@ -1,5 +1,5 @@
 clusterMatrix <- function() {
-  import(c("biganalytics", "cluster", "skmeans", "kmndirs"))
+  import(c("biganalytics", "cluster", "skmeans"))
   
   # skmeansCluster()
   skmeansClusterPar10()
@@ -31,8 +31,8 @@ skmeansClusterPar10 <- function() {
   set.seed(125)
   no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "skmeans")
-  clusterEvalQ(cl, library("quanteda"))
+  #clusterExport(cl, "skmeans")
+  clusterEvalQ(cl, {library("quanteda");library("skmeans")})
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
   nstart <- 8
@@ -41,7 +41,7 @@ skmeansClusterPar10 <- function() {
     clusterApply(cl, nstartv, function(n, x)
       skmeans(x, 10, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
   stopCluster(cl)
-  return(result)
+  return(result[[1]])
 }
 
 # ==============================================================================
@@ -62,12 +62,13 @@ skmeansClusterDoPar10 <- function() {
   # result <-
   #   clusterApply(cl, nstartv, function(n, x)
   #     skmeans(x,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+
   
   registerDoParallel(cl)
   
   result <- 
     foreach(n=nstartv,
-            #.export= "DFM",
+            .export= "DFM",
             .packages = c("skmeans","quanteda")) %dopar% {
               skmeans(DFM,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
     }
