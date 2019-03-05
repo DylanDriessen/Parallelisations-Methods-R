@@ -8,14 +8,14 @@ preProcess <- function(){
 
 preProcessSequential <- function() {
   #process every line sequentially
-  print("#####################preProcess_seq")
+  #print("#####################preProcess_seq")
   return(preProcessChunk(docs$text))
 }
 
 preProcessParallel <- function() {
   #process every line in parallel with lapply
-  print("#####################preProcess_parallel")
-  cluster <- makeCluster(no_cores, outfile = "")
+  #print("#####################preProcess_parallel")
+  cluster <- makeCluster(no_cores)
   result <- parLapply(cluster,docs$text,preProcessChunk)
   stopCluster(cluster)
   return(unlist(result))
@@ -23,8 +23,8 @@ preProcessParallel <- function() {
 
 preProcessDoparallel <- function() {
   #process every line sequentially with foreach
-  print("#####################preProcess_doparallel")
-  cluster <- makeCluster(no_cores, outfile = "")
+  #print("#####################preProcess_doparallel")
+  cluster <- makeCluster(no_cores)
   registerDoParallel(cluster)
   result <- foreach(doc = docs$text, 
                     .combine = c,
@@ -36,8 +36,8 @@ preProcessDoparallel <- function() {
 
 preProcessCluster <- function() {
   #process every line in parallel with lapply
-  print("#####################preProcess_cluster")
-  cluster <- makeCluster(no_cores, outfile = "" )
+  #print("#####################preProcess_cluster")
+  cluster <- makeCluster(no_cores)
   result <- clusterApply(cl = cluster,x=docs$text,preProcessChunk)
   stopCluster(cluster)
   return(unlist(result))
@@ -45,8 +45,8 @@ preProcessCluster <- function() {
 
 preProcessDoparallelChunked <- function(){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
-  print("#####################preProcess_DevidedInChunks_doparallel")
-  cluster <- makeCluster(no_cores,outfile="")
+  #print("#####################preProcess_DevidedInChunks_doparallel")
+  cluster <- makeCluster(no_cores)
   registerDoSNOW(cluster)
   res <- foreach(chunk = createChunksObjects(no_cores), .combine = c,.export = "preProcessChunk") %dopar% 
     preProcessChunk(chunk)
@@ -56,13 +56,14 @@ preProcessDoparallelChunked <- function(){
 
 preProcessParallelChunked <- function(){
   #Devide descriptions into a number of chunks equal to the number of cores and process the chunks in parallel
-  print("#####################preProcess_DevidedInChunks_parallel")
+  #print("#####################preProcess_DevidedInChunks_parallel")
   
-  cluster <- makeCluster(no_cores,outfile="")
+  cluster <- makeCluster(no_cores)
   res <- parLapply(cluster,createChunksObjects(no_cores),preProcessChunk)
   stopCluster(cluster)
   return(unlist(res))
 }
+
 
 preProcessClusterChunked <- function() {
   ###################################################
@@ -72,8 +73,8 @@ preProcessClusterChunked <- function() {
   #     Check effect van mcapply
   #
   ###################################################
-  print("preProcess_DevidedInChunks_cluster")
-  cluster <- makeCluster(no_cores,outfile="")
+  #print("preProcess_DevidedInChunks_cluster")
+  cluster <- makeCluster(no_cores)
   result <- unlist(clusterApply(cluster, createChunksObjects(no_cores),preProcessChunk)) #Named function gebruikt ca 58% minder ram
   stopCluster(cluster)
   return(result)
@@ -94,7 +95,7 @@ createChunksObjects <- function(noChunks){
   for(i in 1:noChunks){
     og <- round((i-1)*nrow(docs)/noChunks)+1
     bg <- round(nrow(docs)/noChunks*i)
-    print(paste(og," --> ",bg))
+    #print(paste(og," --> ",bg))
     docsList[[i]] <- unlist(docs[og:bg,"text"])
   }
   
@@ -106,7 +107,7 @@ benchmarkPreProcess <- function(times = 1,display=TRUE,save=TRUE){
   
   benchmarkResult <- microbenchmark(preProcessSequential(),
                                     #preProcessParallel(),
-                                    #preProcessParallelChunked(),
+                                    preProcessParallelChunked(),
                                     #preProcessDoparallel(),
                                     preProcessDoparallelChunked(),
                                     #preProcessCluster(),
