@@ -39,30 +39,30 @@ saveFunctionData <- function(f, fpath) {
 }
 
 
-#saveFunctionData(read_doparallel_foreach_peakRAM, "results/readFiles/foreach")
-#saveFunctionData(read_clusterapply_peakRAM, "results/readFiles/clusterapply")
-#saveFunctionData(read_parlapply_peakRAM , "results/readFiles/parlapply")
-#saveFunctionData(read_sequential_peakRAM, "results/readFiles/sequential")
+saveFunctionData(read_doparallel_foreach_peakRAM, "results/readFiles/foreach")
+saveFunctionData(read_clusterapply_peakRAM, "results/readFiles/clusterapply")
+saveFunctionData(read_parlapply_peakRAM , "results/readFiles/parlapply")
+saveFunctionData(read_sequential_peakRAM, "results/readFiles/sequential")
 
-#saveFunctionData(createCorpusCluster_peakRAM, "results/createCorpus/Cluster")
-#saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
-#saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
-
-
-# saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
-# saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
-# saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
+saveFunctionData(createCorpusCluster_peakRAM, "results/createCorpus/Cluster")
+saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
+saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
 
 
+ saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
+ saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
+ saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
 
 
-#saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
+
+
+saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
 #saveFunctionData(preProcessParallel_peakRAM, "results/preProcess/parallel") niet uitvoeren
 #saveFunctionData(preProcessDoparallel_peakRAM, "results/preProcess/doparallel") niet uitvoeren
 #saveFunctionData(preProcessCluster_peakRAM,"results/preProcess/cluster" ) niet uitvoeren
-#saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
-#saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
-#saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
+saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
+saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
+saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
 
 
 
