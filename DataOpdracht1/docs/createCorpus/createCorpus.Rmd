@@ -50,12 +50,13 @@ TMCorpus <- function() {
 
 Voor bovenstaande functie te parallelliseren hebben we *docs* eerst opgesplitst in kleinere delen => chunks.
 Hierdoor kunnen de verschillende cleaning methodes parallel runnen over meerdere chunks.
-We maken hier bij elke functie gebruik van de doParallel:foreach methode.
+We maken hier bij elke functie gebruik van de doParallel::foreach methode.
 
-Eerst creëren we de parallele cluster waarmee we gaan werken. Deze geven we dan mee als cluster in onze methode als *cl*
+Eerst creëren we de parallele cluster waarmee we gaan werken. Deze geven we dan mee als cluster in onze methode als *cl*.
 We maken hier gebruik van makeCluster en clusterEvalQ.
 makeCluster zal de parallele cluster creëren op basis van het aantal cores dat we meegeven. 
-clusterEvalQ zal ervoor zorgen dat het tm-package zal meegegeven worden over elke core. 
+clusterEvalQ zal ervoor zorgen dat het tm-package zal meegegeven worden over elke core.
+
 ```{r}
 createCorpusCluster <- function() {
   no_cores <- detectCores() - 1 
@@ -122,7 +123,7 @@ TMCorpusChunk <- function() {
 
 ```
 
-Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we volgende methode geschreven. We gaan hier terug op basis van het aantal cores onze corpus opsplitsen in chunks, maar hierbij telkens de onder -en bovengrens mee te geven, die zal opgeslagen worden in de lijst *docsList*
+Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we volgende methode geschreven. We gaan hier terug op basis van het aantal cores onze corpus opsplitsen in chunks, maar hierbij telkens de onder -en bovengrens mee te geven, die zal opgeslagen worden in de lijst *docsList*.
 ```{r}
 createDocsChunks <- function(noChunks) {
   docsList <- list()
@@ -172,7 +173,7 @@ Bovenstaande parallellisaties geven al mooie resultaten terug.
 Hierna zijn we gaan zoeken achter andere packages voor text analyse, en kwamen we Quanteda tegen zoals boven uitgelegd.
 
 Quanteda werkt met tokens, elk woord zal hier aanschouwd worden als een token dus.
-Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan als bij tm.
+Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan bij tm.
 
 In *quanteda_options* geven we mee over hoeveel cores hij threads kan gebruiken.
 Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met *quanteda_options()* in de console.
