@@ -63,7 +63,7 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
 #saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
 #saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
-
+saveFunctionData(createDTMChunked_peakRAM, "test")
 
 
 # saveFunctionData_doSNOW <- function(f, fpath) {
