@@ -53,19 +53,18 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
 #saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
 
-
 # saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
 # saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
 # saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
 #saveFunctionData(createDTMChunked_peakRAM, "test/test")
 #saveFunctionData(createDTM_peakRAM, "test/test/test")
 
-
 #saveFunctionData(skmeansCluster_peakRAM, "test/cluster")
 #saveFunctionData(skmeansClusterPar_peakRAM, "test/clusterPar")
 #saveFunctionData(skmeansClusterDoPar_peakRAM, "test/clusterDoPar")
 #saveFunctionData(skmeansClusterParIter, "test/clusterParIter")
 #saveFunctionData(skmeansClusterDoParIter, "test/DoParIter")
+
 
 
 
