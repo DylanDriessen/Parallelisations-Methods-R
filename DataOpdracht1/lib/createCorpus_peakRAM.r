@@ -57,7 +57,7 @@ TMCorpusChunk1Loop_peakRAM <- function() {
 ##
 #####################################################################
 
-TMCorpusChunk <- function() {
+TMCorpusChunk_peakRAM <- function() {
   t <- Sys.time()
   df <- peakRAM(TMCorpusChunk())
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
@@ -70,7 +70,7 @@ TMCorpusChunk <- function() {
 ##
 #####################################################################
 
-TMCorpus <- function() {
+TMCorpus_peakRAM <- function() {
   t <- Sys.time()
   df <- peakRAM(TMCorpus())
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())

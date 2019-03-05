@@ -49,9 +49,10 @@ saveFunctionData <- function(f, fpath) {
 #saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
 #saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
 
-#saveFunctionData(createCorpusCluster_peakRAM, "results/createCorpus/Cluster")
-#saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
-#saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
+#saveFunctionData(TMCorpusChunk1Loop_peakRAM, "results/createCorpus/TMForeachOneLoop")
+#saveFunctionData(TMCorpusChunk_peakRAM, "results/createCorpus/TMCorpusChunk")
+#saveFunctionData(TMCorpus_peakRAM, "results/createCorpus/TMCorpus")
+#saveFunctionData(QuantedaCorpus_peakRAM, "results/createCorpus/QuanR")
 
 # saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
 # saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
