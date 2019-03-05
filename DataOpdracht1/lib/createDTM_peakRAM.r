@@ -1,7 +1,5 @@
 source("lib/createDTM.r")
 
-
-
 #####################################################################
 ##
 ##             Document-Feature Matrix Parallel Chunks
@@ -54,9 +52,9 @@ createDfmChunks_peakRAM <- function() {
 ##
 #####################################################################
 
-createDFM_peakRAM <- function() {
+createDFMnormal_peakRAM <- function() {
   t <- Sys.time()
-  df <- peakRAM(createDFM())
+  df <- peakRAM(createDFMnormal())
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
 }
 
@@ -72,14 +70,67 @@ createDFMasDTM_peakRAM <- function() {
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
 }
 
+
 #####################################################################
 ##
 ##                     Document-Term Matrix
 ##
 #####################################################################
 
-createDTMC <- function() {
+createDTM_peakRAM <- function() {
   t <- Sys.time()
-  df <- peakRAM(createDTMC())
+  df <- peakRAM(createDTM())
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
+}
+
+#####################################################################
+##
+##                     Document-Term Matrix Chunked
+##
+#####################################################################
+
+createDTMChunked_peakRAM <- function() {
+  # CREATE DTM (RAW AND WEIGHTED)
+  
+  print("create a DTM")
+  dtm_ctrl <- list(
+    tokenize = "words",
+    tolower = FALSE,
+    removePunctuation = FALSE,
+    removeNumbers = FALSE,
+    stopwords = FALSE,
+    stemming = FALSE,
+    dictionary = NULL,
+    bounds = list(global = c(1, Inf)),
+    weighting = weightTf,
+    wordLengths = c(1, Inf)
+  )
+  
+  chunks <- createCorpusChunks(no_chunks = no_cores)
+  
+  cluster <- makeCluster(no_cores,outfile="")
+  registerDoParallel(cluster)
+  
+  dtmpramList <- 
+    foreach(chunk = chunks,
+            .packages = "tm") %dopar% {
+              t <- Sys.time()
+              pram <- peakRAM(res <-DocumentTermMatrix(chunk,control=dtm_ctrl))
+              list(cbind(Process_Id = Sys.getpid(), pram[,2:4], Start_Time = t, End_Time = Sys.time()), res)
+            }
+  stopCluster(cluster)
+  
+  #get peakram from result list
+  pram <- dtmpramList[[1]][[1]]
+  for (i in 2:length(dtmpramList))
+    pram <- rbind(pram, dtmpramList[[i]][[1]])
+  
+  #get dfm from result list
+  dtmList <- list()
+  for (i in 1:length(dtmpramList)) 
+    dtmList[i] <- dtmpramList[[i]][[2]]
+  
+  dtm <- do.call(tm:::c.DocumentTermMatrix,dtmList)
+  
+  return(pram)
 }

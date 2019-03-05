@@ -33,8 +33,8 @@ skmeansClusterPar <- function(k) {
   set.seed(125)
   no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "skmeans")
-  clusterEvalQ(cl, library("quanteda"))
+  #clusterExport(cl, "skmeans")
+  clusterEvalQ(cl, {library("quanteda");library("skmeans")})
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
   nstart <- 8
@@ -65,7 +65,7 @@ skmeansClusterDoPar <- function(k) {
   
   result <- 
     foreach(n=nstartv,
-            #.export= "DFM",
+            .export= "DFM",
             .packages = c("skmeans","quanteda")) %dopar% {
               skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
     }
