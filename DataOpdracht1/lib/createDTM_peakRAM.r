@@ -109,6 +109,7 @@ createDTMChunked_peakRAM <- function() {
   chunks <- createCorpusChunks(no_chunks = no_cores)
   
   cluster <- makeCluster(no_cores,outfile="")
+  clusterEvalQ(cluster, library("peakRAM"))
   registerDoParallel(cluster)
   
   dtmpramList <- 
@@ -128,7 +129,7 @@ createDTMChunked_peakRAM <- function() {
   #get dfm from result list
   dtmList <- list()
   for (i in 1:length(dtmpramList)) 
-    dtmList[i] <- dtmpramList[[i]][[2]]
+    dtmList[[i]] <- dtmpramList[[i]][[2]]
   
   dtm <- do.call(tm:::c.DocumentTermMatrix,dtmList)
   
