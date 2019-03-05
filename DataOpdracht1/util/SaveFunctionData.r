@@ -38,6 +38,12 @@ saveFunctionData <- function(f, fpath) {
   png(paste0(fpath, '/snow_plot.png')); plot(snowtime); dev.off()
 }
 
+
+#saveFunctionData(read_doparallel_foreach_peakRAM, "results/readFiles/foreach")
+#saveFunctionData(read_clusterapply_peakRAM, "results/readFiles/clusterapply")
+#saveFunctionData(read_parlapply_peakRAM , "results/readFiles/parlapply")
+#saveFunctionData(read_sequential_peakRAM, "results/readFiles/sequential")
+
 #saveFunctionData(createCorpusCluster_peakRAM, "results/createCorpus/Cluster")
 #saveFunctionData(VCorp_peakRAM, "results/createCorpus/Vcorp")
 #saveFunctionData(Quan_peakRAM, "results/createCorpus/Quan")
@@ -46,6 +52,8 @@ saveFunctionData <- function(f, fpath) {
 saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
 saveFunctionData(createDFM_peakRAM, "results/createDTM/dfm")
 saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
+
+
 
 
 #saveFunctionData(read_doparallel_foreach_peakRAM, "results/preProcess/test" )

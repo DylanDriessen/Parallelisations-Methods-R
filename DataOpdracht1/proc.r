@@ -9,7 +9,7 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/medium/"; ofn <- "ps18b_abstr"; batches <- 5
 
 no_cores <- detectCores()
 
@@ -57,6 +57,7 @@ docs$text <- preProcessClusterChunked()
 
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
+docsCorpusQuan <- createCorpusQuan()
 #docsCorpus2 <- createCorpus()
 #microbenchmark(VCorpChunk(), Quan(), VCorpChunk1Loop(), times = 2)
 #microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
@@ -75,7 +76,8 @@ docsCorpus <- createCorpus()
 # ==============================================================================
 
 source("lib/createDTM.r")
-DFM2 <- createDTM()
+DFM <- createDFM()
+DTM <- createDTM()
 #microbenchmark(createDFM(), createDfmChunks(), createDfmChunksBind(), times = 5)
 
 # ==============================================================================
@@ -96,8 +98,8 @@ Voca <- deriveVoc()
 # ==============================================================================
 
 source("lib/cluster.R")
-cluster2 <- clusterMatrix()
-
+cluster <- clusterMatrix()
+#microbenchmark(skmeansCluster(), skmeansClusterPar10(), skmeansClusterPar100(), times = 1)
 
 # SAVE RESULTS
 save(voc, file="voc.RDa")

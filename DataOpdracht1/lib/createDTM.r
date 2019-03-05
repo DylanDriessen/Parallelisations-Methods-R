@@ -1,11 +1,15 @@
+createDFM <- function() {
+  # CREATE
+  #createDFMasDTM()
+  #createDFMChunks()
+  createDFMnormal()
+  #createDFMChunksBind()
+}
+
 createDTM <- function() {
   # CREATE
-  createDFMasDTM()
-  #createDfmChunks()
-  #createDTMC()
-  #createDTMCChunked()
-  #createDFM()
-  #createDfmChunksBind()
+  #createDTM()
+  createDTMChunked()
 }
 
 makeCreateDTMCluster <- function() {
@@ -21,7 +25,7 @@ makeCreateDTMCluster <- function() {
 ##
 #####################################################################
 
-createDfmChunks <- function() {
+createDFMChunks <- function() {
   print("createCluster")
   cl <- makeCreateDTMCluster()
   no_cores <- detectCores()
@@ -30,7 +34,7 @@ createDfmChunks <- function() {
   dfmList <- list()
   print("checking limits & writing dfm's to list")
   docrows <- nrow(docs)
-  dc <- docsCorpus
+  dc <- docsCorpusQuan
   print("test")
   dfmList <-
     foreach(i = 1:no_cores) %dopar% {
@@ -57,6 +61,10 @@ createDfmChunks <- function() {
     dfmTotal <- rbind(dfmTotal, dfmList[[i]])
   }
   print("done binding")
+  
+  print("Remove zero rows")
+  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+  
   return(dfmTotal)
   print("returnd result")
   
@@ -69,7 +77,7 @@ createDfmChunks <- function() {
 #####################################################################
 
 
-createDfmChunksBind <- function() {
+createDFMChunksBind <- function() {
   print("createCluster")
   cl <- makeCreateDTMCluster()
   no_cores <- detectCores()
@@ -78,7 +86,7 @@ createDfmChunksBind <- function() {
   dfmList <- list()
   print("checking limits & writing dfm's to list")
   docrows <- nrow(docs)
-  dc <- docsCorpus
+  dc <- docsCorpusQuan
   print("test")
   dfmList <-
     foreach(i = 1:no_cores, .combine = rbind) %dopar% {
@@ -97,6 +105,9 @@ createDfmChunksBind <- function() {
   print("remove big Corpus")
   #rm(docsCorpus)
   
+  print("Remove zero rows")
+  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+  
   return(dfmList)
   print("returnd result")
   
@@ -108,12 +119,13 @@ createDfmChunksBind <- function() {
 ##
 #####################################################################
 
-createDFM <- function() {
+createDFMnormal <- function() {
   # CREATE DFM
   print("create a DFM")
-  dtm_raw <- dfm(docsCorpus)
+  dtm_raw <- dfm(docsCorpusQuan)
   rowSums(dtm_raw, na.rm = FALSE)
   # dtm_tfidf  <- dfm_weight(dtm_raw)
+  print("Remove zero rows")
   dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
   return(dtm_raw)
 }
@@ -127,11 +139,16 @@ createDFM <- function() {
 createDFMasDTM <- function() {
   # CREATE DFM
   print("create a DFM")
-  dtm_raw <- dfm(docsCorpus)
+  dtm_raw <- dfm(docsCorpusQuan)
+  
   #as dtm now
+  print("Remove zero rows")
+  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+  
   print("convert to DTM")
   dtm_raw <- convert(dtm_raw, to = "tm")
   dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  
   return(dtm_raw)
 }
 
@@ -141,7 +158,7 @@ createDFMasDTM <- function() {
 ##
 #####################################################################
 
-createDTMC <- function() {
+createDTM <- function() {
   # CREATE DTM (RAW AND WEIGHTED)
   print("create a DTM")
   dtm_ctrl <- list(
@@ -174,7 +191,7 @@ createDTMC <- function() {
 ##
 #####################################################################
 
-createDTMCChunked <- function() {
+createDTMChunked <- function() {
   # CREATE DTM (RAW AND WEIGHTED)
 
   print("create a DTM")
