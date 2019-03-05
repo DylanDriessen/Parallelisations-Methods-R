@@ -46,6 +46,38 @@ skmeansClusterPar10 <- function() {
 
 # ==============================================================================
 #
+#                                 SKMEANS doParallel 10
+#
+# ==============================================================================
+
+skmeansClusterDoPar10 <- function() {
+  #genetic
+  set.seed(125)
+  cl <- makeCluster(no_cores, outfile = "")
+  ##clusterExport(cl, "skmeans")
+  registerDoParallel(cl)
+  clusterSetRNGStream(cl, iseed = 1236)
+  nstart <- 8
+  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  # result <-
+  #   clusterApply(cl, nstartv, function(n, x)
+  #     skmeans(x,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
+  
+  registerDoParallel(cl)
+  
+  result <- 
+    foreach(n=nstartv,
+            #.export= "DFM",
+            .packages = c("skmeans","quanteda")) %dopar% {
+              skmeans(DFM,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
+    }
+  
+  stopCluster(cl)
+  return(result[[1]])
+}
+
+# ==============================================================================
+#
 #                                 SKMEANS Parallel 100
 #
 # ==============================================================================
