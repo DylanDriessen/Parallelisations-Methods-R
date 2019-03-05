@@ -1,11 +1,13 @@
 clusterMatrix <- function() {
-  import(c("biganalytics", "cluster", "skmeans", "kmndirs"))
+  import(c("biganalytics", "cluster", "skmeans"))
   
-  # skmeansCluster()
-  skmeansClusterPar10()
-  # skmeansClusterPar100()
-  # 1000 is teveel momenteel -> crash
-  # skmeansClusterPar1000()
+  k <- 10
+  
+  # skmeansCluster(k)
+  skmeansClusterPar(k)
+  # skmeansClusterDoPar(k)
+  # skmeansClusterParIter(k)
+  # skmeansClusterDoParIter(k)
   
 }
 
@@ -15,18 +17,18 @@ clusterMatrix <- function() {
 #
 # ==============================================================================
 
-skmeansCluster <- function(){
-  result <- skmeans(DFM, 10 ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
+skmeansCluster <- function(k){
+  result <- skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
   return(result)
 }
 
 # ==============================================================================
 #
-#                                 SKMEANS Parallel 10
+#                                 SKMEANS Parallel 
 #
 # ==============================================================================
 
-skmeansClusterPar10 <- function() {
+skmeansClusterPar <- function(k) {
   #genetic
   set.seed(125)
   no_cores <- detectCores() - 1
@@ -39,18 +41,18 @@ skmeansClusterPar10 <- function() {
   nstartv <- rep(floor(nstart / no_cores), no_cores)
   result <-
     clusterApply(cl, nstartv, function(n, x)
-      skmeans(x, 10, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
+      skmeans(x, k, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
   stopCluster(cl)
-  return(result)
+  return(result[[1]])
 }
 
 # ==============================================================================
 #
-#                                 SKMEANS doParallel 10
+#                                 SKMEANS doParallel 
 #
 # ==============================================================================
 
-skmeansClusterDoPar10 <- function() {
+skmeansClusterDoPar <- function(k) {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
@@ -59,17 +61,13 @@ skmeansClusterDoPar10 <- function() {
   clusterSetRNGStream(cl, iseed = 1236)
   nstart <- 8
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)
-  # result <-
-  #   clusterApply(cl, nstartv, function(n, x)
-  #     skmeans(x,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM2)
-  
   registerDoParallel(cl)
   
   result <- 
     foreach(n=nstartv,
             #.export= "DFM",
             .packages = c("skmeans","quanteda")) %dopar% {
-              skmeans(DFM,10,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
+              skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
     }
   
   stopCluster(cl)
@@ -78,46 +76,52 @@ skmeansClusterDoPar10 <- function() {
 
 # ==============================================================================
 #
-#                                 SKMEANS Parallel 100
+#                         SKMEANS  clusterApply Iterations
 #
 # ==============================================================================
 
-skmeansClusterPar100 <- function() {
+skmeansClusterParIter <- function(k) {
   #genetic
   set.seed(125)
+  no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores, outfile = "")
   clusterExport(cl, "skmeans")
-  registerDoParallel(cl)
+  clusterEvalQ(cl, library("quanteda"))
   clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 8
-  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  registerDoParallel(cl)
+  nstart <- 10
+  nstartv <- rep(floor(nstart / no_cores), no_cores)
   result <-
     clusterApply(cl, nstartv, function(n, x)
-      skmeans(x,100,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
+      skmeans(x, k, method = "pclust", control = list(nruns = 8 ,maxiter = n,verbose = TRUE)), DFM)
   stopCluster(cl)
-  return(result)
+  return(result[[1]])
 }
 
 # ==============================================================================
 #
-#                           SKMEANS Parallel 1000
+#                         SKMEANS doParallel Iterations
 #
 # ==============================================================================
 
-# 1000 is teveel momenteel -> crash
-
-skmeansClusterPar1000 <- function() {
+skmeansClusterDoParIter <- function(k) {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "skmeans")
+  ##clusterExport(cl, "skmeans")
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 8
+  nstart <- 10
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)
-  result <-
-    clusterApply(cl, nstartv, function(n, x)
-      skmeans(x,1000,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
+  registerDoParallel(cl)
+  
+  result <- 
+    foreach(n=nstartv,
+            #.export= "DFM",
+            .packages = c("skmeans","quanteda")) %dopar% {
+              skmeans(DFM, k ,method = "pclust",control = list(nruns = 8 ,maxiter = n,verbose = TRUE))
+            }
+  
   stopCluster(cl)
-  return(result)
+  return(result[[1]])
 }
