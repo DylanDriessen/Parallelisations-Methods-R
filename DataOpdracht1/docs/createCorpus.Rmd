@@ -1,0 +1,227 @@
+---
+title: "Create a corpus"
+output: html_notebook
+---
+
+In deze documentatie zal aangetoond worden dat de klassieke TM package sneller kan verlopen door middel van parallellisatie. Hiernaast gaan we gebruik maken van een andere package "Quanteda". 
+
+Quanteda is een multithreaded package dat gebouwd is bovenop stringi, data.table en Matrix.
+Het is ontworpen voor een snelle methode te zijn voor het gaan naar een corpus van tekst, naar een document by features matrix.
+Quanteda zal gebruik maken van zijn eigen ingebouwde methodes voor het cleanen van de gecreërde tokens in de document by features matrix.
+
+Hieronder ziet u de sequentiele code voor het creëren van een corpus van het document *docs* met behulp van de TM-package.
+Hierbij zal ook de nodige cleaning gedaan worden met behulp van tm_map.
+```{r}
+TMCorpus <- function() {
+  crp <- VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
+  
+  ##### Define general function to replace strings in corpus
+  (crp.replacePattern <- content_transformer(function(x, pattern, replace) gsub(pattern, replace, x)))
+  
+  ##### Clean unicode characters
+  ##### Remove graphical characters
+  crp <- tm_map(crp, crp.replacePattern, "[^[:graph:]]", " ")
+  
+  ##### To lower
+  crp <- tm_map(crp, content_transformer(tolower))
+  
+  ##### Stopword removal
+  crp <- tm_map(crp, removeWords, c(stopwords("SMART")))
+  
+  ##### Stemming
+  crp <- tm_map(crp, stemDocument, language = "porter")
+  
+  ##### All numbers (including numbers as part of a alphanumerical term)
+  crp <- tm_map(crp, removeNumbers)
+  
+  ##### Punctuation
+  crp <- tm_map(crp, removePunctuation, preserve_intra_word_dashes = TRUE)
+  
+  ##### Whitespace
+  crp <- tm_map(crp, stripWhitespace)
+  
+  # SAVE RESULTS
+  save(crp, file = "crp.RDa")
+  return(crp)
+}
+```
+
+Voor bovenstaande functie te parallelliseren hebben we *docs* eerst opgesplitst in kleinere delen => chunks.
+Hierdoor kunnen de verschillende cleaning methodes parallel runnen over meerdere chunks.
+We maken hier bij elke functie gebruik van de doParallel:foreach methode.
+
+Eerst creëren we de parallele cluster waarmee we gaan werken. Deze geven we dan mee als cluster in onze methode als *cl*
+We maken hier gebruik van makeCluster en clusterEvalQ.
+makeCluster zal de parallele cluster creëren op basis van het aantal cores dat we meegeven. 
+clusterEvalQ zal ervoor zorgen dat het tm-package zal meegegeven worden over elke core. 
+```{r}
+createCorpusCluster <- function() {
+  no_cores <- detectCores() - 1 
+  cl <- makeCluster(no_cores, outfile = "")
+  clusterEvalQ(cl, {
+    library("tm")
+  })
+  return(cl)
+}
+```
+
+In TMCorpusChunk gaan we elke cleaning methode parallelliseren over chunks van de corpus die we eerst zullen creëren.
+We creëren deze chunks op basis van het aantal rijen in de corpus die we dan delen door het aantal cores dat we ter beschikking stellen.
+Doordat de document id's niet opeenvolgend zijn hebben we in docs een extra kolom aangemaakt *id*. Hierop baseren we ons voor het verdelen in chunks.
+Deze resultaten gaan we dan terug combineren tot 1 grote corpus.
+```{r}
+TMCorpusChunk <- function() {
+  crp <- VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
+  cl <- createCorpusCluster()
+  ##### Define general function to replace strings in corpus
+  (crp.replacePattern <- content_transformer(function(x, pattern, replace) gsub(pattern, replace, x)))
+  
+  ids <- 1:length(crp)
+  no_cores <- detectCores() - 1
+  chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
+  
+  registerDoParallel(cl)
+  
+  ##### Clean unicode characters
+  ##### Remove graphical characters
+  crp <- foreach(chunk = chunks, .combine = c) %dopar% 
+    tm_map(crp[chunk], crp.replacePattern, "[^[:graph:]]", " ")
+  
+  ##### To lower
+  crp <- foreach(chunk = chunks, .combine = c) %dopar%
+    tm_map(crp[chunk], content_transformer(tolower))
+
+  ##### Stopword removal
+  crp <- foreach(chunk = chunks, .combine = c) %dopar%
+    tm_map(crp[chunk], removeWords, c(stopwords("SMART")))
+
+  ##### Stemming
+  crp <- foreach(chunk = chunks, .combine = c) %dopar%
+    tm_map(crp[chunk], stemDocument, language = "porter")
+  
+  ##### All numbers (including numbers as part of a alphanumerical term)
+  crp <- foreach(chunk = chunks, .combine = c) %dopar%
+    tm_map(crp[chunk], removeNumbers)
+  
+  ##### Punctuation
+  crp <- foreach(chunk = chunks, .combine = c) %dopar%
+    tm_map(crp[chunk], removePunctuation, preserve_intra_word_dashes = TRUE)
+  
+  ##### Whitespace
+  crp <- foreach(chunk = chunks, .combine = c) %dopar%
+    tm_map(crp[chunk], stripWhitespace)
+  
+  stopCluster(cl)
+  
+  # SAVE RESULTS
+  save(crp, file = "crp.RDa")
+  return(crp)
+}
+
+```
+
+Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we volgende methode geschreven. We gaan hier terug op basis van het aantal cores onze corpus opsplitsen in chunks, maar hierbij telkens de onder -en bovengrens mee te geven, die zal opgeslagen worden in de lijst *docsList*
+```{r}
+createDocsChunks <- function(noChunks) {
+  docsList <- list()
+  for (i in 1:noChunks) {
+    og <- round((i - 1) * nrow(docs) / noChunks) + 1
+    bg <- round(nrow(docs) / noChunks * i)
+    print(paste(og, " --> ", bg))
+    docsList[[i]] <- docs[og:bg, ]
+  }
+  
+  return(docsList)
+}
+```
+
+Parallellisatie hierboven leek ons nog niet efficiënt genoeg doordat er meerdere foreach terugkeren. We hebben daarom alle cleaning in 1 loop gestoken die op basis van het aantal cores tegelijk zullen lopen.
+
+Hier passen we ook meteen onze nieuwe methode *createDocsChunks* voor het verdelen in chunks in toe.
+```{r}
+TMCorpusChunk1Loop <- function() {
+  crp.replacePattern <-
+    content_transformer(function(x, pattern, replace)
+      gsub(pattern, replace, x))
+  
+  docsChunks <- createDocsChunks(no_cores)
+  cl <- createCorpusCluster()
+  registerDoParallel(cl)
+  
+  crp <- foreach(docsChunk = docsChunks, .combine = c) %dopar% {
+                   crpChunk <- VCorpus(DataframeSource(docsChunk), readerControl = list(language = "en"))
+                   tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
+                   tm_map(crpChunk, content_transformer(tolower))
+                   tm_map(crpChunk, removeWords, c(stopwords("SMART")))
+                   tm_map(crpChunk, stemDocument, language = "porter")
+                   tm_map(crpChunk, removeNumbers)
+                   tm_map(crpChunk, removePunctuation, preserve_intra_word_dashes = TRUE)
+                   tm_map(crpChunk, stripWhitespace)
+                 }
+  stopCluster(cl)
+  
+  # SAVE RESULTS
+  save(crp, file = "crp.RDa")
+  return(crp)
+}
+```
+
+Bovenstaande parallellisaties geven al mooie resultaten terug. 
+Hierna zijn we gaan zoeken achter andere packages voor text analyse, en kwamen we Quanteda tegen zoals boven uitgelegd.
+
+Quanteda werkt met tokens, elk woord zal hier aanschouwd worden als een token dus.
+Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan als bij tm.
+
+In *quanteda_options* geven we mee over hoeveel cores hij threads kan gebruiken.
+Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met *quanteda_options()* in de console.
+
+```{r}
+quanteda_options()
+```
+
+
+https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
+```{r}
+QuantedaCorpus <- function() {
+  ##### Set Quanteda options
+  quanteda_options(threads = parallel::detectCores() - 1, verbose = TRUE)
+  
+  ##### Create Quanteda Corpus
+  crpT <- corpus(docs)
+  
+  #Quanteda tokens
+  crpT <- tokens(crpT, remove_punct = TRUE, remove_numbers = TRUE)
+  
+  #Remove symbols
+  crpT <- tokens_remove(crpT, "\\p{Z}", valuetype = "regex")
+  crpT <- tokens(crpT, remove_symbols = TRUE)
+  
+  ##### Stemming
+  crpT <- tokens_wordstem(crpT)
+  
+  ##### Stopword removal
+  crpT <- tokens_select(crpT, stopwords(source = "smart"), selection = 'remove')
+  
+  ##### To lower
+  crpT <- tokens_tolower(crpT)
+  
+  ##### Clean unicode characters
+  ##### Remove graphical characters
+  crpT <- tokens_remove(crpT, "*#*")
+  crpT <- tokens_remove(crpT, "*-*")
+  crpT <- tokens_remove(crpT, "*.*")
+  crpT <- tokens_remove(crpT, "*,*")
+  crpT <- tokens_remove(crpT, "*\\d*")
+  
+  # SAVE RESULTS
+  save(crpT, file = "crpT.RDa")
+  return(crpT)
+}
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+microbenchmark(TMCorpus(), TMCorpusChunk(), TMCorpusChunk1Loop(), QuantedaCorpus(), times = 3)
+```
+
+
