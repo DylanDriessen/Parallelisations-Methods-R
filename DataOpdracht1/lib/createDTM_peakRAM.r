@@ -109,6 +109,7 @@ createDTMChunked_peakRAM <- function() {
   chunks <- createCorpusChunks(no_chunks = no_cores)
   
   cluster <- makeCluster(no_cores,outfile="")
+  clusterEvalQ(cluster, library("peakRAM"))
   registerDoParallel(cluster)
   
   dtmpramList <- 
