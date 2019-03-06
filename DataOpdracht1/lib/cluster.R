@@ -17,7 +17,7 @@ clusterMatrix <- function() {
 #
 # ==============================================================================
 
-skmeansCluster <- function(k){
+skmeansCluster <- function(k,nstarts,maxiter){
   result <- skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
   return(result)
 }
@@ -28,7 +28,7 @@ skmeansCluster <- function(k){
 #
 # ==============================================================================
 
-skmeansClusterPar <- function(k) {
+skmeansClusterPar <- function(k,nstarts,maxiter) {
   #genetic
   set.seed(125)
   no_cores <- detectCores() - 1
@@ -37,11 +37,11 @@ skmeansClusterPar <- function(k) {
   clusterEvalQ(cl, {library("quanteda");library("skmeans")})
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
-  nstart <- 8
-  nstartv <- nstartv <- divideNStarts(nstarts = nstart,ncores = no_cores)
+  #nstart <- 8
+  nstartv <- divideNStarts(nstarts = nstarts,ncores = no_cores)
   result <-
-    clusterApply(cl, nstartv, function(n, x)
-      skmeans(x, k, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
+    clusterApply(cl, nstartv, function(n, dfm,maxiter)
+      skmeans(dfm, k, method = "pclust", control = list(nruns = n ,maxiter = maxiter,verbose = TRUE)), DFM, maxiter)
   stopCluster(cl)
   return(result[[1]])
 }
@@ -52,22 +52,22 @@ skmeansClusterPar <- function(k) {
 #
 # ==============================================================================
 
-skmeansClusterDoPar <- function(k) {
+skmeansClusterDoPar <- function(k,nstarts,maxiter) {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
   ##clusterExport(cl, "skmeans")
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 8
-  nstartv <- divideNStarts(nstarts = nstart,ncores = no_cores)
+  #nstart <- 8
+  nstartv <- divideNStarts(nstarts = nstarts,ncores = no_cores)
   registerDoParallel(cl)
   
   result <- 
     foreach(n=nstartv,
             .export= "DFM",
             .packages = c("skmeans","quanteda")) %dopar% {
-              skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
+              skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = maxiter,verbose = TRUE))
     }
   
   stopCluster(cl)
@@ -80,7 +80,7 @@ skmeansClusterDoPar <- function(k) {
 #
 # ==============================================================================
 
-skmeansClusterParIter <- function(k) {
+skmeansClusterParIter <- function(k,nstarts,maxiter) {
   #genetic
   set.seed(125)
   no_cores <- detectCores() - 1
@@ -89,11 +89,12 @@ skmeansClusterParIter <- function(k) {
   clusterEvalQ(cl, library("quanteda"))
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
-  nstart <- 10
-  nstartv <- rep(floor(nstart / no_cores), no_cores)
+  #nstart <- 10
+  #nstartv <- rep(floor(nstart / no_cores), no_cores)
+  niterv <- divideNStarts(maxiter,ncores = no_cores)
   result <-
-    clusterApply(cl, nstartv, function(n, x)
-      skmeans(x, k, method = "pclust", control = list(nruns = 8 ,maxiter = n,verbose = TRUE)), DFM)
+    clusterApply(cl, niterv, function(n, x)
+      skmeans(x, k, method = "pclust", control = list(nruns = nstarts ,maxiter = n,verbose = TRUE)), DFM)
   stopCluster(cl)
   return(result[[1]])
 }
@@ -104,23 +105,23 @@ skmeansClusterParIter <- function(k) {
 #
 # ==============================================================================
 
-skmeansClusterDoParIter <- function(k) {
+skmeansClusterDoParIter <- function(k,nstarts,maxiter) {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
   ##clusterExport(cl, "skmeans")
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 10
-  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  #nstart <- 10
+  niterv <- divideNStarts(maxiter,no_cores)
   registerDoParallel(cl)
   
   result <- 
-    foreach(n=nstartv,
+    foreach(n=niterv,
             #.export= "DFM",
             .packages = c("skmeans","quanteda"),
             .export = "DFM") %dopar% {
-              skmeans(DFM, k ,method = "pclust",control = list(nruns = 8 ,maxiter = n,verbose = TRUE))
+              skmeans(DFM, k ,method = "pclust",control = list(nruns = nstarts ,maxiter = n,verbose = TRUE))
             }
   
   stopCluster(cl)
