@@ -5,13 +5,13 @@ output:
     df_print: paged
 ---
 
-In deze documentatie zal aangetoond worden dat de klassieke [tm-package]() sneller kan verlopen door middel van parallellisatie. Hiernaast gaan we gebruik maken van een andere package [Quanteda](https://cran.r-project.org/web/packages/quanteda/quanteda.pdf). 
+In deze documentatie tonen we aan dat de klassieke [tm-package]() sneller verloopt door middel van parallellisatie. Hiernaast maken we gebruik van een andere package [Quanteda](https://cran.r-project.org/web/packages/quanteda/quanteda.pdf). 
 
 [Quanteda](https://cran.r-project.org/web/packages/quanteda/quanteda.pdf) is een multithreaded package dat gebouwd is bovenop [stringi](), [data.table]() en [Matrix]().
-Het is ontworpen voor een snelle methode te zijn voor het gaan naar een corpus van tekst, naar een document by features matrix.
-Quanteda zal gebruik maken van zijn eigen ingebouwde methodes voor het cleanen van de gecreërde tokens in de document by features matrix.
+Het is ontworpen als snelle methode voor het omzetten van een corpus van tekst, naar een document by features matrix.
+Quanteda zal gebruik maken van zijn eigen ingebouwde methodes om de gecreërde tokens in de document by features matrix te cleanen.
 
-Hieronder ziet u de sequentiele code voor het creëren van een corpus van het document *docs* met behulp van de tm-package.
+Hieronder ziet u de sequentiele code om een corpus te creëren van het document *docs* met behulp van de tm-package.
 Hierbij zal ook de nodige cleaning gedaan worden met behulp van tm_map.
 ```{r}
 TMCorpus <- function() {
@@ -48,14 +48,14 @@ TMCorpus <- function() {
 }
 ```
 
-Voor bovenstaande functie te parallelliseren hebben we *docs* eerst opgesplitst in kleinere delen => chunks.
+Om de bovenstaande functie te parallelliseren splitsen we *docs* eerst op in kleinere delen (chunks).
 Hierdoor kunnen de verschillende cleaning methodes parallel runnen over meerdere chunks.
-We maken hier bij elke functie gebruik van de doParallel::foreach methode.
+We maken bij elke functie gebruik van de doParallel::foreach methode.
 
-Eerst creëren we de parallele cluster waarmee we gaan werken. Deze geven we dan mee als cluster in onze methode als *cl*.
-We maken hier gebruik van makeCluster en clusterEvalQ.
-makeCluster zal de parallele cluster creëren op basis van het aantal cores dat we meegeven. 
-clusterEvalQ zal ervoor zorgen dat het tm-package zal meegegeven worden over elke core.
+Eerst creëren we de parallele cluster. Deze geven we dan mee in onze methode als *cl*.
+We maken hier gebruik van 'makeCluster' en 'clusterEvalQ'.
+'makeCluster' maakt de parallele cluster aan op basis van het aantal cores dat we meegeven. 
+Met 'clusterEvalQ' laden we de tm-package in op elke core.
 
 ```{r}
 createCorpusCluster <- function() {
@@ -68,10 +68,11 @@ createCorpusCluster <- function() {
 }
 ```
 
-In TMCorpusChunk gaan we elke cleaning methode parallelliseren over chunks van de corpus die we eerst zullen creëren.
-We creëren deze chunks op basis van het aantal rijen in de corpus die we dan delen door het aantal cores dat we ter beschikking stellen.
-Doordat de document id's niet opeenvolgend zijn hebben we in docs een extra kolom aangemaakt *id*. Hierop baseren we ons voor het verdelen in chunks.
-Deze resultaten gaan we dan terug combineren tot 1 grote corpus.
+<!-- In TMCorpusChunk parallelliseren we elke cleaning methode over chunks van de corpus die we eerst zullen creëren. -->
+Om de chunks te maken splitsen we *docs* op basis van het aantal cores dat we ter beschikking stellen.
+Omdat de document id's niet opeenvolgend zijn, hebben we in docs een extra kolom aangemaakt *id*. Deze gebruiken we om op een juiste manier de id's op te splitsen in chuncks.
+Op deze manier verwerkt elke core hetzelfde aantal documenten.
+Deze resultaten combineren we dan tot 1 grote corpus.
 ```{r}
 TMCorpusChunk <- function() {
   crp <- VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
@@ -123,7 +124,7 @@ TMCorpusChunk <- function() {
 
 ```
 
-Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we volgende methode geschreven. We gaan hier terug op basis van het aantal cores onze corpus opsplitsen in chunks, maar hierbij telkens de onder -en bovengrens mee te geven, die zal opgeslagen worden in de lijst *docsList*.
+Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we de volgende methode geschreven. Op basis van het aantal cores splitsen we onze corpus op in chunks die we in de lijst *docsList* plaatsen. Zo wordt enkel de chunk die nodig is doorgegeven aan de functie die wordt uitgevoerd binnen de parallelle loop. Hierdoor verlagen we ons geheugen gebruik aanzienlijk.
 ```{r}
 createDocsChunks <- function(noChunks) {
   docsList <- list()
@@ -138,9 +139,9 @@ createDocsChunks <- function(noChunks) {
 }
 ```
 
-Parallellisatie hierboven leek ons nog niet efficiënt genoeg doordat er meerdere foreach terugkeren. We hebben daarom alle cleaning in 1 loop gestoken die op basis van het aantal cores tegelijk zullen lopen.
+Parallellisatie hierboven lijkt ons niet efficiënt genoeg omdat er meerdere foreach lussen gebruikt worden. Daarom nemen we alle cleaning samen in 1 loop.
 
-Hier passen we ook meteen onze nieuwe methode *createDocsChunks* voor het verdelen in chunks in toe.
+Hier passen we ook meteen onze nieuwe methode *createDocsChunks* op toe, voor het verdelen in chunks.
 ```{r}
 TMCorpusChunk1Loop <- function() {
   crp.replacePattern <-
@@ -170,12 +171,12 @@ TMCorpusChunk1Loop <- function() {
 ```
 
 Bovenstaande parallellisaties geven al mooie resultaten terug. 
-Hierna zijn we gaan zoeken achter andere packages voor text analyse, en kwamen we Quanteda tegen zoals boven uitgelegd.
+Hierna hebben we gezocht naar andere packages voor text analyse en kwamen we, zoals eerder vermeld, Quanteda tegen.
 
-Quanteda werkt met tokens, elk woord zal hier aanschouwd worden als een token dus.
-Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan bij tm.
+Quanteda werkt met tokens, elk woord wordt aanschouwd als één token.
+De tokens worden gecleaned, en deze cleaning zal soms strenger verlopen dan bij de tm-package.
 
-In *quanteda_options* geven we mee over hoeveel cores hij threads kan gebruiken.
+In *quanteda_options* geven we mee over hoeveel cores quanteda threads kan gebruiken.
 Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met *quanteda_options()* in de console.
 
 
