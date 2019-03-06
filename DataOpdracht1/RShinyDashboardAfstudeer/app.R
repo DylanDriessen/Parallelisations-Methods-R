@@ -30,11 +30,14 @@ ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ra
 
 # Define UI for application that draws a histogram
 ui <- shinyServer(fluidPage(
+  includeCSS("RShinyDashboardAfstudeer/www/custom.css"),
   
+  titlePanel(img(src='logo.png', align = "right", width = "350", height = "80")),
+
   navbarPage("Choose your tab",
                tabPanel("Overzicht",
                         sidebarPanel(
-                          helpText("Select wich function"),
+                          helpText("Select which function"),
                           selectInput(inputId = "callFunction", label = "Choose a function to display:",
                                       choices = c( ReadFile = "Read", PreProcess = "Pre", createCorpus = "Corpus", createDTM = "DTM", Cluster = "Cluster")
                                       ),
@@ -43,7 +46,7 @@ ui <- shinyServer(fluidPage(
                          mainPanel(
                         fluidRow(plotlyOutput("benchMarkSummary"), align = "center"))
                    ),
-               tabPanel("CorsInfo",
+               tabPanel("CoresInfo",
                         sidebarPanel(
                           helpText("Select wich function"),
                           selectInput(inputId = "callFunctionCors", label = "Choose a function to display:",
@@ -2897,6 +2900,7 @@ server <- shinyServer(function(input, output, session){
 })
 
 shinyApp(ui = ui, server = server)
+
 
 
 

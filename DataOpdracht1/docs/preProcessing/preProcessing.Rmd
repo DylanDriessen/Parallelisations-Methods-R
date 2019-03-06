@@ -19,12 +19,12 @@ preProcess <- function(text){
 
 ## Parallel
 
-Aangezien lijnen onafhankelijk van elkaar geprocessed kunnen worden, kunnen we hier makkelijk parallel processing op toepassen met behulp van de packages [parallel](https://www.rdocumentation.org/packages/parallel/versions/3.5.2/topics/clusterApply) en [doparallel](https://cran.r-project.org/web/packages/doParallel/doParallel.pdf).
+Aangezien lijnen onafhankelijk van elkaar geprocessed kunnen worden (emberassingly parallel), kunnen we hier gemakkelijk parallel processing op toepassen met behulp van de packages [parallel](https://www.rdocumentation.org/packages/parallel/versions/3.5.2/topics/clusterApply) en [doparallel](https://cran.r-project.org/web/packages/doParallel/doParallel.pdf).
 
 
 
 ### clusterApply
-De eerste manier die we geprobeerd hebben was om lijn per lijn te verdelen naar de cores. Dit bleek behoorlijk inefficient te zijn aangezien er een grote overhead bestond die te wijten was aan communicatie tussen master en slaves. 
+We hebben eerst geprobeerd om lijn per lijn te verdelen over de cores. Dit bleek behoorlijk inefficient te zijn aangezien er een grote overhead bestond die te wijten was aan communicatie tussen master en slaves. 
 
 ```{r}
 preProcessCluster <- function() {
@@ -44,9 +44,9 @@ preProcessCluster <- function() {
 ***
 
 ### clusterApplyChunked
-Een oplossing voor de overhead is om eerst de vector in een aantal chunks te gaan verdelen gelijk aan het aantal cores die we te beschikking hebben. Eerst deden we dit door een vector aan te maken van 1 tot het aantal rijen in docs en dan een lijst te maken met subsets van deze vector. op deze manier werd onze code sneller uitgevoerd maar was het geheugen gebruik niet optimaal.  
+Een oplossing voor deze overhead is om eerst de vector in een aantal chunks te verdelen, gelijk aan het aantal cores dat we ter beschikking hebben. Eerst deden we dit door bij elke core de volledige vector in te laden, waarna we de ID's van de lijnen verdelen over de verschillende cores. Op deze manier werd onze code sneller uitgevoerd maar was het geheugen gebruik niet optimaal. Zo werd onze originele vector, wanneer we van 8 cores gebruik maken, 9 keer in het ram geheugen ingeladen.
 
-Oms ons geheugen verbruik te verbeteren zijn we overgeschakeld naar het opsplitsen van de text vector in chunks en deze dan te verdelen over de cores. Op deze manier wordt theoretisch gezien de vector maar 3 keer in geheugen gezet, 1 keer in de originele dataframe, 1 keer in de lijst van chunks en elke core laad nog een chunk in memory.
+Oms ons geheugen verbruik te verbeteren zijn we overgeschakeld naar het opsplitsen van de text vector in chunks en deze dan te verdelen over de cores. Op deze manier wordt de vector maar 3 keer in geheugen gezet, 1 keer in de originele dataframe, 1 keer in de lijst van chunks en elke core laad dan zijn eigen chunk ook nog eens in het geheugen.
 
 ####Creating chunks
 
@@ -83,22 +83,16 @@ preProcessClusterChunked <- function() {
 
 ***
 
-##Microbenchmark op elke functie
+##Microbenchmark
 
 ```{r echo=FALSE}
-microbenchmark(preProcessSequential(),
-               #preProcessParallel(),
-               preProcessParallelChunked(),
-               #preProcessDoparallel(),
-               preProcessDoparallelChunked(),
-               #preProcessCluster(),
-               preProcessClusterChunked(),
-               times=1)
+print("50.000 lijnen")
+readRDS("./resources/preProcessBenchmark.rds")
 ```
 
 ##Bevindingen
 * Het parallel uitvoeren van named functions gebruikt minder ram dan wanneer we ze anonymous maken.
-* Wanneer we parLappy gaan gebruiken zonder de vector eerst te verdelen in chunks, zien we dat er geen overhead is op vlak van communicatie. Toch is de functie waar we de vector eerst gaan verdelen in chunks een beetje sneller. 
+* Wanneer we parLappy gaan gebruiken zonder de vector eerst te verdelen in chunks, zien we dat er geen overhead is op vlak van communicatie. Toch is de functie waar we de vector eerst gaan verdelen in chunks een beetje sneller.
 
 #![parLapplyPlot](./resources/parLapply.png)
 [

@@ -16,7 +16,7 @@ TMCorpusChunk1Loop_peakRAM <- function() {
   docsChunks <- createDocsChunks(no_cores)
   cl <- createCorpusCluster()
   clusterEvalQ(cl, library("peakRAM"))
-  registerDoParallel(cl)
+  registerDoSNOW(cl)
   
   crp <- foreach(docsChunk = docsChunks,
                  .combine = rbind) %dopar% {
