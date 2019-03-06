@@ -1,0 +1,112 @@
+---
+title: "Cluster"
+output: html_notebook
+---
+
+<!--https://stats.stackexchange.com/questions/81396/clustering-algorithms-that-operate-on-sparse-data-matricies -->
+
+Omdat we met Big Data bezig zijn kunnen we niet met de standaard [kmeans](https://www.rdocumentation.org/packages/stats/versions/3.5.2/topics/kmeans) functie werken want deze werkt met een full matrix. Aangezien we gelimiteerd zijn in de hoeveelheid geheugen die we ter beschikking hebben kunnen we niet met full matrixes werken. Een oplossing is om in plaats van een full matrix een sparce matrix aan te maken.  
+In een sparce matrix gaan de zero values die in de full matrix staan weggelaten worden. Een sparce matrix houd per document een lijst bij met de id's van de woorden die hierin voorkomen.  
+Om met sparce matrices te kunnen werken, gebruiken we de functie [skmeans](https://www.rdocumentation.org/packages/skmeans/versions/0.2-11/topics/skmeans) gebruiken.
+
+##Parallel
+
+###Parallelisatie over het aantal runs
+
+Per cluster berekening 
+
+####Parallel
+```{r}
+skmeansClusterPar <- function(k) {
+  #genetic
+  set.seed(125)
+  no_cores <- detectCores() - 1
+  cl <- makeCluster(no_cores, outfile = "")
+  #clusterExport(cl, "skmeans")
+  clusterEvalQ(cl, {library("quanteda");library("skmeans")})
+  clusterSetRNGStream(cl, iseed = 1236)
+  registerDoParallel(cl)
+  nstart <- 8
+  nstartv <- rep(floor(nstart / no_cores), no_cores)
+  result <-
+    clusterApply(cl, nstartv, function(n, x)
+      skmeans(x, k, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
+  stopCluster(cl)
+  return(result[[1]])
+}
+```
+####DoParallel
+```{r}
+skmeansClusterDoPar <- function(k) {
+  #genetic
+  set.seed(125)
+  cl <- makeCluster(no_cores, outfile = "")
+  ##clusterExport(cl, "skmeans")
+  registerDoParallel(cl)
+  clusterSetRNGStream(cl, iseed = 1236)
+  nstart <- 8
+  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  registerDoParallel(cl)
+  
+  result <- 
+    foreach(n=nstartv,
+            .export= "DFM",
+            .packages = c("skmeans","quanteda")) %dopar% {
+              skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE))
+    }
+  
+  stopCluster(cl)
+  return(result[[1]])
+}
+
+```
+###Parallelisatie over max iterations
+####Parallel
+```{r}
+skmeansClusterParIter <- function(k) {
+  #genetic
+  set.seed(125)
+  no_cores <- detectCores() - 1
+  cl <- makeCluster(no_cores, outfile = "")
+  clusterExport(cl, "skmeans")
+  clusterEvalQ(cl, library("quanteda"))
+  clusterSetRNGStream(cl, iseed = 1236)
+  registerDoParallel(cl)
+  nstart <- 10
+  nstartv <- rep(floor(nstart / no_cores), no_cores)
+  result <-
+    clusterApply(cl, nstartv, function(n, x)
+      skmeans(x, k, method = "pclust", control = list(nruns = 8 ,maxiter = n,verbose = TRUE)), DFM)
+  stopCluster(cl)
+  return(result[[1]])
+}
+```
+
+####DoParallel
+```{r}
+skmeansClusterDoParIter <- function(k) {
+  #genetic
+  set.seed(125)
+  cl <- makeCluster(no_cores, outfile = "")
+  ##clusterExport(cl, "skmeans")
+  registerDoParallel(cl)
+  clusterSetRNGStream(cl, iseed = 1236)
+  nstart <- 10
+  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  registerDoParallel(cl)
+  
+  result <- 
+    foreach(n=nstartv,
+            #.export= "DFM",
+            .packages = c("skmeans","quanteda"),
+            .export = "DFM") %dopar% {
+              skmeans(DFM, k ,method = "pclust",control = list(nruns = 8 ,maxiter = n,verbose = TRUE))
+            }
+  
+  stopCluster(cl)
+  return(result[[1]])
+}
+```
+##Packages
+
+
