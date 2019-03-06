@@ -190,8 +190,8 @@ $(document).ready(function () {
 </div>
 
 
-<p>In deze documentatie zal aangetoond worden dat de klassieke <a href>tm-package</a> sneller kan verlopen door middel van parallellisatie. Hiernaast gaan we gebruik maken van een andere package <a href="https://cran.r-project.org/web/packages/quanteda/quanteda.pdf">Quanteda</a>.</p>
-<p><a href="https://cran.r-project.org/web/packages/quanteda/quanteda.pdf">Quanteda</a> is een multithreaded package dat gebouwd is bovenop <a href>stringi</a>, <a href>data.table</a> en <a href>Matrix</a>. Het is ontworpen voor een snelle methode te zijn voor het gaan naar een corpus van tekst, naar een document by features matrix. Quanteda zal gebruik maken van zijn eigen ingebouwde methodes voor het cleanen van de gecreërde tokens in de document by features matrix.</p>
+<p>In deze documentatie zal aangetoond worden dat de klassieke <a href>tm-package</a> sneller verloopt door middel van parallellisatie. Hiernaast maken we gebruik van een andere package <a href="https://cran.r-project.org/web/packages/quanteda/quanteda.pdf">Quanteda</a>.</p>
+<p><a href="https://cran.r-project.org/web/packages/quanteda/quanteda.pdf">Quanteda</a> is een multithreaded package dat gebouwd is bovenop <a href>stringi</a>, <a href>data.table</a> en <a href>Matrix</a>. Het is ontworpen als snelle methode voor het omzetten van een corpus van tekst, naar een document by features matrix. Quanteda zal gebruik maken van zijn eigen ingebouwde methodes voor het cleanen van de gecreërde tokens in de document by features matrix.</p>
 <p>Hieronder ziet u de sequentiele code voor het creëren van een corpus van het document <em>docs</em> met behulp van de tm-package. Hierbij zal ook de nodige cleaning gedaan worden met behulp van tm_map.</p>
 <pre class="r"><code>TMCorpus &lt;- function() {
   crp &lt;- VCorpus(DataframeSource(docs), readerControl = list(language = &quot;en&quot;))
@@ -225,8 +225,8 @@ $(document).ready(function () {
   save(crp, file = &quot;crp.RDa&quot;)
   return(crp)
 }</code></pre>
-<p>Voor bovenstaande functie te parallelliseren hebben we <em>docs</em> eerst opgesplitst in kleinere delen =&gt; chunks. Hierdoor kunnen de verschillende cleaning methodes parallel runnen over meerdere chunks. We maken hier bij elke functie gebruik van de doParallel:foreach methode.</p>
-<p>Eerst creëren we de parallele cluster waarmee we gaan werken. Deze geven we dan mee als cluster in onze methode als <em>cl</em> We maken hier gebruik van makeCluster en clusterEvalQ. makeCluster zal de parallele cluster creëren op basis van het aantal cores dat we meegeven. clusterEvalQ zal ervoor zorgen dat het tm-package zal meegegeven worden over elke core.</p>
+<p>Voor bovenstaande functie te parallelliseren hebben we <em>docs</em> eerst opgesplitst in kleinere delen =&gt; chunks. Hierdoor kunnen de verschillende cleaning methodes parallel runnen over meerdere chunks. We maken hier bij elke functie gebruik van de doParallel::foreach methode.</p>
+<p>Eerst creëren we de parallele cluster waarmee we gaan werken. Deze geven we dan mee als cluster in onze methode als <em>cl</em>. We maken hier gebruik van makeCluster en clusterEvalQ. makeCluster zal de parallele cluster creëren op basis van het aantal cores dat we meegeven. clusterEvalQ zal ervoor zorgen dat het tm-package zal meegegeven worden over elke core.</p>
 <pre class="r"><code>createCorpusCluster &lt;- function() {
   no_cores &lt;- detectCores() - 1 
   cl &lt;- makeCluster(no_cores, outfile = &quot;&quot;)
@@ -283,7 +283,7 @@ $(document).ready(function () {
   save(crp, file = &quot;crp.RDa&quot;)
   return(crp)
 }</code></pre>
-<p>Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we volgende methode geschreven. We gaan hier terug op basis van het aantal cores onze corpus opsplitsen in chunks, maar hierbij telkens de onder -en bovengrens mee te geven, die zal opgeslagen worden in de lijst <em>docsList</em></p>
+<p>Het opdelen in chunks leek ons efficiënter te kunnen. Hiervoor hebben we volgende methode geschreven. We gaan hier terug op basis van het aantal cores onze corpus opsplitsen in chunks, maar hierbij telkens de onder -en bovengrens mee te geven, die zal opgeslagen worden in de lijst <em>docsList</em>.</p>
 <pre class="r"><code>createDocsChunks &lt;- function(noChunks) {
   docsList &lt;- list()
   for (i in 1:noChunks) {
@@ -323,7 +323,7 @@ $(document).ready(function () {
   return(crp)
 }</code></pre>
 <p>Bovenstaande parallellisaties geven al mooie resultaten terug. Hierna zijn we gaan zoeken achter andere packages voor text analyse, en kwamen we Quanteda tegen zoals boven uitgelegd.</p>
-<p>Quanteda werkt met tokens, elk woord zal hier aanschouwd worden als een token dus. Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan als bij tm.</p>
+<p>Quanteda werkt met tokens, elk woord zal hier aanschouwd worden als een token dus. Cleaning gebeurd op deze tokens, en zal soms strenger verlopen dan bij tm.</p>
 <p>In <em>quanteda_options</em> geven we mee over hoeveel cores hij threads kan gebruiken. Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met <em>quanteda_options()</em> in de console.</p>
 <pre class="r"><code>QuantedaCorpus &lt;- function() {
   ##### Set Quanteda options
