@@ -29,7 +29,7 @@ skmeansClusterPar_peakRAM <- function() {
   clusterExport(cl, "no_clusters")
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
   clusterSetRNGStream(cl, iseed = 1236)
-  registerDoParallel(cl)
+  registerDoSNOW(cl)
   nstart <- 8
   nstartv <- rep(floor(nstart / no_cores), no_cores)
   result <-
@@ -54,7 +54,7 @@ skmeansClusterDoPar_peakRAM <- function() {
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
   clusterExport(cl, "no_clusters")
-  registerDoParallel(cl)
+  registerDoSNOW(cl)
   clusterSetRNGStream(cl, iseed = 1236)
   nstart <- 8
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)
@@ -87,7 +87,7 @@ skmeansClusterParIter <- function() {
   clusterExport(cl, "no_clusters")
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
   clusterSetRNGStream(cl, iseed = 1236)
-  registerDoParallel(cl)
+  registerDoSNOW(cl)
   nstart <- 10
   nstartv <- rep(floor(nstart / no_cores), no_cores)
   result <-
@@ -111,7 +111,7 @@ skmeansClusterDoParIter <- function() {
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
   clusterExport(cl, "no_clusters")
-  registerDoParallel(cl)
+  registerDoSNOW(cl)
   clusterSetRNGStream(cl, iseed = 1236)
   nstart <- 10
   nstartv <- rep(ceiling(nstart / no_cores), no_cores)

@@ -110,7 +110,7 @@ createDTMChunked_peakRAM <- function() {
   
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
-  registerDoParallel(cluster)
+  registerDoSnow(cluster)
   
   dtmpramList <- 
     foreach(chunk = chunks,
