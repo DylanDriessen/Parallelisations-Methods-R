@@ -48,22 +48,17 @@ saveFunctionData <- function(f, fpath) {
 # saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
 # saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
 # saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
-<<<<<<< HEAD
-# 
-# saveFunctionData(TMCorpusChunk1Loop_peakRAM, "results/createCorpus/TMForeachOneLoop")
-# #saveFunctionData(TMCorpusChunk_peakRAM, "results/createCorpus/TMCorpusChunk")
-=======
+
 
 # saveFunctionData(TMCorpusChunk1Loop_peakRAM, "results/createCorpus/TMForeachOneLoop")
 # # saveFunctionData(TMCorpusChunk_peakRAM, "results/createCorpus/TMCorpusChunk")
->>>>>>> 2041c957440b517be27e281d13ba8abb329d6993
 # saveFunctionData(TMCorpus_peakRAM, "results/createCorpus/TMCorpus")
 # saveFunctionData(QuantedaCorpus_peakRAM, "results/createCorpus/QuanR")
 # 
 # saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
 # saveFunctionData(createDFMnormal_peakRAM, "results/createDTM/dfm")
 # saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
-<<<<<<< HEAD
+
 # saveFunctionData(createDTMChunked_peakRAM, "results/createDTM/DTMchunked")
 # saveFunctionData(createDTM_peakRAM, "results/createDTM/DTM")
 # 
@@ -72,16 +67,7 @@ saveFunctionData <- function(f, fpath) {
 # saveFunctionData(skmeansClusterDoPar_peakRAM, "results/cluster/doParallel")
 # saveFunctionData(skmeansClusterParIter, "results/cluster/parIter")
 # saveFunctionData(skmeansClusterDoParIter, "results/cluster/doParIter")
-=======
-# saveFunctionData(createDTMChunked_peakRAM, "test/test")
-# saveFunctionData(createDTM_peakRAM, "test/test/test")
-# 
-# saveFunctionData(skmeansCluster_peakRAM, "test/cluster")
-# saveFunctionData(skmeansClusterPar_peakRAM, "test/clusterPar")
-# saveFunctionData(skmeansClusterDoPar_peakRAM, "test/clusterDoPar")
-# saveFunctionData(skmeansClusterParIter, "test/clusterParIter")
-# saveFunctionData(skmeansClusterDoParIter, "test/DoParIter")
->>>>>>> 2041c957440b517be27e281d13ba8abb329d6993
+
 
 
 
