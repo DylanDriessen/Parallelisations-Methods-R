@@ -245,9 +245,10 @@ $(document).ready(function () {
 <p>Elke lijn van de vector wordt achter elkaar doorgegeven aan de functie stringi::stri_trans_general.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJlUHJvY2VzcyA8LSBmdW5jdGlvbih0ZXh0KXtcbiAgcmV0dXJuKHN0cmluZ2k6OnN0cmlfdHJhbnNfZ2VuZXJhbCh0ZXh0LCAnTGF0aW4tQVNDSUknKSlcbn1cbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r preProcess &lt;- function(text){ return(stringi::stri_trans_general(text, ‘Latin-ASCII’)) }</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlUHJvY2VzcyA8LSBmdW5jdGlvbih0ZXh0KXtcbiAgcmV0dXJuKHN0cmluZ2k6OnN0cmlfdHJhbnNfZ2VuZXJhbCh0ZXh0LCAnTGF0aW4tQVNDSUknKSlcbn1cbmBgYCJ9 -->
+<pre class="r"><code>preProcess &lt;- function(text){
+  return(stringi::stri_trans_general(text, 'Latin-ASCII'))
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -260,9 +261,13 @@ $(document).ready(function () {
 <p>We hebben eerst geprobeerd om lijn per lijn te verdelen over de cores. Dit bleek behoorlijk inefficient te zijn aangezien er een grote overhead bestond die te wijten was aan communicatie tussen master en slaves.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJlUHJvY2Vzc0NsdXN0ZXIgPC0gZnVuY3Rpb24oKSB7XG4gIGNsdXN0ZXIgPC0gbWFrZUNsdXN0ZXIobm9fY29yZXMsIG91dGZpbGUgPSBcXFxcIClcbiAgcmVzdWx0IDwtIGNsdXN0ZXJBcHBseShjbCA9IGNsdXN0ZXIseD1kb2NzJHRleHQscHJlUHJvY2Vzc0NodW5rKVxuICBzdG9wQ2x1c3RlcihjbHVzdGVyKVxuICByZXR1cm4odW5saXN0KHJlc3VsdCkpXG59XG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r preProcessCluster &lt;- function() { cluster &lt;- makeCluster(no_cores, outfile = \ ) result &lt;- clusterApply(cl = cluster,x=docs$text,preProcessChunk) stopCluster(cluster) return(unlist(result)) }</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlUHJvY2Vzc0NsdXN0ZXIgPC0gZnVuY3Rpb24oKSB7XG4gIGNsdXN0ZXIgPC0gbWFrZUNsdXN0ZXIobm9fY29yZXMsIG91dGZpbGUgPSBcIlwiIClcbiAgcmVzdWx0IDwtIGNsdXN0ZXJBcHBseShjbCA9IGNsdXN0ZXIseD1kb2NzJHRleHQscHJlUHJvY2Vzc0NodW5rKVxuICBzdG9wQ2x1c3RlcihjbHVzdGVyKVxuICByZXR1cm4odW5saXN0KHJlc3VsdCkpXG59XG5gYGAifQ== -->
+<pre class="r"><code>preProcessCluster &lt;- function() {
+  cluster &lt;- makeCluster(no_cores, outfile = &quot;&quot; )
+  result &lt;- clusterApply(cl = cluster,x=docs$text,preProcessChunk)
+  stopCluster(cluster)
+  return(unlist(result))
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -280,10 +285,19 @@ $(document).ready(function () {
 <h4>Creating chunks</h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY3JlYXRlQ2h1bmtzT2JqZWN0cyA8LSBmdW5jdGlvbihub0NodW5rcyl7XG4gIGNodW5rTGlzdCA8LSBsaXN0KClcbiAgZm9yKGkgaW4gMTpub0NodW5rcyl7XG4gICAgI2JlcmVrZW4gZGUgb25kZXItIGVuIGJvdmVuZ3JlbnMgdmFuIGRlIGNodW5rXG4gICAgb2cgPC0gcm91bmQoKGktMSkqbnJvdyhkb2NzKS9ub0NodW5rcykrMVxuICAgIGJnIDwtIHJvdW5kKG5yb3coZG9jcykvbm9DaHVua3MqaSlcbiAgICAjTmVlbSBlZW4gc3Vic2V0IGVuIHBsYWF0cyBkZXplIGluIGVlbiBsaWpzdFxuICAgIGNodW5rTGlzdFtbaV1dIDwtIHVubGlzdChkb2NzW29nOmJnLCBcXHRleHRcXF0pXG4gIH1cbiAgXG4gIHJldHVybihjaHVua0xpc3QpXG59XG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r createChunksObjects &lt;- function(noChunks){ chunkList &lt;- list() for(i in 1:noChunks){ #bereken de onder- en bovengrens van de chunk og &lt;- round((i-1)<em>nrow(docs)/noChunks)+1 bg &lt;- round(nrow(docs)/noChunks</em>i) #Neem een subset en plaats deze in een lijst chunkList[[i]] &lt;- unlist(docs[og:bg, ]) }</p>
-<p>return(chunkList) }</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY3JlYXRlQ2h1bmtzT2JqZWN0cyA8LSBmdW5jdGlvbihub0NodW5rcyl7XG4gIGNodW5rTGlzdCA8LSBsaXN0KClcbiAgZm9yKGkgaW4gMTpub0NodW5rcyl7XG4gICAgI2JlcmVrZW4gZGUgb25kZXItIGVuIGJvdmVuZ3JlbnMgdmFuIGRlIGNodW5rXG4gICAgb2cgPC0gcm91bmQoKGktMSkqbnJvdyhkb2NzKS9ub0NodW5rcykrMVxuICAgIGJnIDwtIHJvdW5kKG5yb3coZG9jcykvbm9DaHVua3MqaSlcbiAgICAjTmVlbSBlZW4gc3Vic2V0IGVuIHBsYWF0cyBkZXplIGluIGVlbiBsaWpzdFxuICAgIGNodW5rTGlzdFtbaV1dIDwtIHVubGlzdChkb2NzW29nOmJnLCBcInRleHRcIl0pXG4gIH1cbiAgXG4gIHJldHVybihjaHVua0xpc3QpXG59XG5gYGAifQ== -->
+<pre class="r"><code>createChunksObjects &lt;- function(noChunks){
+  chunkList &lt;- list()
+  for(i in 1:noChunks){
+    #bereken de onder- en bovengrens van de chunk
+    og &lt;- round((i-1)*nrow(docs)/noChunks)+1
+    bg &lt;- round(nrow(docs)/noChunks*i)
+    #Neem een subset en plaats deze in een lijst
+    chunkList[[i]] &lt;- unlist(docs[og:bg, &quot;text&quot;])
+  }
+  
+  return(chunkList)
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -293,9 +307,14 @@ $(document).ready(function () {
 <h3>Processing chunks</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJlUHJvY2Vzc0NsdXN0ZXJDaHVua2VkIDwtIGZ1bmN0aW9uKCkge1xuICBjbHVzdGVyIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlPVxcXFwpXG4gIGNodW5rcyA8LSBjcmVhdGVDaHVua3NPYmplY3RzKG5vX2NvcmVzKVxuICByZXN1bHQgPC0gdW5saXN0KGNsdXN0ZXJBcHBseShjbHVzdGVyLCBjaHVua3MsIHByZVByb2Nlc3NDaHVuaykpXG4gIHN0b3BDbHVzdGVyKGNsdXN0ZXIpXG4gIHJldHVybihyZXN1bHQpXG59XG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r preProcessClusterChunked &lt;- function() { cluster &lt;- makeCluster(no_cores, outfile=\) chunks &lt;- createChunksObjects(no_cores) result &lt;- unlist(clusterApply(cluster, chunks, preProcessChunk)) stopCluster(cluster) return(result) }</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlUHJvY2Vzc0NsdXN0ZXJDaHVua2VkIDwtIGZ1bmN0aW9uKCkge1xuICBjbHVzdGVyIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlPVwiXCIpXG4gIGNodW5rcyA8LSBjcmVhdGVDaHVua3NPYmplY3RzKG5vX2NvcmVzKVxuICByZXN1bHQgPC0gdW5saXN0KGNsdXN0ZXJBcHBseShjbHVzdGVyLCBjaHVua3MsIHByZVByb2Nlc3NDaHVuaykpXG4gIHN0b3BDbHVzdGVyKGNsdXN0ZXIpXG4gIHJldHVybihyZXN1bHQpXG59XG5gYGAifQ== -->
+<pre class="r"><code>preProcessClusterChunked &lt;- function() {
+  cluster &lt;- makeCluster(no_cores, outfile=&quot;&quot;)
+  chunks &lt;- createChunksObjects(no_cores)
+  result &lt;- unlist(clusterApply(cluster, chunks, preProcessChunk))
+  stopCluster(cluster)
+  return(result)
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
