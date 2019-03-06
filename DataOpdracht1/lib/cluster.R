@@ -126,3 +126,21 @@ skmeansClusterDoParIter <- function(k) {
   stopCluster(cl)
   return(result[[1]])
 }
+
+devideNstarts <- function(nstarts,ncores){
+  if(nstarts<ncores){
+    return(rep(1,nstarts))
+  }
+  
+  list<-rep(0,ncores)
+  
+  for(i in 1:nstarts){
+    if(i>=ncores){
+      i=i%%ncores+1
+    }
+    
+    list[[i]]=list[[i]]+1
+  }
+  return(list)
+}
+
