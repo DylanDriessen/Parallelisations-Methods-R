@@ -1,4 +1,4 @@
-source("cluster.R")
+source("lib/cluster.R")
 no_clusters <- 10
 
 list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
@@ -26,7 +26,7 @@ skmeansClusterPar_peakRAM <- function() {
   set.seed(125)
   no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores, outfile = "")
-  #clusterExport(cl, "skmeans")
+  clusterExport(cl, "no_clusters")
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
@@ -53,7 +53,7 @@ skmeansClusterDoPar_peakRAM <- function() {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
-  ##clusterExport(cl, "skmeans")
+  clusterExport(cl, "no_clusters")
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
   nstart <- 8
@@ -84,6 +84,7 @@ skmeansClusterParIter <- function() {
   set.seed(125)
   no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores, outfile = "")
+  clusterExport(cl, "no_clusters")
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
@@ -109,7 +110,7 @@ skmeansClusterDoParIter <- function() {
   #genetic
   set.seed(125)
   cl <- makeCluster(no_cores, outfile = "")
-  ##clusterExport(cl, "skmeans")
+  clusterExport(cl, "no_clusters")
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
   nstart <- 10
