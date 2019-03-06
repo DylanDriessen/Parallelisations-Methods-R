@@ -5,11 +5,11 @@ import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow",
          "stringi", "ff", "ffbase", "tm","SnowballC","slam","stringi","data.table",
          "magrittr","corrplot","NLP", "foreach","doParallel","microbenchmark",
          "text2vec","doMC","quanteda","textmineR", "parallel", "peakRAM",
-         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr", "stopwords", "skmeans"))
+         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr", "stopwords", "skmeans", "future"))
 
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/small/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 5
 
 no_cores <- detectCores()
 
@@ -88,8 +88,8 @@ DTM <- createDTM()
 #
 # ==============================================================================
 
-source("lib/deriveVocabulary.r")
-Voca <- deriveVoc()
+#source("lib/deriveVocabulary.r")
+#Voca <- deriveVoc()
 
 # ==============================================================================
 #
@@ -102,4 +102,4 @@ cluster <- clusterMatrix()
 #microbenchmark(skmeansCluster(), skmeansClusterPar10(), skmeansClusterPar100(), times = 1)
 
 # SAVE RESULTS
-save(voc, file="voc.RDa")
+#save(voc, file="voc.RDa")
