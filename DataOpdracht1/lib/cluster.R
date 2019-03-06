@@ -38,7 +38,7 @@ skmeansClusterPar <- function(k) {
   clusterSetRNGStream(cl, iseed = 1236)
   registerDoParallel(cl)
   nstart <- 8
-  nstartv <- rep(floor(nstart / no_cores), no_cores)
+  nstartv <- nstartv <- divideNStarts(nstarts = nstart,ncores = no_cores)
   result <-
     clusterApply(cl, nstartv, function(n, x)
       skmeans(x, k, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
@@ -60,7 +60,7 @@ skmeansClusterDoPar <- function(k) {
   registerDoParallel(cl)
   clusterSetRNGStream(cl, iseed = 1236)
   nstart <- 8
-  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
+  nstartv <- divideNStarts(nstarts = nstart,ncores = no_cores)
   registerDoParallel(cl)
   
   result <- 
@@ -127,7 +127,7 @@ skmeansClusterDoParIter <- function(k) {
   return(result[[1]])
 }
 
-devideNstarts <- function(nstarts,ncores){
+divideNStarts <- function(nstarts,ncores){
   if(nstarts<ncores){
     return(rep(1,nstarts))
   }
@@ -135,7 +135,7 @@ devideNstarts <- function(nstarts,ncores){
   list<-rep(0,ncores)
   
   for(i in 1:nstarts){
-    if(i>=ncores){
+    if(i>ncores){
       i=i%%ncores+1
     }
     
