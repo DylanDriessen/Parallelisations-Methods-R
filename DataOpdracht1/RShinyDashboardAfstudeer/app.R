@@ -1,8 +1,9 @@
 setwd("../")
-plan(multiprocess)
 
 # load all packages and source files
 source("startupDashboard.r")
+plan(multiprocess)
+
 
 # Define UI for application that draws a histogram
 ui <- shinyServer(fluidPage(
@@ -11,7 +12,7 @@ ui <- shinyServer(fluidPage(
   titlePanel(img(src='logo.png', align = "right", width = "350", height = "80")),
 
   navbarPage("Choose your tab",
-               tabPanel("Overzicht",
+               tabPanel("Overview",
                         sidebarPanel(
                           helpText("Select which function"),
                           selectInput(inputId = "callFunction", label = "Choose a function to display:",
@@ -61,7 +62,8 @@ ui <- shinyServer(fluidPage(
                         
                          mainPanel(
                         column( plotlyOutput("RAMoutputFunctions"), width = 6),
-                        column(imageOutput("CPUusage"), width = 6), width = 10)
+                        column(imageOutput("CPUusage"), width = 6), 
+                        width = 10)
                ),
                tabPanel("Resources",
                         sidebarPanel(
@@ -225,6 +227,7 @@ ui <- shinyServer(fluidPage(
                             selectInput(inputId= "callMethodClusterLIVE", label = "Choose a method to display",
                                         choices = c("doParallelLive", "doParIterLive", "parallelLive", "parIterLive", "sequentialLive"))),
                           actionButton("RunLive", "RunLive"),
+                          actionButton("Save", "Save"),
                           width = 2),
                        
                         
@@ -2907,6 +2910,99 @@ server <- shinyServer(function(input, output, session){
     }
    
   })
+  
+ 
+  
+  observeEvent(input$Save, {
+    
+    if(input$callFunctionLive == "Read"){
+      if(input$callMethodReadFilesLIVE == "sequentialLive"){
+        
+        future(saveFunctionData(read_sequential_peakRAM, "test/test"))
+      }
+      else if(input$callMethodReadFilesLIVE == "clusterapplyLive"){
+        future(saveFunctionData(read_clusterapply_peakRAM, "results/readFiles/clusterapply"))
+      }
+      else if(input$callMethodReadFilesLIVE == "parlapplyLive"){
+        future(saveFunctionData(read_parlapply_peakRAM , "results/readFiles/parlapply"))
+      }
+      else if(input$callMethodReadFilesLIVE == "foreachLive"){
+        future(saveFunctionData(read_doparallel_foreach_peakRAM, "results/readFiles/foreach"))
+      }
+    }
+    else if(input$callFunctionLive == "Pre"){
+      print("checkLive")
+      
+      if(input$callMethodPreLIVE == "SequentialLive"){
+        print("checkLive")
+        future(saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential"))
+      }
+      else if(input$callMethodPreLIVE == "DoParallelChunkedLive"){
+        future(saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked"))
+      }
+      else if(input$callMethodPreLIVE == "ParallelChunkedLive"){
+        future(saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked"))
+      }
+      else if(input$callMethodPreLIVE == "ClusterChunkedLive"){
+        future(saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked"))
+      }
+    }
+    
+    
+    else if(input$callFunctionLive == "Corpus"){
+      if(input$callMethodCorpusLIVE == "QuanRLive"){
+        future(saveFunctionData(QuantedaCorpus_peakRAM, "results/createCorpus/QuanR"))
+      }
+      else if(input$callMethodCorpusLIVE == "TMCorpusLive"){
+        future(saveFunctionData(TMCorpus_peakRAM, "results/createCorpus/TMCorpus"))
+      }
+      
+     # else if(input$callMethodCorpusLIVE == "TMCorpusChunkRes"){
+       # future(TMCorpusChunk())
+      #}
+      else if(input$callMethodCorpusLIVE == "TMForeachOneLoopLive"){
+        future(saveFunctionData(TMCorpusChunk1Loop_peakRAM, "results/createCorpus/TMForeachOneLoop"))
+      }
+      
+    }
+    
+    else if(input$callFunctionLive == "DTM"){
+      if(input$callMethodDTMLIVE == "createDfmChunksLive"){
+        future(saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks"))
+      }
+      else if(input$callMethodDTMLIVE == "createDFMLive"){
+        future(saveFunctionData(createDFMnormal_peakRAM, "results/createDTM/dfm"))
+      }
+      else if(input$callMethodDTMLIVE == "createDFMasDTMLive"){
+        future(saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm"))
+      }
+      else if(input$callMethodDTMLIVE == "DTMLive"){
+        future(saveFunctionData(createDTM_peakRAM, "results/createDTM/DTM"))
+      }
+      else if(nput$callMethodDTMLIVE == "DTMchunkedLive"){
+        future(saveFunctionData(createDTMChunked_peakRAM, "results/createDTM/DTMchunked")) 
+      }
+    }
+    # else if(input$callFunctionLive == "Cluster"){
+    #   if(input$callMethodClusterLIVE == "doParallelLive"){
+    #     future(skmeansClusterDoPar(10,10,10))
+    #   }
+    #   else if(input$callMethodClusterLIVE == "doParIterLive"){
+    #     future(skmeansClusterDoParIter(10,10,10))
+    #   }
+    #   else if(input$callMethodClusterLIVE  == "parallelLive"){
+    #     future(skmeansClusterPar(10,10,10))
+    #   }
+    #   else if(input$callMethodClusterLIVE  == "parIterLive"){
+    #     future(skmeansClusterParIter(10,10,10))
+    #   }
+    #   else if(input$callMethodClusterLIVE  == "sequentialLive"){
+    #     future(skmeansCluster(10,10,10))
+    #   }
+    # }
+    
+  })
+  
     
     
     

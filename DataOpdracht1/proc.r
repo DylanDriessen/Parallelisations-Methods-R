@@ -1,6 +1,6 @@
 (.packages())
 
-source(loadPackages.R)
+source("loadPackages.R")
 
 no_cores <- detectCores()
 
@@ -14,7 +14,7 @@ no_cores <- detectCores()
 ################################################################################
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/small/"; ofn <- "ps18b_abstr"; batches <- 5
 
 # read batches and add ids
 source("lib/readFiles.r")
