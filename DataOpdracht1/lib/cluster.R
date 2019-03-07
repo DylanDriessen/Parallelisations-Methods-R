@@ -3,6 +3,9 @@ clusterMatrix <- function() {
   
   # skmeansCluster(k = 10,nstarts = 10,maxiter = 10)
   skmeansClusterPar(k = 10,nstarts = 10,maxiter = 10)
+  skmeansClusterPar(k = 25,nstarts = 10,maxiter = 10)
+  skmeansClusterPar(k = 50,nstarts = 10,maxiter = 10)
+  skmeansClusterPar(k = 100,nstarts = 10,maxiter = 10)
   # skmeansClusterDoPar(k = 10,nstarts = 10,maxiter = 10)
   # skmeansClusterParIter(k = 10,nstarts = 10,maxiter = 10)
   # skmeansClusterDoParIter(k = 10,nstarts = 10,maxiter = 10)
