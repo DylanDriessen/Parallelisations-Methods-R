@@ -81,8 +81,6 @@ readFiles <- function(f = read_sequential){
   docs <- ps18b_abstr[,c(1, 3, 2)]
   names(docs) <- c("doc_id", "text", "language")
   
-  ## Save to rds file and return
-  saveRDS(docs, file="docs.rds")
   print("Finished reading batches.")
   return(docs)
 }
