@@ -48,7 +48,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionCors == 'Corpus'", 
                             selectInput(inputId= "callMethodCorpusCORS", label = "Choose a method to display",
-                                        choices = c("QuanRCors", "TMCorpusCors", "TMCorpusChunkCors", "TMForeachOneLoopCors"))),
+                                        choices = c("QuanRCors", "TMCorpusCors", "TMForeachOneLoopCors"))),
                           
                           
                           conditionalPanel(
@@ -90,7 +90,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionRes == 'Corpus'", 
                             selectInput(inputId= "callMethodCorpusRES", label = "Choose a method to display",
-                                        choices = c("QuanRRes", "TMCorpusRes", "TMCorpusChunkRes", "TMForeachOneLoopRes"))),
+                                        choices = c("QuanRRes", "TMCorpusRes", "TMForeachOneLoopRes"))),
                           
                           
                           conditionalPanel(
@@ -123,60 +123,60 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Read'",
                             selectInput(inputId = "callMethodReadFilesFIRST", label = "Choose method to compare",
-                                        choices = c("sequentialFirst", "clusterapplyFirst", "parlapplyFirst", "foreachFirst"))),
+                                        choices = c(Sequential = "sequentialFirst", ClusterApply = "clusterapplyFirst",  ParLapply = "parlapplyFirst", ForEach = "foreachFirst"))),
                           #CompareCondition
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Read'",
                             selectInput(inputId = "callMethodReadFilesSECOND", label = "Choose method to compare",
-                                        choices = c("sequentialSecond", "clusterapplySecond", "parlapplySecond", "foreachSecond")
+                                        choices = c(Sequential2 = "sequentialSecond",ClusterApply2 = "clusterapplySecond", ParLapply2 = "parlapplySecond", ForEach2 = "foreachSecond")
                                         )),
                           #===================#
                           #===================#
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Pre'",
                             selectInput(inputId = "callMethodPreFIRST", label = "Choose a method to compare",
-                                        choices = c("SequentialFirst", "DoParallelChunkedFirst", "ParallelChunkedFirst", "ClusterChunkedFirst"))), 
+                                        choices = c(Sequential = "SequentialFirst" , DoParallelChunk = "DoParallelChunkedFirst", ParallelChunk = "ParallelChunkedFirst", ClusteChunk = "ClusterChunkedFirst"))), 
                           #CompareCondition
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Pre'",
                             selectInput(inputId = "callMethodPreSECOND", label = "Choose a method to compare",
-                                        choices = c("SequentialSecond", "DoParallelChunkedSecond", "ParallelChunkedSecond", "ClusterChunkedSecond"))),
+                                        choices = c(Sequential2 = "SequentialSecond" , DoParallelChunk2 = "DoParallelChunkedSecond", ParallelChunk2 = "ParallelChunkedSecond", ClusteChunk2 = "ClusterChunkedSecond"))), 
                           #===================#
                           #===================#
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Corpus'", 
                             selectInput(inputId= "callMethodCorpusFIRST", label = "Choose a method to compare",
-                                        choices = c("QuanRFirst", "TMCorpusFirst", "TMCorpusChunkFirst", "TMForeachOneLoopFirst"))),
+                                        choices = c(Quan = "QuanRFirst", TMCorpus = "TMCorpusFirst", TMForEach =  "TMForeachOneLoopFirst"))),
                           #CompareCondition
                           
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Corpus'", 
                             selectInput(inputId= "callMethodCorpusSECOND", label = "Choose a method to compare",
-                                        choices = c("QuanRSecond", "TMCorpusSecond", "TMCorpusChunkSecond", "TMForeachOneLoopSecond"))),
+                                        choices = c(Quan2 = "QuanRSecond", TMCorpus2 = "TMCorpusSecond", TMForEach2 =  "TMForeachOneLoopSecond"))),
                           #===================#
                           #===================#
                           
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'DTM'", 
                             selectInput(inputId= "callMethodDTMFIRST", label = "Choose a method to compare",
-                                        choices = c("createDfmChunksFirst", "createDFMFirst", "createDFMasDTMFirst", "DTMFirst", "DTMchunkedFirst" ))),
+                                        choices = c( dfmChunk = "createDfmChunksFirst", DFM = "createDFMFirst", DTMasDFM = "createDFMasDTMFirst",DTM = "DTMFirst", DTMchunk = "DTMchunkedFirst" ))),
                           
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'DTM'", 
                             selectInput(inputId= "callMethodDTMSECOND", label = "Choose a method to compare",
-                                        choices = c("createDfmChunksSecond", "createDFMSecond", "createDFMasDTMSecond", "DTMSecond", "DTMchunkedSecond"))),
+                                        choices = c( dfmChunk2 = "createDfmChunksSecond", DFM2 = "createDFMSecond", DTMasDFM2 = "createDFMasDTMSecond",DTM2 = "DTMSecond", DTMchunk2 = "DTMchunkedSecond" ))),
                           #===================#
                           #===================#
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Cluster'", 
                             selectInput(inputId= "callMethodClusterFIRST", label = "Choose a method to compare",
-                                        choices = c("doParallelFirst", "doParIterFirst", "parallelFirst", "parIterFirst", "sequentialFirst"))),
+                                        choices = c(doPar = "doParallelFirst", DoParIter ="doParIterFirst", parallel = "parallelFirst", parIter = "parIterFirst", sequential = "sequentialFirst"))),
                           
                         
                         conditionalPanel(
                           condition = "input.callFunctionComp == 'Cluster'", 
                           selectInput(inputId= "callMethodClusterSECOND", label = "Choose a method to compare",
-                                      choices = c("doParallelSecond", "doParIterSecond", "parallelSecond", "parIterSecond", "sequentialSecond"))),
+                                      choices = c(doPar2 = "doParallelSecond", DoParIter2 ="doParIterSecond", parallel2 = "parallelSecond", parIter2 = "parIterSecond", sequential2 = "sequentialSecond"))),
                         
                         selectInput(inputId = "compare", label = "Choose what to compare",
                         choices = c("peakRAM", "CPUusage", "RAMusage", "plotCPUtime")),
@@ -186,7 +186,10 @@ ui <- shinyServer(fluidPage(
                        
                         
                         mainPanel(
-                          
+                            fluidRow(
+                           column( h4("First compare function." , align = "center"),width = 6),
+                            column (h4("Second compare function", align = "center"), width = 6)
+                            ),
                             column(plotlyOutput("Compare"), width = 6),
                             column(plotlyOutput("CompareSecond"), width = 6)
                           , width = 10)
@@ -215,7 +218,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionLive == 'Corpus'", 
                             selectInput(inputId= "callMethodCorpusLIVE", label = "Choose a method to display",
-                                        choices = c("QuanRLive", "TMCorpusLive", "TMCorpusChunkRes", "TMForeachOneLoopLive"))),
+                                        choices = c("QuanRLive", "TMCorpusLive", "TMForeachOneLoopLive"))),
                           
                           
                           conditionalPanel(
@@ -267,6 +270,10 @@ server <- shinyServer(function(input, output, session){
     title = "Process_id"
   )
   
+  timeBench <- list(
+    title = "Elapsed_Time(sec)"
+  )
+  
   #==========================#
   #OverzichInfoEachFunction   
   #==========================#
@@ -285,7 +292,7 @@ server <- shinyServer(function(input, output, session){
       print("CHECKREADOVERZICHT")
       output$benchMarkSummary <- renderPlotly({
       benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/microbenchmark.rds")
-      plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9) 
+      plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9) %>% layout(yaxis = timeBench)
         
       })
     }
@@ -293,7 +300,8 @@ server <- shinyServer(function(input, output, session){
       print("CHECK")
       output$benchMarkSummary <- renderPlotly({
       benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/microbenchmark.rds")
-      plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9)
+      plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9) %>% layout(yaxis = timeBench)
+    
       
         
       })
@@ -301,7 +309,7 @@ server <- shinyServer(function(input, output, session){
     else if(input$callFunction == "DTM"){
         output$benchMarkSummary <- renderPlotly({
         benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/microbenchmark.rds")
-        plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9) 
+        plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9) %>% layout(yaxis = timeBench)
         
       })
     }
@@ -309,7 +317,7 @@ server <- shinyServer(function(input, output, session){
       
       output$benchMarkSummary <- renderPlotly({
         benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/microbenchmark.rds")
-        plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9)
+        plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9) %>% layout(yaxis = timeBench)
       
       })
     }
@@ -317,7 +325,7 @@ server <- shinyServer(function(input, output, session){
         
         output$benchMarkSummary <- renderPlotly({
           benchmarkReadSmall <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/microbenchmark.rds")
-          plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9)
+          plot_ly(data = benchmarkReadSmall, x = benchmarkReadSmall$expr, y = as.numeric(benchmarkReadSmall$time) *10^-9)%>% layout(yaxis = timeBench)
           
         })
       }
@@ -1205,7 +1213,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines")%>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1213,7 +1221,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines")%>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1240,7 +1248,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/clusterapply/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1248,7 +1256,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/clusterapply/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1275,7 +1283,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1283,7 +1291,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1310,7 +1318,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/foreach/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1318,7 +1326,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/foreach/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1349,7 +1357,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/sequential/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1357,7 +1365,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/sequential/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1384,7 +1392,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/doparallelChunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1392,7 +1400,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/doparallelChunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1419,7 +1427,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/parallelChunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1427,7 +1435,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/parallelChunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1454,7 +1462,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/clusterChunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1462,7 +1470,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/clusterChunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1494,7 +1502,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/QuanR/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1502,7 +1510,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/QuanR/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1529,7 +1537,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpus/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1537,7 +1545,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpus/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1564,7 +1572,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpusChunk/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1572,7 +1580,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpusChunk/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1599,7 +1607,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMForeachOneLoop/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1607,7 +1615,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMForeachOneLoop/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1637,7 +1645,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParallel/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1645,7 +1653,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParallel/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1673,7 +1681,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParIter/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1681,7 +1689,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParIter/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1709,7 +1717,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parallel/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1717,7 +1725,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parallel/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1745,7 +1753,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parIter/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1753,7 +1761,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parIter/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1781,7 +1789,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/sequential/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1789,7 +1797,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/sequential/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1822,7 +1830,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmChunks/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1830,7 +1838,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmChunks/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1858,7 +1866,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfm/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1866,7 +1874,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfm/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1894,7 +1902,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmASdtm/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1902,7 +1910,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmASdtm/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1930,7 +1938,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTM/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1938,7 +1946,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTM/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -1966,7 +1974,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTMchunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -1974,7 +1982,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTMchunked/resources.rds")
           output$Compare <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2015,14 +2023,14 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
           })
         }
         else if(input$compare == "RAMusage"){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/sequential/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2049,7 +2057,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/clusterapply/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2057,7 +2065,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/clusterapply/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2084,7 +2092,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2092,7 +2100,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/parlapply/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2119,7 +2127,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/foreach/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2127,7 +2135,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/readFiles/foreach/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2156,7 +2164,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/sequential/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2164,7 +2172,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/sequential/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2191,7 +2199,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/doparallelChunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2199,7 +2207,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/doparallelChunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2226,7 +2234,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/parallelChunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2234,7 +2242,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/parallelChunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2261,7 +2269,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/clusterChunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2269,7 +2277,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/preProcess/clusterChunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2300,7 +2308,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParallel/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2308,7 +2316,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParallel/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2336,7 +2344,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParIter/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2344,7 +2352,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/doParIter/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2372,7 +2380,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parallel/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2380,7 +2388,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parallel/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2408,7 +2416,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parIter/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2) 
             
           })
         }
@@ -2416,7 +2424,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/parIter/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines")%>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2444,7 +2452,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/sequential/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2452,7 +2460,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/cluster/sequential/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2483,7 +2491,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmChunks/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2491,7 +2499,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmChunks/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2519,15 +2527,15 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfm/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
-            
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
+              
           })
         }
         else if(input$compare == "RAMusage"){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfm/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2555,7 +2563,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmASdtm/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2563,7 +2571,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/dfmASdtm/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2591,7 +2599,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTM/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2599,7 +2607,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTM/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2627,7 +2635,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTMchunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2635,8 +2643,8 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createDTM/DTMchunked/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
-          })
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
+          }) 
         }
         else if(input$compare == "plotCPUtime"){
           output$CompareImageSecond <- renderImage({
@@ -2667,7 +2675,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/QuanR/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2675,7 +2683,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/QuanR/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2702,15 +2710,15 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpus/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
-            
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
+             
           })
         }
         else if(input$compare == "RAMusage"){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpus/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2737,7 +2745,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpusChunk/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2)
             
           })
         }
@@ -2745,7 +2753,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMCorpusChunk/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
@@ -2772,7 +2780,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMForeachOneLoop/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$cpu, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM2) 
             
           })
         }
@@ -2780,7 +2788,7 @@ server <- shinyServer(function(input, output, session){
           resources <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/results/createCorpus/TMForeachOneLoop/resources.rds")
           output$CompareSecond <- renderPlotly({
             plot_ly(data = resources, x = as.POSIXct(resources$time, origin ="1970-01-01"), y = resources$ram, type = "scatter",
-                    mode = "lines")
+                    mode = "lines") %>% layout(xaxis = Elapsed, yaxis = RAM)
           })
         }
         else if(input$compare == "plotCPUtime"){
