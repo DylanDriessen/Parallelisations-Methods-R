@@ -1,10 +1,8 @@
 clusterMatrix <- function() {
   import(c("biganalytics", "cluster", "skmeans"))
   
-  k <- 10
-  
   # skmeansCluster(k)
-  skmeansClusterPar(k)
+  skmeansClusterPar(k = 10,nstarts = 10,maxiter = 10)
   # skmeansClusterDoPar(k)
   # skmeansClusterParIter(k)
   # skmeansClusterDoParIter(k)
