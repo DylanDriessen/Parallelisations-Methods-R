@@ -99,6 +99,8 @@ rm(voc); gc()
 
 source("lib/cluster.R")
 cluster <- clusterMatrix()
+
 #microbenchmark(skmeansCluster(), skmeansClusterPar10(), skmeansClusterPar100(), times = 1)
+
 saveRDS(cluster, "data/cluster.rds")
 rm(cluster); gc()
