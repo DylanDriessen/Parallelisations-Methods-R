@@ -100,6 +100,7 @@ DTM <- createDTM()
 
 source("lib/cluster.R")
 cluster <- clusterMatrix()
+
 #microbenchmark(skmeansCluster(), skmeansClusterPar10(), skmeansClusterPar100(), times = 1)
 
 # SAVE RESULTS

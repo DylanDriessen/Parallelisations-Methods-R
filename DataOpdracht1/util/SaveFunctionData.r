@@ -43,25 +43,25 @@ saveFunctionData <- function(f, fpath) {
 # saveFunctionData(read_clusterapply_peakRAM, "results/readFiles/clusterapply")
 # saveFunctionData(read_parlapply_peakRAM , "results/readFiles/parlapply")
 # saveFunctionData(read_sequential_peakRAM, "results/readFiles/sequential")
-# 
+# # 
 # saveFunctionData(preProcessSequential_peakRAM, "results/preProcess/sequential")
 # saveFunctionData(preProcessDoparallelChunked_peakRAM, "results/preProcess/doparallelChunked")
 # saveFunctionData(preProcessParallelChunked_peakRAM, "results/preProcess/parallelChunked")
 # saveFunctionData(preProcessClusterChunked_peakRAM, "results/preProcess/clusterChunked")
-
-
+# 
+# 
 # saveFunctionData(TMCorpusChunk1Loop_peakRAM, "results/createCorpus/TMForeachOneLoop")
-# # saveFunctionData(TMCorpusChunk_peakRAM, "results/createCorpus/TMCorpusChunk")
+# #saveFunctionData(TMCorpusChunk_peakRAM, "results/createCorpus/TMCorpusChunk")
 # saveFunctionData(TMCorpus_peakRAM, "results/createCorpus/TMCorpus")
 # saveFunctionData(QuantedaCorpus_peakRAM, "results/createCorpus/QuanR")
-# 
+# # 
 # saveFunctionData(createDfmChunks_peakRAM, "results/createDTM/dfmChunks")
 # saveFunctionData(createDFMnormal_peakRAM, "results/createDTM/dfm")
 # saveFunctionData(createDFMasDTM_peakRAM, "results/createDTM/dfmASdtm")
-
+# 
 # saveFunctionData(createDTMChunked_peakRAM, "results/createDTM/DTMchunked")
 # saveFunctionData(createDTM_peakRAM, "results/createDTM/DTM")
-# 
+#  
 # saveFunctionData(skmeansCluster_peakRAM, "results/cluster/sequential")
 # saveFunctionData(skmeansClusterPar_peakRAM, "results/cluster/parallel")
 # saveFunctionData(skmeansClusterDoPar_peakRAM, "results/cluster/doParallel")

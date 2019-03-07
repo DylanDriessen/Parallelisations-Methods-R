@@ -62,7 +62,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionCors == 'Pre'",
                             selectInput(inputId = "callMethodPreCORS", label = "Choose a method to display",
-                                        choices = c("SequentialCors", "ClusterCors", "DoParallelChunkedCors", "ParallelChunkedCors", "ClusterChunkedCors")
+                                        choices = c("SequentialCors", "DoParallelChunkedCors", "ParallelChunkedCors", "ClusterChunkedCors")
                             )), 
                           
                           conditionalPanel(
@@ -102,7 +102,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionRes == 'Pre'",
                             selectInput(inputId = "callMethodPreRES", label = "Choose a method to display",
-                                        choices = c("SequentialRes", "ClusterRes", "DoParallelChunkedRes", "ParallelChunkedRes", "ClusterChunkedRes")
+                                        choices = c("SequentialRes", "DoParallelChunkedRes", "ParallelChunkedRes", "ClusterChunkedRes")
                                         
                             )), 
 
@@ -154,12 +154,12 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Pre'",
                             selectInput(inputId = "callMethodPreFIRST", label = "Choose a method to compare",
-                                        choices = c("SequentialFirst", "ClusterFirst", "DoParallelChunkedFirst", "ParallelChunkedFirst", "ClusterChunkedFirst"))), 
+                                        choices = c("SequentialFirst", "DoParallelChunkedFirst", "ParallelChunkedFirst", "ClusterChunkedFirst"))), 
                           #CompareCondition
                           conditionalPanel(
                             condition = "input.callFunctionComp == 'Pre'",
                             selectInput(inputId = "callMethodPreSECOND", label = "Choose a method to compare",
-                                        choices = c("SequentialSecond", "ClusterSecond", "DoParallelChunkedSecond", "ParallelChunkedSecond", "ClusterChunkedSecond"))),
+                                        choices = c("SequentialSecond", "DoParallelChunkedSecond", "ParallelChunkedSecond", "ClusterChunkedSecond"))),
                           #===================#
                           #===================#
                           conditionalPanel(
@@ -227,7 +227,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionLive == 'Pre'",
                             selectInput(inputId = "callMethodPreLIVE", label = "Choose a method to display",
-                                        choices = c("SequentialLive", "ClusterLive", "DoParallelChunkedLive", "ParallelChunkedLive", "ClusterChunkedLive")
+                                        choices = c("SequentialLive", "DoParallelChunkedLive", "ParallelChunkedLive", "ClusterChunkedLive")
                                         
                             )), 
                           
@@ -240,7 +240,7 @@ ui <- shinyServer(fluidPage(
                           conditionalPanel(
                             condition = "input.callFunctionLive == 'DTM'", 
                             selectInput(inputId= "callMethodDTMLIVE", label = "Choose a method to display",
-                                        choices = c("createDfmChunksLive", "createDFMLive", "createDFMasDTMLive" ))),
+                                        choices = c("createDfmChunksLive", "createDFMLive", "createDFMasDTMLive",  "DTMLive", "DTMchunkedLive"))),
                           
                           
                           
@@ -2821,14 +2821,14 @@ server <- shinyServer(function(input, output, session){
   
   
   Elapsed <- list(
-    title = "Elapsed_Time_sec"
+    title = "Elapsed Time (sec)"
   )
   RAM <- list(
-    title = "RAMusage"
+    title = "RAMusage(GB)"
   )
   
   RAM2 <- list(
-    title = "CPUusage"
+    title = "CPUusage(%)"
   )
   
   
@@ -2839,12 +2839,13 @@ server <- shinyServer(function(input, output, session){
   
   #onStop(end_monitor)
   
-  #inputId = "callMethodReadFilesLIVE", label = "Choose method to display",
-  #choices = c("sequentialLive", "clusterapplyLive", "parlapplyLive", "foreachLive"))),
+ 
   
+  #========#
+  #Live functies Tonen
+  #========#
   
   observeEvent(input$RunLive, {
-    
     
     if(input$callFunctionLive == "Read"){
       if(input$callMethodReadFilesLIVE == "sequentialLive"){
@@ -2861,8 +2862,75 @@ server <- shinyServer(function(input, output, session){
         future(readFiles_doparallel_foreach())
       }
     }
-    
-    
+    else if(input$callFunctionLive == "Pre"){
+      print("checkLive")
+      
+      if(input$callMethodPreLIVE == "SequentialLive"){
+        print("checkLive")
+        future(preProcessSequential())
+      }
+      else if(input$callMethodPreLIVE == "DoParallelChunkedLive"){
+        future(preProcessDoparallelChunked())
+      }
+      else if(input$callMethodPreLIVE == "ParallelChunkedLive"){
+       future(preProcessParallelChunked())
+     }
+      else if(input$callMethodPreLIVE == "ClusterChunkedLive"){
+        future(preProcessClusterChunked())
+       }
+   }
+    else if(input$callFunctionLive == "Corpus"){
+      if(input$callMethodCorpusLIVE == "QuanRLive"){
+        future(QuantedaCorpus())
+      }
+      else if(input$callMethodCorpusLIVE == "TMCorpusLive"){
+        future(TMCorpus())
+      }
+      
+      else if(input$callMethodCorpusLIVE == "TMCorpusChunkRes"){
+        future(TMCorpusChunk())
+      }
+      else if(input$callMethodCorpusLIVE == "TMForeachOneLoopLive"){
+        future(TMCorpusChunk1Loop())
+      }
+      
+    }
+    else if(input$callFunctionLive == "DTM"){
+      if(input$callMethodDTMLIVE == "createDfmChunksLive"){
+          future(createDFMChunks())
+      }
+      else if(input$callMethodDTMLIVE == "createDFMLive"){
+        future(createDFM())
+      }
+      else if(input$callMethodDTMLIVE == "createDFMasDTMLive"){
+        future(createDFMasDTM())
+      }
+      else if(input$callMethodDTMLIVE == "DTMLive"){
+        future(createDTM())
+      }
+      else if(nput$callMethodDTMLIVE == "DTMchunkedLive"){
+       future(createDTMChunked()) 
+      }
+    }
+    else if(input$callFunctionLive == "Cluster"){
+      if(input$callMethodClusterLIVE == "doParallelLive"){
+        future(skmeansClusterDoPar())
+      }
+      else if(input$callMethodClusterLIVE == "doParIterLive"){
+        future(skmeansClusterDoParIter())
+      }
+      else if(input$callMethodClusterLIVE  == "parallelLive"){
+        future(skmeansClusterPar())
+      }
+      else if(input$callMethodClusterLIVE  == "parIterLive"){
+        future(skmeansClusterParIter())
+      }
+      else if(input$callMethodClusterLIVE  == "sequentialLive"){
+        future(skmeansCluster())
+      }
+    }
+   # inputId= "callMethodClusterLIVE", label = "Choose a method to display",
+    #choices = c("doParallelLive", "doParIterLive", "parallelLive", "parIterLive", "sequentialLive"))),
   })
     
     
