@@ -19,7 +19,7 @@ clusterMatrix <- function() {
 # ==============================================================================
 
 skmeansCluster <- function(k=10,nstarts=10,maxiter=10){
-  result <- skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
+  result <- skmeans(DFM, k ,method = "pclust", control = list(nruns = nstarts, maxiter = maxiter, verbose = TRUE))
   return(result)
 }
 

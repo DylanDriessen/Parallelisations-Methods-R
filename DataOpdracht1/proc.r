@@ -3,10 +3,10 @@
 source("loadPackages.R")
 
 no_cores <- detectCores()
-save <- TRUE # save to data files
+save <- FALSE # save to data files
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/small/"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/medium/"; batches <- 5
 
 if (save) dir.create("data", showWarnings = FALSE)
 
@@ -51,7 +51,7 @@ rm(docs); gc()
 
 # create corpus
 source("lib/createCorpus.r")
-docsCorpus <- createCorpus()
+#docsCorpus <- createCorpus()
 docsCorpusQuan <- createCorpusQuan()
 
 # save to RDS
