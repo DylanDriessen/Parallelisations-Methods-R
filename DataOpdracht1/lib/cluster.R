@@ -29,16 +29,11 @@ skmeansCluster <- function(k,nstarts,maxiter){
 # ==============================================================================
 
 skmeansClusterPar <- function(k,nstarts,maxiter) {
-  #genetic
-  set.seed(125)
-  no_cores <- detectCores() - 1
+  nstartv <- divide(nstarts = nstarts,ncores = no_cores)
+
   cl <- makeCluster(no_cores, outfile = "")
-  #clusterExport(cl, "skmeans")
   clusterEvalQ(cl, {library("quanteda");library("skmeans")})
-  clusterSetRNGStream(cl, iseed = 1236)
-  registerDoParallel(cl)
-  #nstart <- 8
-  nstartv <- divideNStarts(nstarts = nstarts,ncores = no_cores)
+
   result <-
     clusterApply(cl, nstartv, function(n, dfm,maxiter)
       skmeans(dfm, k, method = "pclust", control = list(nruns = n ,maxiter = maxiter,verbose = TRUE)), DFM, maxiter)
@@ -53,20 +48,15 @@ skmeansClusterPar <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterDoPar <- function(k,nstarts,maxiter) {
-  #genetic
-  set.seed(125)
+  nstartv <- divide(nstarts = nstarts,ncores = no_cores)
+
   cl <- makeCluster(no_cores, outfile = "")
-  ##clusterExport(cl, "skmeans")
-  registerDoParallel(cl)
-  clusterSetRNGStream(cl, iseed = 1236)
-  #nstart <- 8
-  nstartv <- divideNStarts(nstarts = nstarts,ncores = no_cores)
   registerDoParallel(cl)
   
   result <- 
     foreach(n=nstartv,
-            .export= "DFM",
-            .packages = c("skmeans","quanteda")) %dopar% {
+            .packages = c("skmeans","quanteda"),
+            .export= "DFM") %dopar% {
               skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = maxiter,verbose = TRUE))
     }
   
@@ -81,17 +71,11 @@ skmeansClusterDoPar <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterParIter <- function(k,nstarts,maxiter) {
-  #genetic
-  set.seed(125)
-  no_cores <- detectCores() - 1
-  cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "skmeans")
-  clusterEvalQ(cl, library("quanteda"))
-  clusterSetRNGStream(cl, iseed = 1236)
-  registerDoParallel(cl)
-  #nstart <- 10
-  #nstartv <- rep(floor(nstart / no_cores), no_cores)
-  niterv <- divideNStarts(maxiter,ncores = no_cores)
+  niterv <- divide(maxiter,ncores = no_cores)
+  
+  cl <- makeCluster(no_cores)
+  clusterEvalQ(cl, {library("quanteda");library("skmeans")})
+
   result <-
     clusterApply(cl, niterv, function(n, x)
       skmeans(x, k, method = "pclust", control = list(nruns = nstarts ,maxiter = n,verbose = TRUE)), DFM)
@@ -106,40 +90,32 @@ skmeansClusterParIter <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterDoParIter <- function(k,nstarts,maxiter) {
-  #genetic
-  set.seed(125)
+  niterv <- divide(maxiter,no_cores)
+
   cl <- makeCluster(no_cores, outfile = "")
-  ##clusterExport(cl, "skmeans")
-  registerDoParallel(cl)
-  clusterSetRNGStream(cl, iseed = 1236)
-  #nstart <- 10
-  niterv <- divideNStarts(maxiter,no_cores)
   registerDoParallel(cl)
   
   result <- 
     foreach(n=niterv,
-            #.export= "DFM",
             .packages = c("skmeans","quanteda"),
             .export = "DFM") %dopar% {
               skmeans(DFM, k ,method = "pclust",control = list(nruns = nstarts ,maxiter = n,verbose = TRUE))
-            }
+    }
   
   stopCluster(cl)
   return(result[[1]])
 }
 
-divideNStarts <- function(nstarts,ncores){
-  if(nstarts<ncores){
-    return(rep(1,nstarts))
+divide <- function(x,ncores){
+  if(x<ncores){
+    return(rep(1,x))
   }
-  
   list<-rep(0,ncores)
   
-  for(i in 1:nstarts){
+  for(i in 1:x){
     if(i>ncores){
       i=i%%ncores+1
     }
-    
     list[[i]]=list[[i]]+1
   }
   return(list)
