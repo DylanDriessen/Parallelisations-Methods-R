@@ -3,7 +3,7 @@ source("loadPackages.R")
 import(c("shiny", "ggplot2", "plotly", "DT", "future", "promises", "markdown"))
 
 # Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/small/"; ofn <- "ps18b_abstr"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/small/"; batches <- 5
 
 # Load intermediate files into memory
 docs <- readRDS("data/docs.rds")
