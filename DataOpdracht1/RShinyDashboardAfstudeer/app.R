@@ -2929,8 +2929,7 @@ server <- shinyServer(function(input, output, session){
         future(skmeansCluster())
       }
     }
-   # inputId= "callMethodClusterLIVE", label = "Choose a method to display",
-    #choices = c("doParallelLive", "doParIterLive", "parallelLive", "parIterLive", "sequentialLive"))),
+   
   })
     
     
