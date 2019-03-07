@@ -20,6 +20,13 @@ skmeansCluster <- function(k,nstarts,maxiter){
   return(result)
 }
 
+divideN <- function(nstart, ncores) {
+  if(nstart<ncores) return(rep(1,nstart))
+  mod <- nstart%%ncores
+  return(c(rep(ceiling(nstart/ncores), times = mod),
+           rep(floor(nstart/ncores), times = ncores-mod)))
+}
+
 # ==============================================================================
 #
 #                                 SKMEANS Parallel 
