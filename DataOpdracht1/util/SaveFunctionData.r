@@ -51,7 +51,6 @@ saveFunctionData <- function(f, fpath) {
 # 
 # 
 # saveFunctionData(TMCorpusChunk1Loop_peakRAM, "results/createCorpus/TMForeachOneLoop")
-# #saveFunctionData(TMCorpusChunk_peakRAM, "results/createCorpus/TMCorpusChunk")
 # saveFunctionData(TMCorpus_peakRAM, "results/createCorpus/TMCorpus")
 # saveFunctionData(QuantedaCorpus_peakRAM, "results/createCorpus/QuanR")
 # # 

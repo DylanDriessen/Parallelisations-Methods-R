@@ -6,7 +6,7 @@ no_cores <- detectCores()
 save <- TRUE # save to data files
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/small/"; batches <- 1
 
 if (save) dir.create("data", showWarnings = FALSE)
 
@@ -18,6 +18,7 @@ if (save) dir.create("data", showWarnings = FALSE)
 ################################################################################
 # IMPORT SOURCE DATA
 ################################################################################
+
 
 # read batches and add ids
 source("lib/readFiles.r")
