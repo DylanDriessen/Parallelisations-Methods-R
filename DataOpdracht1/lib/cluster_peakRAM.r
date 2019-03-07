@@ -1,5 +1,8 @@
 source("lib/cluster.R")
-no_clusters <- 10
+
+k <- 10
+nstarts <- 10
+maxiter <- 10
 
 list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 
@@ -11,7 +14,7 @@ list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 
 skmeansCluster_peakRAM <- function(){
   t <- Sys.time()
-  df <- peakRAM(skmeansCluster(no_clusters))
+  df <- peakRAM(skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE)))
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
 }
 
@@ -22,20 +25,20 @@ skmeansCluster_peakRAM <- function(){
 # ==============================================================================
 
 skmeansClusterPar_peakRAM <- function() {
-  #genetic
-  set.seed(125)
-  no_cores <- detectCores() - 1
+  nstartv <- divide_peakRAM(x = nstarts,ncores = no_cores)
+
+  
   cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "no_clusters")
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
-  clusterSetRNGStream(cl, iseed = 1236)
+  clusterExport(cl,c("k","maxiter","nstarts"))
+  
+  
   registerDoSNOW(cl)
-  nstart <- 8
-  nstartv <- rep(floor(nstart / no_cores), no_cores)
+  
   result <-
-    clusterApply(cl, nstartv, function(n, x) {
+    clusterApply(cl, nstartv, function(n,dfm) {
       t <- Sys.time()
-      df <- peakRAM(skmeans(x, no_clusters, method = "pclust", control = list(nruns = n ,maxiter = 10,verbose = TRUE)))
+      df <- peakRAM(skmeans(dfm, k, method = "pclust", control = list(nruns = n ,maxiter = maxiter,verbose = TRUE)))
       cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
     }, DFM)
   stopCluster(cl)
@@ -50,23 +53,18 @@ skmeansClusterPar_peakRAM <- function() {
 # ==============================================================================
 
 skmeansClusterDoPar_peakRAM <- function() {
-  #genetic
-  set.seed(125)
+  nstartv <- divide_peakRAM(x = nstarts,ncores = no_cores)
+  
   cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "no_clusters")
   registerDoSNOW(cl)
-  clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 8
-  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
-  registerDoParallel(cl)
   
   result <- 
     foreach(n=nstartv,
-            .export= "DFM",
             .packages = c("skmeans","quanteda", "peakRAM"),
+            .export= c("DFM","k","maxiter"),
             .combine = rbind) %dopar% {
               t <- Sys.time()
-              df <- peakRAM(skmeans(DFM, no_clusters ,method = "pclust",control = list(nruns = n ,maxiter = 10,verbose = TRUE)))
+              df <- peakRAM(skmeans(DFM, k ,method = "pclust",control = list(nruns = n ,maxiter = maxiter,verbose = TRUE)))
               cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
             }
   stopCluster(cl)
@@ -79,21 +77,20 @@ skmeansClusterDoPar_peakRAM <- function() {
 #
 # ==============================================================================
 
-skmeansClusterParIter <- function() {
-  #genetic
-  set.seed(125)
-  no_cores <- detectCores() - 1
-  cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "no_clusters")
+skmeansClusterParIter_peakRAM <- function() {
+  niterv <- divide_peakRAM(x = maxiter,ncores = no_cores)
+  
+  cl <- makeCluster(no_cores,outfile="")
+  
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
-  clusterSetRNGStream(cl, iseed = 1236)
+  clusterExport(cl,c("k","nstarts"))
+  
   registerDoSNOW(cl)
-  nstart <- 10
-  nstartv <- rep(floor(nstart / no_cores), no_cores)
+  
   result <-
-    clusterApply(cl, nstartv, function(n, x) {
+    clusterApply(cl, niterv, function(n, dfm) {
       t <- Sys.time()
-      df <- peakRAM(skmeans(x, no_clusters, method = "pclust", control = list(nruns = 8 ,maxiter = n,verbose = TRUE)))
+      df <- peakRAM(skmeans(dfm, k, method = "pclust", control = list(nruns = nstarts ,maxiter = n,verbose = TRUE)))
       cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
     }, DFM)
   stopCluster(cl)
@@ -106,26 +103,36 @@ skmeansClusterParIter <- function() {
 #
 # ==============================================================================
 
-skmeansClusterDoParIter <- function() {
-  #genetic
-  set.seed(125)
+skmeansClusterDoParIter_peakRAM <- function() {
+  niterv <- divide_peakRAM(x = maxiter,ncores = no_cores)
+  
   cl <- makeCluster(no_cores, outfile = "")
-  clusterExport(cl, "no_clusters")
   registerDoSNOW(cl)
-  clusterSetRNGStream(cl, iseed = 1236)
-  nstart <- 10
-  nstartv <- rep(ceiling(nstart / no_cores), no_cores)
-  registerDoParallel(cl)
+  
   result <- 
-    foreach(n=nstartv,
-            #.export= "DFM",
+    foreach(n=niterv,
             .packages = c("skmeans","quanteda", "peakRAM"),
-            .export = "DFM",
+            .export = c("DFM","k","nstarts"),
             .combine = rbind) %dopar% {
               t <- Sys.time()
-              df <- peakRAM(skmeans(DFM, no_clusters ,method = "pclust",control = list(nruns = 8 ,maxiter = n,verbose = TRUE)))
+              df <- peakRAM(skmeans(DFM, k ,method = "pclust",control = list(nruns = nstarts ,maxiter = n,verbose = TRUE)))
               cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
             }
   stopCluster(cl)
   return(result)
+}
+
+divide_peakRAM <- function(x,ncores){
+  if(x<ncores){
+    return(rep(1,x))
+  }
+  list<-rep(0,ncores)
+  
+  for(i in 1:x){
+    if(i>ncores){
+      i=i%%ncores+1
+    }
+    list[[i]]=list[[i]]+1
+  }
+  return(list)
 }

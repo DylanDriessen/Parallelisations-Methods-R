@@ -20,7 +20,7 @@ read_batch_peakRAM <- function(x) {
 #   png(paste0('test', '/snow_plot.png'))
 #   plot(snow.time({
 #     cl <- makeCluster(min(no_cores, batches), outfile = "")
-#     clusterExport(cl, c("read_batch", "read_batch_peakRAM", "ifn", "ifp", "ofn"))
+#     clusterExport(cl, c("read_batch", "read_batch_peakRAM", "ifn", "ifp"))
 #     clusterEvalQ(cl, { library("readr"); library("tibble"); library("data.table"); library("peakRAM") })
 #     registerDoSNOW(cl)
 #     res <- foreach(batch_nr = 1:batches, .combine = rbind  ) %dopar% read_batch_peakRAM(batch_nr)

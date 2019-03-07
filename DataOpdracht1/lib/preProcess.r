@@ -1,6 +1,3 @@
-# if (!exists("docs")){
-#   load("docs.rds")
-# }
 
 preProcess <- function(){
   return(preProcessClusterChunked())
