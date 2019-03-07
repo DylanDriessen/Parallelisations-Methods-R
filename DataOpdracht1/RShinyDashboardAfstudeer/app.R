@@ -1,32 +1,8 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
-import(c("shiny", "ggplot2", "plotly", "DT", "future", "promises", "markdown"))
-
 setwd("../")
-source("lib/readFiles_peakRAM.r")
-source("lib/readFiles.r")
-source("lib/createCorpus.r")
-source("lib/createDTM.r")
-source("lib/preProcess.r")
-source("lib/cluster.R")
-source("lib/realtime_sysinfo.r")
-source("util/SaveFunctionData.r")
-source("lib/preProcess_peakRAM.r")
-
-import(c("readr","tibble","data.table", "peakRAM", "foreach", "doParallel", "parallel", "microbenchmark"))
 plan(multiprocess)
 
-
-
-ram <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/ram_data.rds")
-#benchmark <- readRDS("~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
+# load all packages and source files
+source("startupDashboard.r")
 
 # Define UI for application that draws a histogram
 ui <- shinyServer(fluidPage(

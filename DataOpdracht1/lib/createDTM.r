@@ -29,7 +29,7 @@ createDFMChunks <- function() {
   no_cores <- detectCores()
   registerDoParallel(cl)
   dfmList <- list()
-  docrows <- nrow(docs)
+  docrows <- length(docsCorpusQuan)
   dc <- docsCorpusQuan
   dfmList <-
     foreach(i = 1:no_cores) %dopar% {
@@ -64,7 +64,7 @@ createDFMChunksBind <- function() {
   no_cores <- detectCores()
   registerDoParallel(cl)
   dfmList <- list()
-  docrows <- nrow(docs)
+  docrows <- nrow(docsCorpusQuan)
   dc <- docsCorpusQuan
   dfmList <-
     foreach(i = 1:no_cores, .combine = rbind) %dopar% {
