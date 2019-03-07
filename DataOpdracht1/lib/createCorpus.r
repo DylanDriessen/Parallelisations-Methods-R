@@ -1,9 +1,9 @@
 createCorpus <- function() {
   ##### Create corpus (and define default language)
   
-  TMCorpusChunk1Loop()
+  # TMCorpusChunk1Loop()
   # TMCorpusChunk()
-  # TMCorpus()
+   TMCorpus()
 }
 
 createCorpusQuan <- function() {
@@ -12,7 +12,7 @@ createCorpusQuan <- function() {
 }
 
 createCorpusCluster <- function() {
-  no_cores <- detectCores() - 1 
+  # no_cores <- detectCores() - 1 
   cl <- makeCluster(no_cores)
   clusterEvalQ(cl, {
     library("tm")
@@ -75,7 +75,7 @@ TMCorpusChunk1Loop <- function() {
                    # print(paste(pid, "   To lower"))
                    tm_map(crpChunk, content_transformer(tolower))
                    # print(paste(pid, "   Remove stopwords"))
-                   tm_map(crpChunk, removeWords, c(stopwords("SMART")))
+                   tm_map(crpChunk, removeWords, stopwords(source = "smart"))
                    # print(paste(pid, "   Stem document"))
                    tm_map(crpChunk, stemDocument, language = "porter")
                    # print(paste(pid, "   Remove numbers"))
@@ -115,7 +115,7 @@ TMCorpusChunk <- function() {
   ##### Remove graphical characters
   ids <- 1:length(crp)
   library(parallel)
-  no_cores <- detectCores() - 1
+  # no_cores <- detectCores() - 1
   # print("split chunks")
   chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   
@@ -221,7 +221,7 @@ TMCorpus <- function() {
   
   ##### Stopword removal
   # print("Stopword")
-  crp <- tm_map(crp, removeWords, c(stopwords("SMART")))
+  crp <- tm_map(crp, removeWords, stopwords(source = "smart"))
   
   ##### Stemming
   # print("Stemming")
@@ -256,7 +256,8 @@ TMCorpus <- function() {
 #https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 
 QuantedaCorpus <- function() {
-  quanteda_options(threads = parallel::detectCores() - 1, verbose = TRUE)
+  
+  quanteda_options(threads = no_cores, verbose = TRUE)
   
   # print("Creating Quanteda Corpus")
   Quan <- corpus(docspp)
