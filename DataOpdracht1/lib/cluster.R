@@ -1,11 +1,11 @@
 clusterMatrix <- function() {
   import(c("biganalytics", "cluster", "skmeans"))
   
-  # skmeansCluster(k)
+  # skmeansCluster(k = 10,nstarts = 10,maxiter = 10)
   skmeansClusterPar(k = 10,nstarts = 10,maxiter = 10)
-  # skmeansClusterDoPar(k)
-  # skmeansClusterParIter(k)
-  # skmeansClusterDoParIter(k)
+  # skmeansClusterDoPar(k = 10,nstarts = 10,maxiter = 10)
+  # skmeansClusterParIter(k = 10,nstarts = 10,maxiter = 10)
+  # skmeansClusterDoParIter(k = 10,nstarts = 10,maxiter = 10)
   
 }
 

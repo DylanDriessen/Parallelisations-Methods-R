@@ -12,7 +12,7 @@ list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 #
 # ==============================================================================
 
-skmeansCluster_peakRAM <- function(k,nstarts,maxiter){
+skmeansCluster_peakRAM <- function(){
   t <- Sys.time()
   df <- peakRAM(skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE)))
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
