@@ -149,10 +149,10 @@ createDFMasDTM <- function() {
       return(dtm_raw)
     }
   )
-  # dtm_raw <- convert(dtm_raw, to = "tm")
+  dtm_raw <- convert(dtm_raw, to = "tm")
   # dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
   # 
-  # return(dtm_raw)
+  return(dtm_raw)
 }
 
 #####################################################################

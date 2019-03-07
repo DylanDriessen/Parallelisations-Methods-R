@@ -139,7 +139,9 @@ createDocsChunks <- function(noChunks) {
 }
 ```
 
-Parallellisatie hierboven lijkt ons niet efficiënt genoeg omdat er meerdere foreach lussen gebruikt worden. Daarom nemen we alle cleaning samen in 1 loop.
+Parallellisatie hierboven lijkt ons niet efficiënt genoeg omdat er meerdere foreach lussen gebruikt worden.
+Deze methode vraagt ook heel veel geheugen op aan de server. Met als gevolg dat deze functie op een grote dataset (~ > 1.000.000) zal vastlopen.
+Daarom nemen we alle cleaning samen in 1 loop.
 
 Hier passen we ook meteen onze nieuwe methode *createDocsChunks* op toe, voor het verdelen in chunks.
 ```{r}
@@ -179,11 +181,15 @@ De tokens worden gecleaned, en deze cleaning zal soms strenger verlopen dan bij 
 In *quanteda_options* geven we mee over hoeveel cores quanteda threads kan gebruiken.
 Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met *quanteda_options()* in de console.
 
+```{r}
+quanteda_options()
+```
+
 
 ```{r}
 QuantedaCorpus <- function() {
   ##### Set Quanteda options
-  quanteda_options(threads = parallel::detectCores() - 1, verbose = TRUE)
+  quanteda_options(threads = no_cores, verbose = TRUE)
   
   ##### Create Quanteda Corpus
   crpT <- corpus(docs)
@@ -218,5 +224,11 @@ QuantedaCorpus <- function() {
 }
 ```
 
+Deze resultaten zijn bekomen op een dataset van 500.000 documenten.
+De tijd zal zich lineair verhouden t.o.v. de dataset.
+Bevindingen op grotere datasets bevestigen dit, maar zijn niet geplaatst geraakt in een microbenchmark door problemen met het RAM.
+```{r}
+readRDS(file = "./resources/corpusBenchmark.rds")
+```
 
-
+Uit deze resultaten kunnen we besluiten dat het package Quanteda het snelste is.
