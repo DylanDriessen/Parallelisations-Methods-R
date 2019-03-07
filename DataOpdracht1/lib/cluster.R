@@ -29,7 +29,7 @@ skmeansCluster <- function(k,nstarts,maxiter){
 # ==============================================================================
 
 skmeansClusterPar <- function(k,nstarts,maxiter) {
-  nstartv <- divide(nstarts = nstarts,ncores = no_cores)
+  nstartv <- divide(x = nstarts,ncores = no_cores)
 
   cl <- makeCluster(no_cores, outfile = "")
   clusterEvalQ(cl, {library("quanteda");library("skmeans")})
@@ -48,7 +48,7 @@ skmeansClusterPar <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterDoPar <- function(k,nstarts,maxiter) {
-  nstartv <- divide(nstarts = nstarts,ncores = no_cores)
+  nstartv <- divide(x = nstarts,ncores = no_cores)
 
   cl <- makeCluster(no_cores, outfile = "")
   registerDoParallel(cl)
@@ -71,9 +71,9 @@ skmeansClusterDoPar <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterParIter <- function(k,nstarts,maxiter) {
-  niterv <- divide(maxiter,ncores = no_cores)
+  niterv <- divide(x=maxiter,ncores = no_cores)
   
-  cl <- makeCluster(no_cores)
+  cl <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cl, {library("quanteda");library("skmeans")})
 
   result <-
@@ -90,7 +90,7 @@ skmeansClusterParIter <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterDoParIter <- function(k,nstarts,maxiter) {
-  niterv <- divide(maxiter,no_cores)
+  niterv <- divide(x=maxiter,ncores=no_cores)
 
   cl <- makeCluster(no_cores, outfile = "")
   registerDoParallel(cl)

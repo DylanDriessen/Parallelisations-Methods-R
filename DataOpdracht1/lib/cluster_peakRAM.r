@@ -22,7 +22,7 @@ skmeansCluster_peakRAM <- function(){
 # ==============================================================================
 
 skmeansClusterPar_peakRAM <- function() {
-  nstartv <- divide_peakRAM(nstarts = nstarts,ncores = no_cores)
+  nstartv <- divide_peakRAM(x = nstarts,ncores = no_cores)
   
   cl <- makeCluster(no_cores, outfile = "")
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
@@ -48,7 +48,7 @@ skmeansClusterPar_peakRAM <- function() {
 # ==============================================================================
 
 skmeansClusterDoPar_peakRAM <- function() {
-  nstartv <- divide_peakRAM(nstarts = nstarts,ncores = no_cores)
+  nstartv <- divide_peakRAM(x = nstarts,ncores = no_cores)
   
   cl <- makeCluster(no_cores, outfile = "")
   registerDoSNOW(cl)
@@ -73,7 +73,7 @@ skmeansClusterDoPar_peakRAM <- function() {
 # ==============================================================================
 
 skmeansClusterParIter <- function() {
-  niterv <- divide_peakRAM(maxiter,ncores = no_cores)
+  niterv <- divide_peakRAM(x = maxiter,ncores = no_cores)
   
   cl <- makeCluster(no_cores)
   
@@ -98,7 +98,7 @@ skmeansClusterParIter <- function() {
 # ==============================================================================
 
 skmeansClusterDoParIter <- function() {
-  niterv <- divide_peakRAM(maxiter,no_cores)
+  niterv <- divide_peakRAM(x = maxiter,ncores = no_cores)
   
   cl <- makeCluster(no_cores, outfile = "")
   registerDoSNOW(cl)
