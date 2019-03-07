@@ -245,6 +245,27 @@ In een sparce matrix gaan de zero values die in de full matrix staan weggelaten 
 Om met sparce matrices te kunnen werken, gebruiken we de functie <a href="https://www.rdocumentation.org/packages/skmeans/versions/0.2-11/topics/skmeans">skmeans</a> gebruiken.</p>
 <div id="parallel" class="section level2">
 <h2>Parallel</h2>
+<p>Eersts gebruiken we een functie om het aantal nstarts of het max aantal iteraties te verdelen over het aantal cores. Wanneer we we bv. 10 nstarts willen verdelen over 8 cores moeten we een lijst hebben van natuurlijke getallen waarvan de som gelijk is aan 10. het resulaat zou op deze vector moeten lijken [2,2,1,1,1,1,1,1].</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGl2aWRlIDwtIGZ1bmN0aW9uKHgsbmNvcmVzKXtcbiAgaWYoeDxuY29yZXMpe1xuICAgIHJldHVybihyZXAoMSx4KSlcbiAgfVxuICBsaXN0PC1yZXAoMCxuY29yZXMpXG4gIFxuICBmb3IoaSBpbiAxOngpe1xuICAgIGlmKGk+bmNvcmVzKXtcbiAgICAgIGk9aSUlbmNvcmVzKzFcbiAgICB9XG4gICAgbGlzdFtbaV1dPWxpc3RbW2ldXSsxXG4gIH1cbiAgcmV0dXJuKGxpc3QpXG59XG5gYGAifQ== -->
+<pre class="r"><code>divide &lt;- function(x,ncores){
+  if(x&lt;ncores){
+    return(rep(1,x))
+  }
+  list&lt;-rep(0,ncores)
+  
+  for(i in 1:x){
+    if(i&gt;ncores){
+      i=i%%ncores+1
+    }
+    list[[i]]=list[[i]]+1
+  }
+  return(list)
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <div id="parallelisatie-over-het-aantal-runs" class="section level3">
 <h3>Parallelisatie over het aantal runs</h3>
 <p>Per cluster berekening</p>
@@ -252,21 +273,16 @@ Om met sparce matrices te kunnen werken, gebruiken we de functie <a href="https:
 <h4>Parallel</h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJQYXIgPC0gZnVuY3Rpb24oaykge1xuICAjZ2VuZXRpY1xuICBzZXQuc2VlZCgxMjUpXG4gIG5vX2NvcmVzIDwtIGRldGVjdENvcmVzKCkgLSAxXG4gIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlID0gXCJcIilcbiAgI2NsdXN0ZXJFeHBvcnQoY2wsIFwic2ttZWFuc1wiKVxuICBjbHVzdGVyRXZhbFEoY2wsIHtsaWJyYXJ5KFwicXVhbnRlZGFcIik7bGlicmFyeShcInNrbWVhbnNcIil9KVxuICBjbHVzdGVyU2V0Uk5HU3RyZWFtKGNsLCBpc2VlZCA9IDEyMzYpXG4gIHJlZ2lzdGVyRG9QYXJhbGxlbChjbClcbiAgbnN0YXJ0IDwtIDhcbiAgbnN0YXJ0diA8LSByZXAoZmxvb3IobnN0YXJ0IC8gbm9fY29yZXMpLCBub19jb3JlcylcbiAgcmVzdWx0IDwtXG4gICAgY2x1c3RlckFwcGx5KGNsLCBuc3RhcnR2LCBmdW5jdGlvbihuLCB4KVxuICAgICAgc2ttZWFucyh4LCBrLCBtZXRob2QgPSBcInBjbHVzdFwiLCBjb250cm9sID0gbGlzdChucnVucyA9IG4gLG1heGl0ZXIgPSAxMCx2ZXJib3NlID0gVFJVRSkpLCBERk0pXG4gIHN0b3BDbHVzdGVyKGNsKVxuICByZXR1cm4ocmVzdWx0W1sxXV0pXG59XG5gYGAifQ== -->
-<pre class="r"><code>skmeansClusterPar &lt;- function(k) {
-  #genetic
-  set.seed(125)
-  no_cores &lt;- detectCores() - 1
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJQYXIgPC0gZnVuY3Rpb24oayxuc3RhcnRzLG1heGl0ZXIpIHtcbiAgbnN0YXJ0diA8LSBkaXZpZGUobnN0YXJ0cyA9IG5zdGFydHMsbmNvcmVzID0gbm9fY29yZXMpXG5cbiAgY2wgPC0gbWFrZUNsdXN0ZXIobm9fY29yZXMsIG91dGZpbGUgPSBcIlwiKVxuICBjbHVzdGVyRXZhbFEoY2wsIHtsaWJyYXJ5KFwicXVhbnRlZGFcIik7bGlicmFyeShcInNrbWVhbnNcIil9KVxuXG4gIHJlc3VsdCA8LVxuICAgIGNsdXN0ZXJBcHBseShjbCwgbnN0YXJ0diwgZnVuY3Rpb24obiwgZGZtLG1heGl0ZXIpXG4gICAgICBza21lYW5zKGRmbSwgaywgbWV0aG9kID0gXCJwY2x1c3RcIiwgY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuICxtYXhpdGVyID0gbWF4aXRlcix2ZXJib3NlID0gVFJVRSkpLCBERk0sIG1heGl0ZXIpXG4gIHN0b3BDbHVzdGVyKGNsKVxuICByZXR1cm4ocmVzdWx0W1sxXV0pXG59XG5gYGAifQ== -->
+<pre class="r"><code>skmeansClusterPar &lt;- function(k,nstarts,maxiter) {
+  nstartv &lt;- divide(nstarts = nstarts,ncores = no_cores)
+
   cl &lt;- makeCluster(no_cores, outfile = &quot;&quot;)
-  #clusterExport(cl, &quot;skmeans&quot;)
   clusterEvalQ(cl, {library(&quot;quanteda&quot;);library(&quot;skmeans&quot;)})
-  clusterSetRNGStream(cl, iseed = 1236)
-  registerDoParallel(cl)
-  nstart &lt;- 8
-  nstartv &lt;- rep(floor(nstart / no_cores), no_cores)
+
   result &lt;-
-    clusterApply(cl, nstartv, function(n, x)
-      skmeans(x, k, method = &quot;pclust&quot;, control = list(nruns = n ,maxiter = 10,verbose = TRUE)), DFM)
+    clusterApply(cl, nstartv, function(n, dfm,maxiter)
+      skmeans(dfm, k, method = &quot;pclust&quot;, control = list(nruns = n ,maxiter = maxiter,verbose = TRUE)), DFM, maxiter)
   stopCluster(cl)
   return(result[[1]])
 }</code></pre>
@@ -278,29 +294,23 @@ Om met sparce matrices te kunnen werken, gebruiken we de functie <a href="https:
 <h4>DoParallel</h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJEb1BhciA8LSBmdW5jdGlvbihrKSB7XG4gICNnZW5ldGljXG4gIHNldC5zZWVkKDEyNSlcbiAgY2wgPC0gbWFrZUNsdXN0ZXIobm9fY29yZXMsIG91dGZpbGUgPSBcIlwiKVxuICAjI2NsdXN0ZXJFeHBvcnQoY2wsIFwic2ttZWFuc1wiKVxuICByZWdpc3RlckRvUGFyYWxsZWwoY2wpXG4gIGNsdXN0ZXJTZXRSTkdTdHJlYW0oY2wsIGlzZWVkID0gMTIzNilcbiAgbnN0YXJ0IDwtIDhcbiAgbnN0YXJ0diA8LSByZXAoY2VpbGluZyhuc3RhcnQgLyBub19jb3JlcyksIG5vX2NvcmVzKVxuICByZWdpc3RlckRvUGFyYWxsZWwoY2wpXG4gIFxuICByZXN1bHQgPC0gXG4gICAgZm9yZWFjaChuPW5zdGFydHYsXG4gICAgICAgICAgICAuZXhwb3J0PSBcIkRGTVwiLFxuICAgICAgICAgICAgLnBhY2thZ2VzID0gYyhcInNrbWVhbnNcIixcInF1YW50ZWRhXCIpKSAlZG9wYXIlIHtcbiAgICAgICAgICAgICAgc2ttZWFucyhERk0sIGsgLG1ldGhvZCA9IFwicGNsdXN0XCIsY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuICxtYXhpdGVyID0gMTAsdmVyYm9zZSA9IFRSVUUpKVxuICAgIH1cbiAgXG4gIHN0b3BDbHVzdGVyKGNsKVxuICByZXR1cm4ocmVzdWx0W1sxXV0pXG59XG5cbmBgYCJ9 -->
-<pre class="r"><code>skmeansClusterDoPar &lt;- function(k) {
-  #genetic
-  set.seed(125)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJEb1BhciA8LSBmdW5jdGlvbihrLG5zdGFydHMsbWF4aXRlcikge1xuICBuc3RhcnR2IDwtIGRpdmlkZShuc3RhcnRzID0gbnN0YXJ0cyxuY29yZXMgPSBub19jb3JlcylcblxuICBjbCA8LSBtYWtlQ2x1c3Rlcihub19jb3Jlcywgb3V0ZmlsZSA9IFwiXCIpXG4gIHJlZ2lzdGVyRG9QYXJhbGxlbChjbClcbiAgXG4gIHJlc3VsdCA8LSBcbiAgICBmb3JlYWNoKG49bnN0YXJ0dixcbiAgICAgICAgICAgIC5wYWNrYWdlcyA9IGMoXCJza21lYW5zXCIsXCJxdWFudGVkYVwiKSxcbiAgICAgICAgICAgIC5leHBvcnQ9IFwiREZNXCIpICVkb3BhciUge1xuICAgICAgICAgICAgICBza21lYW5zKERGTSwgayAsbWV0aG9kID0gXCJwY2x1c3RcIixjb250cm9sID0gbGlzdChucnVucyA9IG4gLG1heGl0ZXIgPSBtYXhpdGVyLHZlcmJvc2UgPSBUUlVFKSlcbiAgICB9XG4gIFxuICBzdG9wQ2x1c3RlcihjbClcbiAgcmV0dXJuKHJlc3VsdFtbMV1dKVxufVxuYGBgIn0= -->
+<pre class="r"><code>skmeansClusterDoPar &lt;- function(k,nstarts,maxiter) {
+  nstartv &lt;- divide(nstarts = nstarts,ncores = no_cores)
+
   cl &lt;- makeCluster(no_cores, outfile = &quot;&quot;)
-  ##clusterExport(cl, &quot;skmeans&quot;)
-  registerDoParallel(cl)
-  clusterSetRNGStream(cl, iseed = 1236)
-  nstart &lt;- 8
-  nstartv &lt;- rep(ceiling(nstart / no_cores), no_cores)
   registerDoParallel(cl)
   
   result &lt;- 
     foreach(n=nstartv,
-            .export= &quot;DFM&quot;,
-            .packages = c(&quot;skmeans&quot;,&quot;quanteda&quot;)) %dopar% {
-              skmeans(DFM, k ,method = &quot;pclust&quot;,control = list(nruns = n ,maxiter = 10,verbose = TRUE))
+            .packages = c(&quot;skmeans&quot;,&quot;quanteda&quot;),
+            .export= &quot;DFM&quot;) %dopar% {
+              skmeans(DFM, k ,method = &quot;pclust&quot;,control = list(nruns = n ,maxiter = maxiter,verbose = TRUE))
     }
   
   stopCluster(cl)
   return(result[[1]])
-}
-</code></pre>
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -312,21 +322,16 @@ Om met sparce matrices te kunnen werken, gebruiken we de functie <a href="https:
 <h4>Parallel</h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJQYXJJdGVyIDwtIGZ1bmN0aW9uKGspIHtcbiAgI2dlbmV0aWNcbiAgc2V0LnNlZWQoMTI1KVxuICBub19jb3JlcyA8LSBkZXRlY3RDb3JlcygpIC0gMVxuICBjbCA8LSBtYWtlQ2x1c3Rlcihub19jb3Jlcywgb3V0ZmlsZSA9IFwiXCIpXG4gIGNsdXN0ZXJFeHBvcnQoY2wsIFwic2ttZWFuc1wiKVxuICBjbHVzdGVyRXZhbFEoY2wsIGxpYnJhcnkoXCJxdWFudGVkYVwiKSlcbiAgY2x1c3RlclNldFJOR1N0cmVhbShjbCwgaXNlZWQgPSAxMjM2KVxuICByZWdpc3RlckRvUGFyYWxsZWwoY2wpXG4gIG5zdGFydCA8LSAxMFxuICBuc3RhcnR2IDwtIHJlcChmbG9vcihuc3RhcnQgLyBub19jb3JlcyksIG5vX2NvcmVzKVxuICByZXN1bHQgPC1cbiAgICBjbHVzdGVyQXBwbHkoY2wsIG5zdGFydHYsIGZ1bmN0aW9uKG4sIHgpXG4gICAgICBza21lYW5zKHgsIGssIG1ldGhvZCA9IFwicGNsdXN0XCIsIGNvbnRyb2wgPSBsaXN0KG5ydW5zID0gOCAsbWF4aXRlciA9IG4sdmVyYm9zZSA9IFRSVUUpKSwgREZNKVxuICBzdG9wQ2x1c3RlcihjbClcbiAgcmV0dXJuKHJlc3VsdFtbMV1dKVxufVxuYGBgIn0= -->
-<pre class="r"><code>skmeansClusterParIter &lt;- function(k) {
-  #genetic
-  set.seed(125)
-  no_cores &lt;- detectCores() - 1
-  cl &lt;- makeCluster(no_cores, outfile = &quot;&quot;)
-  clusterExport(cl, &quot;skmeans&quot;)
-  clusterEvalQ(cl, library(&quot;quanteda&quot;))
-  clusterSetRNGStream(cl, iseed = 1236)
-  registerDoParallel(cl)
-  nstart &lt;- 10
-  nstartv &lt;- rep(floor(nstart / no_cores), no_cores)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJQYXJJdGVyIDwtIGZ1bmN0aW9uKGssbnN0YXJ0cyxtYXhpdGVyKSB7XG4gIG5pdGVydiA8LSBkaXZpZGUobWF4aXRlcixuY29yZXMgPSBub19jb3JlcylcbiAgXG4gIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzKVxuICBjbHVzdGVyRXZhbFEoY2wsIHtsaWJyYXJ5KFwicXVhbnRlZGFcIik7bGlicmFyeShcInNrbWVhbnNcIil9KVxuXG4gIHJlc3VsdCA8LVxuICAgIGNsdXN0ZXJBcHBseShjbCwgbml0ZXJ2LCBmdW5jdGlvbihuLCB4KVxuICAgICAgc2ttZWFucyh4LCBrLCBtZXRob2QgPSBcInBjbHVzdFwiLCBjb250cm9sID0gbGlzdChucnVucyA9IG5zdGFydHMgLG1heGl0ZXIgPSBuLHZlcmJvc2UgPSBUUlVFKSksIERGTSlcbiAgc3RvcENsdXN0ZXIoY2wpXG4gIHJldHVybihyZXN1bHRbWzFdXSlcbn1cbmBgYCJ9 -->
+<pre class="r"><code>skmeansClusterParIter &lt;- function(k,nstarts,maxiter) {
+  niterv &lt;- divide(maxiter,ncores = no_cores)
+  
+  cl &lt;- makeCluster(no_cores)
+  clusterEvalQ(cl, {library(&quot;quanteda&quot;);library(&quot;skmeans&quot;)})
+
   result &lt;-
-    clusterApply(cl, nstartv, function(n, x)
-      skmeans(x, k, method = &quot;pclust&quot;, control = list(nruns = 8 ,maxiter = n,verbose = TRUE)), DFM)
+    clusterApply(cl, niterv, function(n, x)
+      skmeans(x, k, method = &quot;pclust&quot;, control = list(nruns = nstarts ,maxiter = n,verbose = TRUE)), DFM)
   stopCluster(cl)
   return(result[[1]])
 }</code></pre>
@@ -338,25 +343,19 @@ Om met sparce matrices te kunnen werken, gebruiken we de functie <a href="https:
 <h4>DoParallel</h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJEb1Bhckl0ZXIgPC0gZnVuY3Rpb24oaykge1xuICAjZ2VuZXRpY1xuICBzZXQuc2VlZCgxMjUpXG4gIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlID0gXCJcIilcbiAgIyNjbHVzdGVyRXhwb3J0KGNsLCBcInNrbWVhbnNcIilcbiAgcmVnaXN0ZXJEb1BhcmFsbGVsKGNsKVxuICBjbHVzdGVyU2V0Uk5HU3RyZWFtKGNsLCBpc2VlZCA9IDEyMzYpXG4gIG5zdGFydCA8LSAxMFxuICBuc3RhcnR2IDwtIHJlcChjZWlsaW5nKG5zdGFydCAvIG5vX2NvcmVzKSwgbm9fY29yZXMpXG4gIHJlZ2lzdGVyRG9QYXJhbGxlbChjbClcbiAgXG4gIHJlc3VsdCA8LSBcbiAgICBmb3JlYWNoKG49bnN0YXJ0dixcbiAgICAgICAgICAgICMuZXhwb3J0PSBcIkRGTVwiLFxuICAgICAgICAgICAgLnBhY2thZ2VzID0gYyhcInNrbWVhbnNcIixcInF1YW50ZWRhXCIpLFxuICAgICAgICAgICAgLmV4cG9ydCA9IFwiREZNXCIpICVkb3BhciUge1xuICAgICAgICAgICAgICBza21lYW5zKERGTSwgayAsbWV0aG9kID0gXCJwY2x1c3RcIixjb250cm9sID0gbGlzdChucnVucyA9IDggLG1heGl0ZXIgPSBuLHZlcmJvc2UgPSBUUlVFKSlcbiAgICAgICAgICAgIH1cbiAgXG4gIHN0b3BDbHVzdGVyKGNsKVxuICByZXR1cm4ocmVzdWx0W1sxXV0pXG59XG5gYGAifQ== -->
-<pre class="r"><code>skmeansClusterDoParIter &lt;- function(k) {
-  #genetic
-  set.seed(125)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2ttZWFuc0NsdXN0ZXJEb1Bhckl0ZXIgPC0gZnVuY3Rpb24oayxuc3RhcnRzLG1heGl0ZXIpIHtcbiAgbml0ZXJ2IDwtIGRpdmlkZShtYXhpdGVyLG5vX2NvcmVzKVxuXG4gIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlID0gXCJcIilcbiAgcmVnaXN0ZXJEb1BhcmFsbGVsKGNsKVxuICBcbiAgcmVzdWx0IDwtIFxuICAgIGZvcmVhY2gobj1uaXRlcnYsXG4gICAgICAgICAgICAucGFja2FnZXMgPSBjKFwic2ttZWFuc1wiLFwicXVhbnRlZGFcIiksXG4gICAgICAgICAgICAuZXhwb3J0ID0gXCJERk1cIikgJWRvcGFyJSB7XG4gICAgICAgICAgICAgIHNrbWVhbnMoREZNLCBrICxtZXRob2QgPSBcInBjbHVzdFwiLGNvbnRyb2wgPSBsaXN0KG5ydW5zID0gbnN0YXJ0cyAsbWF4aXRlciA9IG4sdmVyYm9zZSA9IFRSVUUpKVxuICAgIH1cbiAgXG4gIHN0b3BDbHVzdGVyKGNsKVxuICByZXR1cm4ocmVzdWx0W1sxXV0pXG59XG5gYGAifQ== -->
+<pre class="r"><code>skmeansClusterDoParIter &lt;- function(k,nstarts,maxiter) {
+  niterv &lt;- divide(maxiter,no_cores)
+
   cl &lt;- makeCluster(no_cores, outfile = &quot;&quot;)
-  ##clusterExport(cl, &quot;skmeans&quot;)
-  registerDoParallel(cl)
-  clusterSetRNGStream(cl, iseed = 1236)
-  nstart &lt;- 10
-  nstartv &lt;- rep(ceiling(nstart / no_cores), no_cores)
   registerDoParallel(cl)
   
   result &lt;- 
-    foreach(n=nstartv,
-            #.export= &quot;DFM&quot;,
+    foreach(n=niterv,
             .packages = c(&quot;skmeans&quot;,&quot;quanteda&quot;),
             .export = &quot;DFM&quot;) %dopar% {
-              skmeans(DFM, k ,method = &quot;pclust&quot;,control = list(nruns = 8 ,maxiter = n,verbose = TRUE))
-            }
+              skmeans(DFM, k ,method = &quot;pclust&quot;,control = list(nruns = nstarts ,maxiter = n,verbose = TRUE))
+    }
   
   stopCluster(cl)
   return(result[[1]])
@@ -372,7 +371,7 @@ Om met sparce matrices te kunnen werken, gebruiken we de functie <a href="https:
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2x1c3RlciIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKPCEtLWh0dHBzOi8vc3RhdHMuc3RhY2tleGNoYW5nZS5jb20vcXVlc3Rpb25zLzgxMzk2L2NsdXN0ZXJpbmctYWxnb3JpdGhtcy10aGF0LW9wZXJhdGUtb24tc3BhcnNlLWRhdGEtbWF0cmljaWVzIC0tPgoKT21kYXQgd2UgbWV0IEJpZyBEYXRhIGJlemlnIHppam4ga3VubmVuIHdlIG5pZXQgbWV0IGRlIHN0YW5kYWFyZCBba21lYW5zXShodHRwczovL3d3dy5yZG9jdW1lbnRhdGlvbi5vcmcvcGFja2FnZXMvc3RhdHMvdmVyc2lvbnMvMy41LjIvdG9waWNzL2ttZWFucykgZnVuY3RpZSB3ZXJrZW4gd2FudCBkZXplIHdlcmt0IG1ldCBlZW4gZnVsbCBtYXRyaXguIEFhbmdlemllbiB3ZSBnZWxpbWl0ZWVyZCB6aWpuIGluIGRlIGhvZXZlZWxoZWlkIGdlaGV1Z2VuIGRpZSB3ZSB0ZXIgYmVzY2hpa2tpbmcgaGViYmVuIGt1bm5lbiB3ZSBuaWV0IG1ldCBmdWxsIG1hdHJpeGVzIHdlcmtlbi4gRWVuIG9wbG9zc2luZyBpcyBvbSBpbiBwbGFhdHMgdmFuIGVlbiBmdWxsIG1hdHJpeCBlZW4gc3BhcmNlIG1hdHJpeCBhYW4gdGUgbWFrZW4uICAKSW4gZWVuIHNwYXJjZSBtYXRyaXggZ2FhbiBkZSB6ZXJvIHZhbHVlcyBkaWUgaW4gZGUgZnVsbCBtYXRyaXggc3RhYW4gd2VnZ2VsYXRlbiB3b3JkZW4uIEVlbiBzcGFyY2UgbWF0cml4IGhvdWQgcGVyIGRvY3VtZW50IGVlbiBsaWpzdCBiaWogbWV0IGRlIGlkJ3MgdmFuIGRlIHdvb3JkZW4gZGllIGhpZXJpbiB2b29ya29tZW4uICAKT20gbWV0IHNwYXJjZSBtYXRyaWNlcyB0ZSBrdW5uZW4gd2Vya2VuLCBnZWJydWlrZW4gd2UgZGUgZnVuY3RpZSBbc2ttZWFuc10oaHR0cHM6Ly93d3cucmRvY3VtZW50YXRpb24ub3JnL3BhY2thZ2VzL3NrbWVhbnMvdmVyc2lvbnMvMC4yLTExL3RvcGljcy9za21lYW5zKSBnZWJydWlrZW4uCgojI1BhcmFsbGVsCgojIyNQYXJhbGxlbGlzYXRpZSBvdmVyIGhldCBhYW50YWwgcnVucwoKUGVyIGNsdXN0ZXIgYmVyZWtlbmluZyAKCiMjIyNQYXJhbGxlbApgYGB7cn0Kc2ttZWFuc0NsdXN0ZXJQYXIgPC0gZnVuY3Rpb24oaykgewogICNnZW5ldGljCiAgc2V0LnNlZWQoMTI1KQogIG5vX2NvcmVzIDwtIGRldGVjdENvcmVzKCkgLSAxCiAgY2wgPC0gbWFrZUNsdXN0ZXIobm9fY29yZXMsIG91dGZpbGUgPSAiIikKICAjY2x1c3RlckV4cG9ydChjbCwgInNrbWVhbnMiKQogIGNsdXN0ZXJFdmFsUShjbCwge2xpYnJhcnkoInF1YW50ZWRhIik7bGlicmFyeSgic2ttZWFucyIpfSkKICBjbHVzdGVyU2V0Uk5HU3RyZWFtKGNsLCBpc2VlZCA9IDEyMzYpCiAgcmVnaXN0ZXJEb1BhcmFsbGVsKGNsKQogIG5zdGFydCA8LSA4CiAgbnN0YXJ0diA8LSByZXAoZmxvb3IobnN0YXJ0IC8gbm9fY29yZXMpLCBub19jb3JlcykKICByZXN1bHQgPC0KICAgIGNsdXN0ZXJBcHBseShjbCwgbnN0YXJ0diwgZnVuY3Rpb24obiwgeCkKICAgICAgc2ttZWFucyh4LCBrLCBtZXRob2QgPSAicGNsdXN0IiwgY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuICxtYXhpdGVyID0gMTAsdmVyYm9zZSA9IFRSVUUpKSwgREZNKQogIHN0b3BDbHVzdGVyKGNsKQogIHJldHVybihyZXN1bHRbWzFdXSkKfQpgYGAKIyMjI0RvUGFyYWxsZWwKYGBge3J9CnNrbWVhbnNDbHVzdGVyRG9QYXIgPC0gZnVuY3Rpb24oaykgewogICNnZW5ldGljCiAgc2V0LnNlZWQoMTI1KQogIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlID0gIiIpCiAgIyNjbHVzdGVyRXhwb3J0KGNsLCAic2ttZWFucyIpCiAgcmVnaXN0ZXJEb1BhcmFsbGVsKGNsKQogIGNsdXN0ZXJTZXRSTkdTdHJlYW0oY2wsIGlzZWVkID0gMTIzNikKICBuc3RhcnQgPC0gOAogIG5zdGFydHYgPC0gcmVwKGNlaWxpbmcobnN0YXJ0IC8gbm9fY29yZXMpLCBub19jb3JlcykKICByZWdpc3RlckRvUGFyYWxsZWwoY2wpCiAgCiAgcmVzdWx0IDwtIAogICAgZm9yZWFjaChuPW5zdGFydHYsCiAgICAgICAgICAgIC5leHBvcnQ9ICJERk0iLAogICAgICAgICAgICAucGFja2FnZXMgPSBjKCJza21lYW5zIiwicXVhbnRlZGEiKSkgJWRvcGFyJSB7CiAgICAgICAgICAgICAgc2ttZWFucyhERk0sIGsgLG1ldGhvZCA9ICJwY2x1c3QiLGNvbnRyb2wgPSBsaXN0KG5ydW5zID0gbiAsbWF4aXRlciA9IDEwLHZlcmJvc2UgPSBUUlVFKSkKICAgIH0KICAKICBzdG9wQ2x1c3RlcihjbCkKICByZXR1cm4ocmVzdWx0W1sxXV0pCn0KCmBgYAojIyNQYXJhbGxlbGlzYXRpZSBvdmVyIG1heCBpdGVyYXRpb25zCiMjIyNQYXJhbGxlbApgYGB7cn0Kc2ttZWFuc0NsdXN0ZXJQYXJJdGVyIDwtIGZ1bmN0aW9uKGspIHsKICAjZ2VuZXRpYwogIHNldC5zZWVkKDEyNSkKICBub19jb3JlcyA8LSBkZXRlY3RDb3JlcygpIC0gMQogIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlID0gIiIpCiAgY2x1c3RlckV4cG9ydChjbCwgInNrbWVhbnMiKQogIGNsdXN0ZXJFdmFsUShjbCwgbGlicmFyeSgicXVhbnRlZGEiKSkKICBjbHVzdGVyU2V0Uk5HU3RyZWFtKGNsLCBpc2VlZCA9IDEyMzYpCiAgcmVnaXN0ZXJEb1BhcmFsbGVsKGNsKQogIG5zdGFydCA8LSAxMAogIG5zdGFydHYgPC0gcmVwKGZsb29yKG5zdGFydCAvIG5vX2NvcmVzKSwgbm9fY29yZXMpCiAgcmVzdWx0IDwtCiAgICBjbHVzdGVyQXBwbHkoY2wsIG5zdGFydHYsIGZ1bmN0aW9uKG4sIHgpCiAgICAgIHNrbWVhbnMoeCwgaywgbWV0aG9kID0gInBjbHVzdCIsIGNvbnRyb2wgPSBsaXN0KG5ydW5zID0gOCAsbWF4aXRlciA9IG4sdmVyYm9zZSA9IFRSVUUpKSwgREZNKQogIHN0b3BDbHVzdGVyKGNsKQogIHJldHVybihyZXN1bHRbWzFdXSkKfQpgYGAKCiMjIyNEb1BhcmFsbGVsCmBgYHtyfQpza21lYW5zQ2x1c3RlckRvUGFySXRlciA8LSBmdW5jdGlvbihrKSB7CiAgI2dlbmV0aWMKICBzZXQuc2VlZCgxMjUpCiAgY2wgPC0gbWFrZUNsdXN0ZXIobm9fY29yZXMsIG91dGZpbGUgPSAiIikKICAjI2NsdXN0ZXJFeHBvcnQoY2wsICJza21lYW5zIikKICByZWdpc3RlckRvUGFyYWxsZWwoY2wpCiAgY2x1c3RlclNldFJOR1N0cmVhbShjbCwgaXNlZWQgPSAxMjM2KQogIG5zdGFydCA8LSAxMAogIG5zdGFydHYgPC0gcmVwKGNlaWxpbmcobnN0YXJ0IC8gbm9fY29yZXMpLCBub19jb3JlcykKICByZWdpc3RlckRvUGFyYWxsZWwoY2wpCiAgCiAgcmVzdWx0IDwtIAogICAgZm9yZWFjaChuPW5zdGFydHYsCiAgICAgICAgICAgICMuZXhwb3J0PSAiREZNIiwKICAgICAgICAgICAgLnBhY2thZ2VzID0gYygic2ttZWFucyIsInF1YW50ZWRhIiksCiAgICAgICAgICAgIC5leHBvcnQgPSAiREZNIikgJWRvcGFyJSB7CiAgICAgICAgICAgICAgc2ttZWFucyhERk0sIGsgLG1ldGhvZCA9ICJwY2x1c3QiLGNvbnRyb2wgPSBsaXN0KG5ydW5zID0gOCAsbWF4aXRlciA9IG4sdmVyYm9zZSA9IFRSVUUpKQogICAgICAgICAgICB9CiAgCiAgc3RvcENsdXN0ZXIoY2wpCiAgcmV0dXJuKHJlc3VsdFtbMV1dKQp9CmBgYAojI1BhY2thZ2VzCgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2x1c3RlciIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKPCEtLWh0dHBzOi8vc3RhdHMuc3RhY2tleGNoYW5nZS5jb20vcXVlc3Rpb25zLzgxMzk2L2NsdXN0ZXJpbmctYWxnb3JpdGhtcy10aGF0LW9wZXJhdGUtb24tc3BhcnNlLWRhdGEtbWF0cmljaWVzIC0tPgoKT21kYXQgd2UgbWV0IEJpZyBEYXRhIGJlemlnIHppam4ga3VubmVuIHdlIG5pZXQgbWV0IGRlIHN0YW5kYWFyZCBba21lYW5zXShodHRwczovL3d3dy5yZG9jdW1lbnRhdGlvbi5vcmcvcGFja2FnZXMvc3RhdHMvdmVyc2lvbnMvMy41LjIvdG9waWNzL2ttZWFucykgZnVuY3RpZSB3ZXJrZW4gd2FudCBkZXplIHdlcmt0IG1ldCBlZW4gZnVsbCBtYXRyaXguIEFhbmdlemllbiB3ZSBnZWxpbWl0ZWVyZCB6aWpuIGluIGRlIGhvZXZlZWxoZWlkIGdlaGV1Z2VuIGRpZSB3ZSB0ZXIgYmVzY2hpa2tpbmcgaGViYmVuIGt1bm5lbiB3ZSBuaWV0IG1ldCBmdWxsIG1hdHJpeGVzIHdlcmtlbi4gRWVuIG9wbG9zc2luZyBpcyBvbSBpbiBwbGFhdHMgdmFuIGVlbiBmdWxsIG1hdHJpeCBlZW4gc3BhcmNlIG1hdHJpeCBhYW4gdGUgbWFrZW4uICAKSW4gZWVuIHNwYXJjZSBtYXRyaXggZ2FhbiBkZSB6ZXJvIHZhbHVlcyBkaWUgaW4gZGUgZnVsbCBtYXRyaXggc3RhYW4gd2VnZ2VsYXRlbiB3b3JkZW4uIEVlbiBzcGFyY2UgbWF0cml4IGhvdWQgcGVyIGRvY3VtZW50IGVlbiBsaWpzdCBiaWogbWV0IGRlIGlkJ3MgdmFuIGRlIHdvb3JkZW4gZGllIGhpZXJpbiB2b29ya29tZW4uICAKT20gbWV0IHNwYXJjZSBtYXRyaWNlcyB0ZSBrdW5uZW4gd2Vya2VuLCBnZWJydWlrZW4gd2UgZGUgZnVuY3RpZSBbc2ttZWFuc10oaHR0cHM6Ly93d3cucmRvY3VtZW50YXRpb24ub3JnL3BhY2thZ2VzL3NrbWVhbnMvdmVyc2lvbnMvMC4yLTExL3RvcGljcy9za21lYW5zKSBnZWJydWlrZW4uCgojI1BhcmFsbGVsCgpFZXJzdHMgZ2VicnVpa2VuIHdlIGVlbiBmdW5jdGllIG9tIGhldCBhYW50YWwgbnN0YXJ0cyBvZiBoZXQgbWF4IGFhbnRhbCBpdGVyYXRpZXMgdGUgdmVyZGVsZW4gb3ZlciBoZXQgYWFudGFsIGNvcmVzLiBXYW5uZWVyIHdlIHdlIGJ2LiAxMCBuc3RhcnRzIHdpbGxlbiB2ZXJkZWxlbiBvdmVyIDggY29yZXMgbW9ldGVuIHdlIGVlbiBsaWpzdCBoZWJiZW4gdmFuIG5hdHV1cmxpamtlIGdldGFsbGVuIHdhYXJ2YW4gZGUgc29tIGdlbGlqayBpcyBhYW4gMTAuIGhldCByZXN1bGFhdCB6b3Ugb3AgZGV6ZSB2ZWN0b3IgbW9ldGVuIGxpamtlbiBbMiwyLDEsMSwxLDEsMSwxXS4KYGBge3J9CmRpdmlkZSA8LSBmdW5jdGlvbih4LG5jb3Jlcyl7CiAgaWYoeDxuY29yZXMpewogICAgcmV0dXJuKHJlcCgxLHgpKQogIH0KICBsaXN0PC1yZXAoMCxuY29yZXMpCiAgCiAgZm9yKGkgaW4gMTp4KXsKICAgIGlmKGk+bmNvcmVzKXsKICAgICAgaT1pJSVuY29yZXMrMQogICAgfQogICAgbGlzdFtbaV1dPWxpc3RbW2ldXSsxCiAgfQogIHJldHVybihsaXN0KQp9CmBgYAoKIyMjUGFyYWxsZWxpc2F0aWUgb3ZlciBoZXQgYWFudGFsIHJ1bnMKClBlciBjbHVzdGVyIGJlcmVrZW5pbmcgCgojIyMjUGFyYWxsZWwKYGBge3J9CnNrbWVhbnNDbHVzdGVyUGFyIDwtIGZ1bmN0aW9uKGssbnN0YXJ0cyxtYXhpdGVyKSB7CiAgbnN0YXJ0diA8LSBkaXZpZGUobnN0YXJ0cyA9IG5zdGFydHMsbmNvcmVzID0gbm9fY29yZXMpCgogIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzLCBvdXRmaWxlID0gIiIpCiAgY2x1c3RlckV2YWxRKGNsLCB7bGlicmFyeSgicXVhbnRlZGEiKTtsaWJyYXJ5KCJza21lYW5zIil9KQoKICByZXN1bHQgPC0KICAgIGNsdXN0ZXJBcHBseShjbCwgbnN0YXJ0diwgZnVuY3Rpb24obiwgZGZtLG1heGl0ZXIpCiAgICAgIHNrbWVhbnMoZGZtLCBrLCBtZXRob2QgPSAicGNsdXN0IiwgY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuICxtYXhpdGVyID0gbWF4aXRlcix2ZXJib3NlID0gVFJVRSkpLCBERk0sIG1heGl0ZXIpCiAgc3RvcENsdXN0ZXIoY2wpCiAgcmV0dXJuKHJlc3VsdFtbMV1dKQp9CmBgYAojIyMjRG9QYXJhbGxlbApgYGB7cn0Kc2ttZWFuc0NsdXN0ZXJEb1BhciA8LSBmdW5jdGlvbihrLG5zdGFydHMsbWF4aXRlcikgewogIG5zdGFydHYgPC0gZGl2aWRlKG5zdGFydHMgPSBuc3RhcnRzLG5jb3JlcyA9IG5vX2NvcmVzKQoKICBjbCA8LSBtYWtlQ2x1c3Rlcihub19jb3Jlcywgb3V0ZmlsZSA9ICIiKQogIHJlZ2lzdGVyRG9QYXJhbGxlbChjbCkKICAKICByZXN1bHQgPC0gCiAgICBmb3JlYWNoKG49bnN0YXJ0diwKICAgICAgICAgICAgLnBhY2thZ2VzID0gYygic2ttZWFucyIsInF1YW50ZWRhIiksCiAgICAgICAgICAgIC5leHBvcnQ9ICJERk0iKSAlZG9wYXIlIHsKICAgICAgICAgICAgICBza21lYW5zKERGTSwgayAsbWV0aG9kID0gInBjbHVzdCIsY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuICxtYXhpdGVyID0gbWF4aXRlcix2ZXJib3NlID0gVFJVRSkpCiAgICB9CiAgCiAgc3RvcENsdXN0ZXIoY2wpCiAgcmV0dXJuKHJlc3VsdFtbMV1dKQp9CmBgYAojIyNQYXJhbGxlbGlzYXRpZSBvdmVyIG1heCBpdGVyYXRpb25zCiMjIyNQYXJhbGxlbApgYGB7cn0Kc2ttZWFuc0NsdXN0ZXJQYXJJdGVyIDwtIGZ1bmN0aW9uKGssbnN0YXJ0cyxtYXhpdGVyKSB7CiAgbml0ZXJ2IDwtIGRpdmlkZShtYXhpdGVyLG5jb3JlcyA9IG5vX2NvcmVzKQogIAogIGNsIDwtIG1ha2VDbHVzdGVyKG5vX2NvcmVzKQogIGNsdXN0ZXJFdmFsUShjbCwge2xpYnJhcnkoInF1YW50ZWRhIik7bGlicmFyeSgic2ttZWFucyIpfSkKCiAgcmVzdWx0IDwtCiAgICBjbHVzdGVyQXBwbHkoY2wsIG5pdGVydiwgZnVuY3Rpb24obiwgeCkKICAgICAgc2ttZWFucyh4LCBrLCBtZXRob2QgPSAicGNsdXN0IiwgY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuc3RhcnRzICxtYXhpdGVyID0gbix2ZXJib3NlID0gVFJVRSkpLCBERk0pCiAgc3RvcENsdXN0ZXIoY2wpCiAgcmV0dXJuKHJlc3VsdFtbMV1dKQp9CmBgYAoKIyMjI0RvUGFyYWxsZWwKYGBge3J9CnNrbWVhbnNDbHVzdGVyRG9QYXJJdGVyIDwtIGZ1bmN0aW9uKGssbnN0YXJ0cyxtYXhpdGVyKSB7CiAgbml0ZXJ2IDwtIGRpdmlkZShtYXhpdGVyLG5vX2NvcmVzKQoKICBjbCA8LSBtYWtlQ2x1c3Rlcihub19jb3Jlcywgb3V0ZmlsZSA9ICIiKQogIHJlZ2lzdGVyRG9QYXJhbGxlbChjbCkKICAKICByZXN1bHQgPC0gCiAgICBmb3JlYWNoKG49bml0ZXJ2LAogICAgICAgICAgICAucGFja2FnZXMgPSBjKCJza21lYW5zIiwicXVhbnRlZGEiKSwKICAgICAgICAgICAgLmV4cG9ydCA9ICJERk0iKSAlZG9wYXIlIHsKICAgICAgICAgICAgICBza21lYW5zKERGTSwgayAsbWV0aG9kID0gInBjbHVzdCIsY29udHJvbCA9IGxpc3QobnJ1bnMgPSBuc3RhcnRzICxtYXhpdGVyID0gbix2ZXJib3NlID0gVFJVRSkpCiAgICB9CiAgCiAgc3RvcENsdXN0ZXIoY2wpCiAgcmV0dXJuKHJlc3VsdFtbMV1dKQp9CmBgYAojI1BhY2thZ2VzCgoK</div>
 
 
 
