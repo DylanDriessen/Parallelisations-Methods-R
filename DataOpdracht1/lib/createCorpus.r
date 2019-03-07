@@ -1,9 +1,9 @@
 createCorpus <- function() {
   ##### Create corpus (and define default language)
   
-  # TMCorpusChunk1Loop()
+  TMCorpusChunk1Loop()
   # TMCorpusChunk()
-   TMCorpus()
+  # TMCorpus()
 }
 
 createCorpusQuan <- function() {
@@ -51,18 +51,19 @@ createDocsChunks <- function(noChunks) {
 
 
 TMCorpusChunk1Loop <- function() {
+  print("TMCorpusChunk1Loop")
   library(parallel)
   
   # print("Define general function to replace strings in corpus")
   crp.replacePattern <-
     content_transformer(function(x, pattern, replace)
       gsub(pattern, replace, x))
-  
+  print("createdocsChunks")
   # print("Create docsChunks")
   docsChunks <- createDocsChunks(no_cores)
   cl <- createCorpusCluster()
   registerDoParallel(cl)
-  
+  print("forEach loopke")
   crp <- foreach(docsChunk = docsChunks,
                  .combine = c) %dopar% {
                    crpChunk <-
@@ -72,10 +73,10 @@ TMCorpusChunk1Loop <- function() {
                    
                    # print(paste(pid, "   Remove graphical"))
                    tm_map(crpChunk, crp.replacePattern, "[^[:graph:]]", " ")
-                   # print(paste(pid, "   To lower"))
+                   # print(paste(pid, "   To lower"))   
                    tm_map(crpChunk, content_transformer(tolower))
                    # print(paste(pid, "   Remove stopwords"))
-                   tm_map(crpChunk, removeWords, stopwords(source = "smart"))
+                   tm_map(crpChunk, removeWords, stopwords("SMART"))
                    # print(paste(pid, "   Stem document"))
                    tm_map(crpChunk, stemDocument, language = "porter")
                    # print(paste(pid, "   Remove numbers"))
@@ -101,12 +102,15 @@ TMCorpusChunk1Loop <- function() {
 #####################################################################
 
 TMCorpusChunk <- function() {
+  print("TMCorpusChunk")
   # print("Creating VCorpus Chunk")
   crp <-
     VCorpus(DataframeSource(docspp), readerControl = list(language = "en"))
+  print("TMCorpusChunk")
   cl <- createCorpusCluster()
   ##### Define general function to replace strings in corpus
   # print("Define general function to replace strings in corpus")
+  print("TMCorpusChunk")
   (crp.replacePattern <-
       content_transformer(function(x, pattern, replace)
         gsub(pattern, replace, x)))
@@ -121,6 +125,7 @@ TMCorpusChunk <- function() {
   
   registerDoParallel(cl)
   # print("Remove graphical characters")
+  print("TMCorpusChunk")
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar% {
                    # print("test")
@@ -131,7 +136,7 @@ TMCorpusChunk <- function() {
   # stopCluster(cl)
   
   ##### To lower
-  # print("To lower")
+  print("To lower")
   # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
@@ -140,16 +145,16 @@ TMCorpusChunk <- function() {
   # stopCluster(cl)
   
   ##### Stopword removal
-  # print("Stopword removal")
+  print("Stopword removal")
   # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
-    tm_map(crp[chunk], removeWords, c(stopwords("SMART")))
+    tm_map(crp[chunk], removeWords, stopwords("SMART"))
   
   # stopCluster(cl)
   
   ##### Stemming
-  # print("Stemming")
+  print("Stemming")
   # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
@@ -160,7 +165,7 @@ TMCorpusChunk <- function() {
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term)
-  # print("Removing all numbers")
+  print("Removing all numbers")
   # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
@@ -169,7 +174,7 @@ TMCorpusChunk <- function() {
   # stopCluster(cl)
   
   ##### Punctuation
-  # print("remove Puncuation")
+  print("remove Puncuation")
   # registerDoParallel(no_cores)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
@@ -178,7 +183,7 @@ TMCorpusChunk <- function() {
   # stopCluster(cl)
   
   ##### Whitespace
-  # print("Remove whitespace")
+  print("Remove whitespace")
   # registerDoParallel(cl)
   crp <- foreach(chunk = chunks,
                  .combine = c) %dopar%
@@ -187,7 +192,7 @@ TMCorpusChunk <- function() {
   stopCluster(cl)
   
   # SAVE RESULTS
-  # print("Saving results")
+  print("Saving results")
   save(crp, file = "crp.RDa")
   return(crp)
 }
@@ -200,46 +205,49 @@ TMCorpusChunk <- function() {
 #####################################################################
 
 TMCorpus <- function() {
+  print("TMCorpus")
   # print("Creating VCorpus")
   crp <-
     VCorpus(DataframeSource(docspp), readerControl = list(language = "en"))
   
   ##### Define general function to replace strings in corpus
-  # print("Define general function to replace strings in corpus")
+  print("Define general function to replace strings in corpus")
+  # print("TMCorpus")
   (crp.replacePattern <-
       content_transformer(function(x, pattern, replace)
         gsub(pattern, replace, x)))
   
   ##### Clean unicode characters
   ##### Remove graphical characters
-  # print("Remove graphical characters")
+  print("Remove graphical characters")
+  # print("TMCorpus")
   crp <- tm_map(crp, crp.replacePattern, "[^[:graph:]]", " ")
   
   ##### To lower
-  # print("To lower")
+  print("To lower")
   crp <- tm_map(crp, content_transformer(tolower))
   
   ##### Stopword removal
-  # print("Stopword")
-  crp <- tm_map(crp, removeWords, stopwords(source = "smart"))
+  print("Stopword")
+  crp <- tm_map(crp, removeWords, stopwords("SMART"))
   
   ##### Stemming
-  # print("Stemming")
+  print("Stemming")
   crp <- tm_map(crp, stemDocument, language = "porter")
   
   ##### Numbers
   
   ##### All numbers (including numbers as part of a alphanumerical term)
-  # print("Removing all numbers")
+  print("Removing all numbers")
   crp <- tm_map(crp, removeNumbers)
   
   ##### Punctuation
-  # print("remove Puncuation")
+  print("remove Puncuation")
   crp <-
     tm_map(crp, removePunctuation, preserve_intra_word_dashes = TRUE)
   
   ##### Whitespace
-  # print("Remove whitespace")
+  print("Remove whitespace")
   crp <- tm_map(crp, stripWhitespace)
   
   # SAVE RESULTS
@@ -256,14 +264,17 @@ TMCorpus <- function() {
 #https://cran.r-project.org/web/packages/quanteda/quanteda.pdf
 
 QuantedaCorpus <- function() {
+  print("QuantedaCorpus")
   
   quanteda_options(threads = no_cores, verbose = TRUE)
   
   # print("Creating Quanteda Corpus")
+  print("QuantedaCorpus")
   Quan <- corpus(docspp)
   
   #Quanteda tokens
   # print("Creating tokens, removing punctuation & numbers")
+  print("QuantedaCorpus")
   Quan <- tokens(Quan, remove_punct = TRUE, remove_numbers = TRUE)
   #
   # ids <- 1:length(crpT)
@@ -274,33 +285,40 @@ QuantedaCorpus <- function() {
   
   #Remove symbols
   # print("Remove regex")
+  print("QuantedaCorpus")
   Quan <- tokens_remove(Quan, "\\p{Z}", valuetype = "regex")
   
   
   # print("Remove symbols")
+  print("QuantedaCorpus")
   Quan <- tokens(Quan, remove_symbols = TRUE)
   
   ##### Stemming
   # print("Stemming")
   #crpT <- tokens_wordstem(crpT, language = "porter")
+  print("QuantedaCorpus")
   Quan <- tokens_wordstem(Quan)
   
   ##### Stopword removal
   # print("Stopword removal")
+  print("QuantedaCorpus")
   Quan <-
     tokens_select(Quan, stopwords(source = "smart"), selection = 'remove')
   
   ##### To lower
   # print("To lower")
+  print("QuantedaCorpus")
   Quan <- tokens_tolower(Quan)
   
   ##### Clean unicode characters
   ##### Remove graphical characters
   # print("Remove graphical characters")
+  print("QuantedaCorpus")
   Quan <- tokens_remove(Quan, "*#*")
   Quan <- tokens_remove(Quan, "*-*")
   Quan <- tokens_remove(Quan, "*.*")
   Quan <- tokens_remove(Quan, "*,*")
+  print("QuantedaCorpus")
   Quan <- tokens_remove(Quan, "*\\d*")
   # stopImplicitCluster()
   

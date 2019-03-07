@@ -16,7 +16,8 @@ clusterMatrix <- function() {
 # ==============================================================================
 
 skmeansCluster <- function(k,nstarts,maxiter){
-  result <- skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE))
+  print("seq")
+  result <- skmeans(DFM, k ,method = "pclust", control = list(nruns = nstarts, maxiter = maxiter, verbose = TRUE))
   return(result)
 }
 
@@ -34,6 +35,7 @@ divideN <- function(nstart, ncores) {
 # ==============================================================================
 
 skmeansClusterPar <- function(k,nstarts,maxiter) {
+  print("skmeansClusterPar")
   nstartv <- divide(x = nstarts,ncores = no_cores)
 
   cl <- makeCluster(no_cores, outfile = "")
@@ -53,6 +55,7 @@ skmeansClusterPar <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterDoPar <- function(k,nstarts,maxiter) {
+  print("skmeansClusterDoPar")
   nstartv <- divide(x = nstarts,ncores = no_cores)
 
   cl <- makeCluster(no_cores, outfile = "")
@@ -76,6 +79,7 @@ skmeansClusterDoPar <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterParIter <- function(k,nstarts,maxiter) {
+  print("skmeansClusterParIter")
   niterv <- divide(x=maxiter,ncores = no_cores)
   
   cl <- makeCluster(no_cores,outfile="")
@@ -95,6 +99,7 @@ skmeansClusterParIter <- function(k,nstarts,maxiter) {
 # ==============================================================================
 
 skmeansClusterDoParIter <- function(k,nstarts,maxiter) {
+  print("skmeansClusterDoParIter")
   niterv <- divide(x=maxiter,ncores=no_cores)
 
   cl <- makeCluster(no_cores, outfile = "")

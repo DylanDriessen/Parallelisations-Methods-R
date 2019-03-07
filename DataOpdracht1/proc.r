@@ -6,7 +6,7 @@ no_cores <- detectCores()
 save <- TRUE # save to data files
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/medium/"; batches <- 5
 
 if (save) dir.create("data", showWarnings = FALSE)
 
