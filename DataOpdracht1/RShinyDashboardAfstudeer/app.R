@@ -1,8 +1,8 @@
 setwd("../")
+source("startupDashboard.r")
 plan(multiprocess)
 
 # load all packages and source files
-source("startupDashboard.r")
 
 # Define UI for application that draws a histogram
 ui <- shinyServer(fluidPage(
