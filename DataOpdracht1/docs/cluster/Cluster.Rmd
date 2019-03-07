@@ -31,7 +31,11 @@ divide <- function(x,ncores){
 
 ###Parallelisatie over het aantal runs
 
-Per cluster berekening 
+Eerst gaan we de clusters parallel laten lopen over het aantal runs. Deze resultaten komen terug in een lijst.
+Omdat bij dit onderzoek onze interesse niet uitgaat naar de beste clusteroplossing maar naar de snelste, roepen we steeds de eerst gemaakte clusteroplossing terug op uit de lijst.
+We hebben geparallelliseerd met de methodes clusterApply en doParallel
+
+De sequentiële oplossing zal uit deze lijst wel de beste clusteroplossing kiezen.
 
 ####Parallel
 ```{r}
@@ -68,6 +72,10 @@ skmeansClusterDoPar <- function(k,nstarts,maxiter) {
 }
 ```
 ###Parallelisatie over max iterations
+
+Na het parallelliseren over nruns, hebben we geparallelliseerd over het aantal iteraties binnen elke run.
+Hier hebben we weer gekozen voor de methodes clusterApply en doParallel
+
 ####Parallel
 ```{r}
 skmeansClusterParIter <- function(k,nstarts,maxiter) {
@@ -103,6 +111,14 @@ skmeansClusterDoParIter <- function(k,nstarts,maxiter) {
   return(result[[1]])
 }
 ```
-##Packages
+###Benchmark
 
 
+###Aantal clusters in functie van de tijd
+Als we gaan kijken hoe een functie verloopt naarmate het aantal clusters groter wordt, krijgen we onderstaand resultaat.
+Hieruit kunnen we besluiten dat de tijd lineair loopt in functie van het aantal clusters.
+```{r}
+readRDS("./resources/skmeansCluster50.000.rds")
+```
+
+#![ClusterPlot](./resources/grafiekCluster.JPG)

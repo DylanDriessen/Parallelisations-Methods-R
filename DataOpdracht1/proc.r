@@ -19,6 +19,7 @@ if (save) dir.create("data", showWarnings = FALSE)
 # IMPORT SOURCE DATA
 ################################################################################
 
+
 # read batches and add ids
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach()
