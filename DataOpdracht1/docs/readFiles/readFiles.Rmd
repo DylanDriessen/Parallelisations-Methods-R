@@ -1,0 +1,78 @@
+---
+title: "Reading the batch files"
+output: html_notebook
+---
+
+
+Het inlezen van files hebben we op enkele manieren geprobeerd. Eerst gingen we 1 file parallel proberen in te lezen maar dit bleek voor problemen te zorgen. We zijn dan overgeschakeld naar verschillende files in parallel in te lezen. Dit was makkelijker en zorgde voor een tijdsverbetering ten opzichte van het sequetieel inlezen.
+
+Aangezien we met vrij grote datasets gingen werken hebben we geprobeerd om deze in te lezen met het [ffbase](https://cran.r-project.org/web/packages/ffbase/ffbase.pdf) package. Dit bleek niet zoals gewenst te werken.  
+
+##Sequentieel
+
+Er wordt geïtereerd over het aantal batches en elke batch wordt met de volgende functie ingelezen.
+
+```{r}
+
+read_batch <- function(batch_nr) {
+  ## Compile file name to read
+  fileName <- paste0(batch_nr, ".txt.xz")
+  filePath <- "/home/user/data/"
+  ## Read batch file
+  return(tibble::as_tibble(readr::read_delim(paste0(filePath, fileName), ",", col_names=TRUE, quote = "\"", 
+                                             escape_backslash = FALSE, escape_double = FALSE, na=character(), 
+                                             trim_ws= TRUE, skip=0, n_max=Inf, locale = locale(encoding = "UTF-8"))))
+}
+
+```
+
+##Parallel
+
+We hebben met het [parallel](https://www.rdocumentation.org/packages/parallel/versions/3.5.2/topics/clusterApply) en [doparallel](https://cran.r-project.org/web/packages/doParallel/doParallel.pdf) package geprobeerd om de batches parallel in te lezen. De manier is gelijkend en het verschil in performance ligt vrij dicht bij elkaar. Er wordt deze keer terug over de batches geïtereerd maar we gaan het inlelezen ervan over verschillende cores verdelen.
+
+```{r}
+read_doparallel_foreach <- function() {
+  cl <- makeReadFileCluster()
+  registerDoParallel(cl)
+  on.exit(stopCluster(cl))
+  return( foreach(batch_nr = 1:batches, .combine = rbind) %dopar% read_batch(batch_nr) )
+}
+```
+
+##ffbase
+
+[ffbase](https://cran.r-project.org/web/packages/ffbase/ffbase.pdf) is een package gemaakt om met grote dataframes te werken en minder geheugen te gebruiken. We hebben geprobeerd deze te implementeren maar dit bleek voor ons geen voordeel te geven. Ffbase werkt intern met factors, dit is handig wanneer er in een vector veel data uit een gelimiteerde set voorkomt. bijvoorbeeld, per student de campus waar hij/zij aan studeert. Zonder ffbase, zou er voor elke student een string bijgehouden worden met de naam van deze campus. Met ffbase wordt aan elke mogelijkheid een id gegeven en in plaats van bij elke student de naam van de campus in memory te plaatsen moet er enkel de lijst met campussen en het het campus id per student in memory geplaatst worden.
+
+Hieronder staat een script die de 2 manieren van in geheugen plaatsen  met elkaar vergelijkt op vlak van geheugen dat ze innemen.
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+no_batches <- 5
+
+cluster <- makeCluster(no_batches)
+registerDoParallel(cluster)
+
+ffdfdataframe <- 
+  foreach (i = 1:no_batches,
+           .combine = ffdfappend,
+           .packages = "ff")%dopar%
+  {
+    return(read.table.ffdf(file=filePath,sep=",",skip=1,appendLevels = TRUE))
+  }
+
+stopCluster(cluster)
+
+
+dataFrame <- as.data.frame(ffdfdataframe)
+
+res.lang.dataFrame <- object.size(dataFrame$V2)
+res.lang.ffdfdataframe <- object.size(ffdfdataframe$V2)
+
+res.text.dataFrame <- object.size(dataFrame$V3)
+res.text.ffdfdataframe <- object.size(ffdfdataframe$V3)
+
+
+
+print(cat(paste0("lang: ffdf=",res.lang.ffdfdataframe," B\t\tdf=",res.lang.dataFrame," B\ntext: ffdf=",res.text.ffdfdataframe," B\tdf=",res.text.dataFrame,"  B\n")))
+```
+
+Uit het resultaat blijkt dat voor de language kolom in het ffdf formaat minder geheugen gebruikt aangezien dit een lijst is met gelimiteerde mogelijkheden. Het verschil tussen de text kolom in het ffdf en df formaat is minder groot want deze bestaat uit allemaal verschillende strings.

@@ -52,4 +52,7 @@ vignettes/*.pdf
 *.rda
 *.Rda
 
+#docs.rds
+
 /DataOpdracht1/results/*
+!DataOpdracht1/docs/preProcessing/resources/*.rds

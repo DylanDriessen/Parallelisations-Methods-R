@@ -8,7 +8,7 @@ source("lib/createDTM.r")
 
 createDfmChunks_peakRAM <- function() {
   print("createCluster")
-  cl <- makeCreateDTMCluster()
+  cl <- makeCreateDFMCluster()
   clusterEvalQ(cl, library("peakRAM"))
   clusterExport(cl, c("no_cores"))
   registerDoSNOW(cl)
@@ -16,7 +16,7 @@ createDfmChunks_peakRAM <- function() {
   dfmList <- list()
   print("checking limits & writing dfm's to list")
   docrows <- nrow(docs)
-  dc <- docsCorpus
+  dc <- docsCorpusQuan
   print("test")
   dfmList <-
     foreach(i = 1:no_cores) %dopar% {
@@ -110,7 +110,7 @@ createDTMChunked_peakRAM <- function() {
   
   cluster <- makeCluster(no_cores,outfile="")
   clusterEvalQ(cluster, library("peakRAM"))
-  registerDoParallel(cluster)
+  registerDoSnow(cluster)
   
   dtmpramList <- 
     foreach(chunk = chunks,

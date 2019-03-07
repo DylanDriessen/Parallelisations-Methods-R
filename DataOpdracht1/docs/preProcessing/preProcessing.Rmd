@@ -83,17 +83,11 @@ preProcessClusterChunked <- function() {
 
 ***
 
-##Microbenchmark op elke functie
+##Microbenchmark
 
 ```{r echo=FALSE}
-microbenchmark(preProcessSequential(),
-               #preProcessParallel(),
-               preProcessParallelChunked(),
-               #preProcessDoparallel(),
-               preProcessDoparallelChunked(),
-               #preProcessCluster(),
-               preProcessClusterChunked(),
-               times=1)
+print("50.000 lijnen")
+readRDS("./resources/preProcessBenchmark.rds")
 ```
 
 ##Bevindingen
