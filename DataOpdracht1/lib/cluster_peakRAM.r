@@ -9,7 +9,7 @@ list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 #
 # ==============================================================================
 
-skmeansCluster_peakRAM <- function(){
+skmeansCluster_peakRAM <- function(k,nstarts,maxiter){
   t <- Sys.time()
   df <- peakRAM(skmeans(DFM, k ,method = "pclust", control = list(nruns = 8, maxiter = 10, verbose = TRUE)))
   cbind(Process_Id = Sys.getpid(), df[,2:4], Start_Time = t, End_Time = Sys.time())
@@ -21,7 +21,7 @@ skmeansCluster_peakRAM <- function(){
 #
 # ==============================================================================
 
-skmeansClusterPar_peakRAM <- function() {
+skmeansClusterPar_peakRAM <- function(k,nstarts,maxiter) {
   nstartv <- divide_peakRAM(x = nstarts,ncores = no_cores)
   
   cl <- makeCluster(no_cores, outfile = "")
@@ -47,7 +47,7 @@ skmeansClusterPar_peakRAM <- function() {
 #
 # ==============================================================================
 
-skmeansClusterDoPar_peakRAM <- function() {
+skmeansClusterDoPar_peakRAM <- function(k,nstarts,maxiter) {
   nstartv <- divide_peakRAM(x = nstarts,ncores = no_cores)
   
   cl <- makeCluster(no_cores, outfile = "")
@@ -72,10 +72,10 @@ skmeansClusterDoPar_peakRAM <- function() {
 #
 # ==============================================================================
 
-skmeansClusterParIter <- function() {
+skmeansClusterParIter_peakRAM <- function(k,nstarts,maxiter) {
   niterv <- divide_peakRAM(x = maxiter,ncores = no_cores)
   
-  cl <- makeCluster(no_cores)
+  cl <- makeCluster(no_cores,outfile="")
   
   clusterEvalQ(cl, {library("quanteda");library("skmeans");library("peakRAM")})
   
@@ -97,7 +97,7 @@ skmeansClusterParIter <- function() {
 #
 # ==============================================================================
 
-skmeansClusterDoParIter <- function() {
+skmeansClusterDoParIter_peakRAM <- function(k,nstarts,maxiter) {
   niterv <- divide_peakRAM(x = maxiter,ncores = no_cores)
   
   cl <- makeCluster(no_cores, outfile = "")
