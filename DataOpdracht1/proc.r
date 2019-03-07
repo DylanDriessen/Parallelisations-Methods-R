@@ -1,8 +1,14 @@
 (.packages())
 
-source(loadPackages.R)
+source("loadPackages.R")
 
 no_cores <- detectCores()
+save <- TRUE # save to data files
+
+## Batches info
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; batches <- 1
+
+if (save) dir.create("data", showWarnings = FALSE)
 
 # Issues: 
 #   Language dependent stop word removal
@@ -13,16 +19,13 @@ no_cores <- detectCores()
 # IMPORT SOURCE DATA
 ################################################################################
 
-## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; ofn <- "ps18b_abstr"; batches <- 1
-
 # read batches and add ids
 source("lib/readFiles.r")
 docs <- readFiles_doparallel_foreach()
 docs$id <- 1:nrow(docs)
 
 # save to RDS
-saveRDS(docs, file="data/docs.rds")
+if (save) saveRDS(docs, file="data/docs.rds")
 
 ################################################################################
 # 2 PREPROCESS
@@ -36,7 +39,7 @@ source("lib/preProcess.r")
 docspp$text <- preProcessClusterChunked()
 
 # save to RDS
-saveRDS(docspp, "data/docspp.rds")
+if (save) saveRDS(docspp, "data/docspp.rds")
 
 # remove docs
 rm(docs); gc()
@@ -51,8 +54,8 @@ docsCorpus <- createCorpus()
 docsCorpusQuan <- createCorpusQuan()
 
 # save to RDS
-saveRDS(docsCorpus, "data/docsCorpus.rds")
-saveRDS(docsCorpusQuan, "data/docsCorpusQuan.rds")
+if (save) { saveRDS(docsCorpus, "data/docsCorpus.rds"); 
+  saveRDS(docsCorpusQuan, "data/docsCorpusQuan.rds") }
 
 # remove docspp
 rm(docspp); gc()
@@ -76,8 +79,8 @@ DFM <- createDFM()
 DTM <- createDTM()
 
 # save to RDS
-saveRDS(DFM, "data/DFM.rds")
-saveRDS(DTM, "data/DTM.rds")
+if (save) { saveRDS(DFM, "data/DFM.rds"); 
+  saveRDS(DTM, "data/DTM.rds") }
 
 # remove corpus
 rm(docsCorpusQuan); rm(docsCorpus); gc()
@@ -102,5 +105,5 @@ cluster <- clusterMatrix()
 
 #microbenchmark(skmeansCluster(), skmeansClusterPar10(), skmeansClusterPar100(), times = 1)
 
-saveRDS(cluster, "data/cluster.rds")
+if (save) saveRDS(cluster, "data/cluster.rds")
 rm(cluster); gc()

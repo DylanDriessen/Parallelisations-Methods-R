@@ -24,13 +24,13 @@ read_batch_ffdf <- function(batch_nr) {
 ### CREATE CLUSTER : make a cluster for parralel processing, fit to run read_batch
 makeReadFileCluster <- function() {
   cl <- makeCluster(min(no_cores, batches), outfile = "")
-  clusterExport(cl, c("read_batch", "ifn", "ifp", "ofn"))
+  clusterExport(cl, c("read_batch", "ifn", "ifp"))
   clusterEvalQ(cl, { library("readr"); library("tibble"); library("data.table") })
   return(cl)
 }
 makeReadFileCluster_ffdf <- function() {
   cl <- makeCluster(min(no_cores, batches), outfile = "")
-  clusterExport(cl, c("read_batch_ffdf", "ifn", "ifp", "ofn"))
+  clusterExport(cl, c("read_batch_ffdf", "ifn", "ifp"))
   clusterEvalQ(cl, { library("ff") })
   return(cl)
 }
@@ -73,12 +73,12 @@ readFiles <- function(f = read_sequential){
   print("Read Files Process started.")
   
   ## Read in files and combine to 1 dataframe
-  ps18b_abstr <- f()
+  docs <- f()
   print("Compiling to dataframe 'docs'.")
   
   ## Rename and order columns
   #docs <- ps18b_abstr[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
-  docs <- ps18b_abstr[,c(1, 3, 2)]
+  docs <- docs[,c(1, 3, 2)]
   names(docs) <- c("doc_id", "text", "language")
   
   print("Finished reading batches.")
