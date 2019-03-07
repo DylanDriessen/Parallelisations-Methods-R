@@ -3,8 +3,8 @@ clusterMatrix <- function() {
   
   k <- 10
   
-  # skmeansCluster(k)
-  skmeansClusterPar(k)
+  skmeansCluster(k)
+  # skmeansClusterPar(k)
   # skmeansClusterDoPar(k)
   # skmeansClusterParIter(k)
   # skmeansClusterDoParIter(k)

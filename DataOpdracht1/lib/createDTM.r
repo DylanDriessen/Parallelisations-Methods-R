@@ -4,15 +4,19 @@ createDFM <- function() {
   #createDFMChunks()
   createDFMnormal()
   #createDFMChunksBind()
+  
+  # docrows <- nrow(docs)
+  # rm(docs)
 }
 
 createDTM <- function() {
   # CREATE
-  #createDTM()
-  createDTMChunked()
+  createDTM()
+  #createDTMChunked()
 }
 
 makeCreateDFMCluster <- function() {
+  # no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores)
   clusterEvalQ(cl, { library("quanteda") })
   return(cl)
@@ -23,16 +27,17 @@ makeCreateDFMCluster <- function() {
 ##             Document-Feature Matrix Parallel Chunks
 ##
 #####################################################################
-
+##HEEL FOUT
 createDFMChunks <- function() {
   cl <- makeCreateDFMCluster()
-  no_cores <- detectCores()
+  # no_cores <- detectCores()
   registerDoParallel(cl)
   dfmList <- list()
   docrows <- nrow(docs)
+  #rm(docs)
   dc <- docsCorpusQuan
   dfmList <-
-    foreach(i = 1:no_cores) %dopar% {
+    foreach(i = 1:no_cores, .export = "no_cores") %dopar% {
       og <- round((i - 1) * docrows / no_cores) + 1
       print(paste(no_cores, docrows))
       bg <- round(docrows / no_cores * i)
@@ -48,8 +53,18 @@ createDFMChunks <- function() {
     dfmTotal <- rbind(dfmTotal, dfmList[[i]])
   }
   
-  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
-  return(dfmTotal)
+  tryCatch(
+    {
+      print("try1")
+      dfmTotal <- dfmTotal[rowSums(dfmTotal[,-1]) != 0,]
+      print("try")
+      return(dfmTotal)
+    },
+    error = function(condition) {
+      print("catch")
+      return(dfmTotal)
+    }
+  )
 }
 
 #####################################################################
@@ -61,13 +76,14 @@ createDFMChunks <- function() {
 
 createDFMChunksBind <- function() {
   cl <- makeCreateDFMCluster()
-  no_cores <- detectCores()
+  # no_cores <- detectCores() - 1
   registerDoParallel(cl)
   dfmList <- list()
+  # docrows <- nrow(docs)
   docrows <- nrow(docs)
   dc <- docsCorpusQuan
   dfmList <-
-    foreach(i = 1:no_cores, .combine = rbind) %dopar% {
+    foreach(i = 1:no_cores*2, .combine = rbind, .export = "no_cores") %dopar% {
       og <- round((i - 1) * docrows / no_cores) + 1
       print(paste(no_cores, docrows))
       bg <- round(docrows / no_cores * i)
@@ -77,10 +93,18 @@ createDFMChunksBind <- function() {
     }
   
   stopCluster(cl)
-  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
-  
-  return(dfmList)
-  
+  tryCatch(
+    {
+      print("try1")
+      dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+      print("try")
+      return(dfmList)
+    },
+    error = function(condition) {
+      print("catch")
+      return(dfmList)
+    }
+  )
 }
 
 #####################################################################
@@ -93,8 +117,18 @@ createDFMnormal <- function() {
   dtm_raw <- dfm(docsCorpusQuan)
   rowSums(dtm_raw, na.rm = FALSE)
   # dtm_tfidf  <- dfm_weight(dtm_raw)
-  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
-  return(dtm_raw)
+  tryCatch(
+    {
+      print("try1")
+      dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+      print("try")
+      return(dtm_raw)
+    },
+    error = function(condition) {
+    print("catch")
+    return(dtm_raw)
+    }
+  )
 }
 
 #####################################################################
@@ -105,11 +139,22 @@ createDFMnormal <- function() {
 
 createDFMasDTM <- function() {
   dtm_raw <- dfm(docsCorpusQuan)
-  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
-  dtm_raw <- convert(dtm_raw, to = "tm")
-  dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
-  
-  return(dtm_raw)
+  tryCatch(
+    {
+      print("try1")
+      dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+      print("try")
+      return(dtm_raw)
+    },
+    error = function(condition) {
+      print("catch")
+      return(dtm_raw)
+    }
+  )
+  # dtm_raw <- convert(dtm_raw, to = "tm")
+  # dtm_tfidf  <- weightTfIdf(dtm_raw, normalize = FALSE)
+  # 
+  # return(dtm_raw)
 }
 
 #####################################################################

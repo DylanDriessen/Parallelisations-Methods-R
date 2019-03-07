@@ -58,14 +58,6 @@ docs$text <- preProcessClusterChunked()
 source("lib/createCorpus.r")
 docsCorpus <- createCorpus()
 docsCorpusQuan <- createCorpusQuan()
-#docsCorpus2 <- createCorpus()
-#microbenchmark(VCorpChunk(), Quan(), VCorpChunk1Loop(), times = 2)
-#microbenchmark_data <- microbenchmark(VCorpChunk = VCorpChunk(), Quan = Quan(), times = 1)[,2]*10^-9
-#microbenchmark_data <- rbind(vcorpFunction = microbenchmark(VCorp(), times = 1)[,2]*10^-9, 
-#                             quanFunction = microbenchmark(Quan() ,times = 1)[,2]*10^-9, 
-#                             vcorpchunkFunction = microbenchmark(VCorpChunk() ,times = 1)[,2]*10^-9)
-
-#saveRDS(microbenchmark_data, file = "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/microbenchmark_data.rds")
 
 # ==============================================================================
 #
