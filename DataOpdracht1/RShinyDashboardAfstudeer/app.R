@@ -2914,19 +2914,19 @@ server <- shinyServer(function(input, output, session){
     }
     else if(input$callFunctionLive == "Cluster"){
       if(input$callMethodClusterLIVE == "doParallelLive"){
-        future(skmeansClusterDoPar())
+        future(skmeansClusterDoPar(10,10,10))
       }
       else if(input$callMethodClusterLIVE == "doParIterLive"){
-        future(skmeansClusterDoParIter())
+        future(skmeansClusterDoParIter(10,10,10))
       }
       else if(input$callMethodClusterLIVE  == "parallelLive"){
-        future(skmeansClusterPar())
+        future(skmeansClusterPar(10,10,10))
       }
       else if(input$callMethodClusterLIVE  == "parIterLive"){
-        future(skmeansClusterParIter())
+        future(skmeansClusterParIter(10,10,10))
       }
       else if(input$callMethodClusterLIVE  == "sequentialLive"){
-        future(skmeansCluster())
+        future(skmeansCluster(10,10,10))
       }
     }
    
