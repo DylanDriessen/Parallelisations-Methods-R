@@ -1,11 +1,6 @@
 (.packages())
 
-source("util/importPackage.r")
-import(c("readr","tibble","data.table", "parallel", "foreach", "doSNOW", "snow", 
-         "stringi", "ff", "ffbase", "tm","SnowballC","slam","stringi","data.table",
-         "magrittr","corrplot","NLP", "foreach","doParallel","microbenchmark",
-         "text2vec","doMC","quanteda","textmineR", "parallel", "peakRAM",
-         "microbenchmark","glmnet", "quanteda", "tcltk2", "pryr", "dplyr", "stopwords", "skmeans"))
+source(loadPackages.R)
 
 no_cores <- detectCores()
 
@@ -34,7 +29,7 @@ saveRDS(docs, file="data/docs.rds")
 ################################################################################
 
 # copy docs into new object
-docspp <- docs; rm(docs); gc()
+docspp <- docs
 
 # preprocess
 source("lib/preProcess.r")
@@ -42,6 +37,9 @@ docspp$text <- preProcessClusterChunked()
 
 # save to RDS
 saveRDS(docspp, "data/docspp.rds")
+
+# remove docs
+rm(docs); gc()
 
 # ==============================================================================
 # 3 CREATE AND CLEAN CORPUS
