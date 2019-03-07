@@ -1,9 +1,4 @@
-# if (!exists("docs")){
-#   load("docs.rds")
-# }
-
-import(c("peakRAM","stringi","parallel", "doSNOW" ))
-
+source("lib/preProcess.r")
 list_to_df <- function(l){ return(as.data.frame(do.call(rbind, l))) }
 
 no_cores <- detectCores()-1

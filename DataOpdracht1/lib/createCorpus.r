@@ -39,10 +39,10 @@ createCRPChunks <- function(noChunks, crp) {
 createDocsChunks <- function(noChunks) {
   docsList <- list()
   for (i in 1:noChunks) {
-    og <- round((i - 1) * nrow(docs) / noChunks) + 1
-    bg <- round(nrow(docs) / noChunks * i)
+    og <- round((i - 1) * nrow(docspp) / noChunks) + 1
+    bg <- round(nrow(docspp) / noChunks * i)
     print(paste(og, " --> ", bg))
-    docsList[[i]] <- docs[og:bg, ]
+    docsList[[i]] <- docspp[og:bg, ]
   }
   
   return(docsList)
@@ -103,7 +103,7 @@ TMCorpusChunk1Loop <- function() {
 TMCorpusChunk <- function() {
   # print("Creating VCorpus Chunk")
   crp <-
-    VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
+    VCorpus(DataframeSource(docspp), readerControl = list(language = "en"))
   cl <- createCorpusCluster()
   ##### Define general function to replace strings in corpus
   # print("Define general function to replace strings in corpus")
@@ -202,7 +202,7 @@ TMCorpusChunk <- function() {
 TMCorpus <- function() {
   # print("Creating VCorpus")
   crp <-
-    VCorpus(DataframeSource(docs), readerControl = list(language = "en"))
+    VCorpus(DataframeSource(docspp), readerControl = list(language = "en"))
   
   ##### Define general function to replace strings in corpus
   # print("Define general function to replace strings in corpus")
@@ -259,7 +259,7 @@ QuantedaCorpus <- function() {
   quanteda_options(threads = parallel::detectCores() - 1, verbose = TRUE)
   
   # print("Creating Quanteda Corpus")
-  Quan <- corpus(docs)
+  Quan <- corpus(docspp)
   
   #Quanteda tokens
   # print("Creating tokens, removing punctuation & numbers")
