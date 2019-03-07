@@ -1,8 +1,11 @@
 setwd("../")
 
+
 # load all packages and source files
+
 source("startupDashboard.r")
 plan(multiprocess)
+
 
 
 # Define UI for application that draws a histogram
