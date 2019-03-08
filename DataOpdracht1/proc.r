@@ -1,3 +1,23 @@
+#BENCHMARKS OP
+#500.000
+#1.500.000
+#3.200.000
+#4.800.000
+#6.400.000
+#8.000.000
+
+##VINCENT
+#Readfiles
+
+##PIETER
+#Preprocessing
+#cluster  -->  k , iter , nruns, batchsize
+
+##DYLAN
+#Corpus
+#DTM
+
+
 (.packages())
 
 source("loadPackages.R")
