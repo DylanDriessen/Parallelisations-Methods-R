@@ -79,7 +79,6 @@ preProcessClusterChunked <- function() {
 
 preProcessChunk <- function(chunk){
   chunk <- stringi::stri_trans_general(chunk, 'Latin-ASCII')
-  gc()
   return(chunk)
 }
 
