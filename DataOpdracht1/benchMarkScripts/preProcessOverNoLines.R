@@ -9,7 +9,7 @@ source("lib/preProcess.r")
 source("loadPackages.R")
 no_cores <- detectCores()
 counter <- 0
-docs <- readRDS(file="docs.rds")
+docs <- readRDS(file="data/docs.rds")
 
 runPreProcessBenchmark <- function(){
   res <- microbenchmark(preProcess(no_lines = "8.000.000"),
