@@ -16,6 +16,16 @@ runPreProcessBenchmarks <- function(){
   
   ########################################
   #
+  # PreprocessSequential 
+  #
+  ########################################
+  
+  print("PreprocessSequential")
+  saveRDS(object = preProcessBenchmark(preProcessSequential),file = "preprocessSequentialChunkedBenchmarkOverNoLinesResult.rds")
+  
+  
+  ########################################
+  #
   # PreprocessClusterChunkedBenchmarks
   #
   ########################################
