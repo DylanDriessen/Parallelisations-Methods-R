@@ -1,23 +1,19 @@
-#500000
-#1500000
-#3200000
-#4800000
-#6400000
-#8000000
+########################################
+#
+# PreProcess Benchmark Code
+#
+########################################
 
 source("lib/preProcess.r")
 source("loadPackages.R")
-no_cores <- detectCores()
-counter <- 0
-docs <- readRDS(file="data/docs.rds")
 
-runPreProcessBenchmark <- function(){
-  res <- microbenchmark(preProcess(no_lines = "8.000.000"),
-                        preProcess(no_lines = "6.400.000"),
-                        preProcess(no_lines = "4.800.000"),
-                        preProcess(no_lines = "3.200.000"),
-                        preProcess(no_lines = "1.500.000"),
-                        preProcess(no_lines = "500.000"),
+runPreProcessBenchmark <- function(f){
+  res <- microbenchmark(preProcess(f,no_lines = "8.000.000"),
+                        preProcess(f,no_lines = "6.400.000"),
+                        preProcess(f,no_lines = "4.800.000"),
+                        preProcess(f,no_lines = "3.200.000"),
+                        preProcess(f,no_lines = "1.500.000"),
+                        preProcess(f,no_lines = "500.000"),
                         setup = benchmarkSetup(),
                         control = list(order="inorder"),
                         times = 1)
@@ -25,8 +21,8 @@ runPreProcessBenchmark <- function(){
   return(res)
 }
 
-preProcess <- function(no_lines){
-  preProcessClusterChunked()
+preProcess <- function(f,no_lines){
+  f()
 }
 
 benchmarkSetup <- function(){
@@ -53,10 +49,35 @@ benchmarkSetup <- function(){
   }
 }
 
-preProcessBenchmarkOverNLinesResult <- runPreProcessBenchmark()
-preProcessBenchmarkOverNLinesResult
-saveRDS(object = preProcessBenchmarkOverNLinesResult,file = "preProcesBenchmarkOverNLinesResult.rds")
+no_cores <- detectCores()
+docs <- readRDS(file="data/docs.rds")
 
+########################################
+#
+# PreprocessClusterChunkedBenchmarks
+#
+########################################
 
+counter <- 0
+preProcessClusterChunkedBenchmarkOverNoLinesResult <- runPreProcessBenchmark(preProcessClusterChunked)
+saveRDS(object = preProcessClusterChunkedBenchmarkOverNoLinesResult,file = "preProcessClusterChunkedBenchmarkOverNoLinesResult.rds")
 
+########################################
+#
+# PreprocessParallelChunkedBenchmarks
+#
+########################################
 
+counter <- 0
+preProcessParallelChunkedBenchmarkOverNoLinesResult <- runPreProcessBenchmark(preProcessParallelChunked)
+saveRDS(object = preProcessParallelChunkedBenchmarkOverNoLinesResult,file = "preProcessParallelChunkedBenchmarkOverNoLinesResult.rds")
+
+########################################
+#
+# PreprocessDoParallelChunkedBenchmarks
+#
+########################################
+
+counter <- 0
+preProcessDoparallelChunkedBenchmarkOverNoLinesResult <- runPreProcessBenchmark(preProcessDoparallelChunked)
+saveRDS(object = preProcessDoparallelChunkedBenchmarkOverNoLinesResult,file = "preProcessDoparallelChunkedBenchmarkOverNoLinesResult.rds")
