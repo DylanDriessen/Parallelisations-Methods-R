@@ -227,8 +227,19 @@ QuantedaCorpus <- function() {
 Deze resultaten zijn bekomen op een dataset van 500.000 documenten.
 De tijd zal zich lineair verhouden t.o.v. de dataset.
 Bevindingen op grotere datasets bevestigen dit, maar zijn niet geplaatst geraakt in een microbenchmark door problemen met het RAM.
+
+##500.000
+
+##1.500.000
 ```{r}
 readRDS(file = "./resources/corpusBenchmark.rds")
 ```
+##3.200.000
+
+##4.800.000
+
+##6.400.000
+
+##8.000.000
 
 Uit deze resultaten kunnen we besluiten dat het package Quanteda het snelste is.

@@ -52,8 +52,7 @@ createDocsChunks <- function(noChunks) {
 
 TMCorpusChunk1Loop <- function() {
   print("TMCorpusChunk1Loop")
-  library(parallel)
-  
+
   # print("Define general function to replace strings in corpus")
   crp.replacePattern <-
     content_transformer(function(x, pattern, replace)
@@ -118,7 +117,6 @@ TMCorpusChunk <- function() {
   ##### Clean unicode characters
   ##### Remove graphical characters
   ids <- 1:length(crp)
-  library(parallel)
   # no_cores <- detectCores() - 1
   # print("split chunks")
   chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
