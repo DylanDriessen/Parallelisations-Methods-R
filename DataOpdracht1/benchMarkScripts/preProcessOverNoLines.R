@@ -1,10 +1,6 @@
 runScriptAfterSource <- TRUE
 
-########################################
-#
-# Run preProcess Benchmarks
-#
-########################################
+#Run preProcess Benchmarks ----
 
 runPreProcessBenchmarks <- function(){
   source("lib/preProcess.r")
@@ -14,50 +10,29 @@ runPreProcessBenchmarks <- function(){
   no_cores <<- detectCores()
   docs <<- readRDS(file="data/docs.rds")
   
-  ########################################
-  #
-  # PreprocessSequential 
-  #
-  ########################################
+  #PreprocessSequential ====
   
   print("PreprocessSequential")
   saveRDS(object = preProcessBenchmark(preProcessSequential),file = "preprocessSequentialChunkedBenchmarkOverNoLinesResult.rds")
   
   
-  ########################################
-  #
-  # PreprocessClusterChunkedBenchmarks
-  #
-  ########################################
+  #PreprocessClusterChunkedBenchmarks ====
   
   print("preProcessClusterChunked")
   saveRDS(object = preProcessBenchmark(preProcessClusterChunked),file = "preProcessClusterChunkedBenchmarkOverNoLinesResult.rds")
   
-  ########################################
-  #
-  # PreprocessParallelChunkedBenchmarks
-  #
-  ########################################
+  #PreprocessParallelChunkedBenchmarks ====
   
   print("preProcessParallelChunked")
   saveRDS(object = preProcessBenchmark(preProcessParallelChunked),file = "preProcessParallelChunkedBenchmarkOverNoLinesResult.rds")
   
-  ########################################
-  #
-  # PreprocessDoParallelChunkedBenchmarks
-  #
-  ########################################
+  #PreprocessDoParallelChunkedBenchmarks ====
   
   print("preProcessDoParallelChunked")
   saveRDS(object = preProcessBenchmark(preProcessDoparallelChunked),file = "preProcessDoparallelChunkedBenchmarkOverNoLinesResult.rds")
 }
 
-########################################
-#
-# PreProcess Benchmark
-#
-########################################
-
+#PreProcess Benchmark over number of lines ----
 preProcessBenchmark <- function(f){
   counter <<- 0
   
@@ -100,7 +75,6 @@ benchmarkSetup <- function(){
     docs <<- head(docs,n= 500000)
   }
 }
-
 
 if(runScriptAfterSource){
   runPreProcessBenchmarks()  
