@@ -1,7 +1,9 @@
 #NOTES + TODO ----
 #CTRL+click op functies in comments werkt ook
-#TODO filepaths in benchmarkOverNoLinesSetup() moeten aangepast worden
-#TODO filepath in clusterOverKBenchmark() moet aangepast worden. Wordt misschien best op een kleine dataset uitgevoerd. maxiter en nruns kan ook nog aangepast worden
+#TODO In benchmarkOverNoLinesSetup() filePaths aanpassen naar de corresponderende DFM.rds files
+#TODO In clusterOverKBenchmark() filepath aanpassen. Wordt misschien best op een kleine dataset uitgevoerd. 
+#TODO In runClusterOverK() KAN nstarts en maxiter nog aangepast worden om sneller te laten runnen.
+
 
 runScriptAfterSource <- TRUE
 
@@ -115,6 +117,8 @@ runClusterOverK <- function(f,k){
   print(paste0("k=",k))
   f(k=k,nstarts=10,maxiter=10)
 }
+
+#Check if script must run on source ----
 
 if(runScriptAfterSource){
   runClusterBenchmarks()  
