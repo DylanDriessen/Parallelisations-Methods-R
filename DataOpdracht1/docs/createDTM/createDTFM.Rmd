@@ -187,7 +187,16 @@ createDFMChunksBind <- function() {
 
 
 ### Benchmarks
+
+##500.000
+
+##1.500.000
 ```{r}
 readRDS("./resources/dtmBenchmark.rds")
 ```
 
+##3.200.000
+
+##6.400.000
+
+##8.000.000
