@@ -73,16 +73,16 @@ readFiles <- function(f = read_sequential){
   print("Read Files Process started.")
   
   ## Read in files and combine to 1 dataframe
-  docs <- f()
+  docss <- f()
   print("Compiling to dataframe 'docs'.")
   
   ## Rename and order columns
   #docs <- ps18b_abstr[,c("appln_id", "appln_abstract", "appln_abstract_lg")]
-  docs <- docs[,c(1, 3, 2)]
-  names(docs) <- c("doc_id", "text", "language")
+  docss <- docss[,c(1, 3, 2)]
+  names(docss) <- c("doc_id", "text", "language")
   
   print("Finished reading batches.")
-  return(docs)
+  return(docss)
 }
 
 ### CALL METHODS
@@ -104,10 +104,9 @@ readFiles_doparallel_foreach_ffdf <- function() {
 
 ### BENCHMARK
 benchmark_read <- function() {
- benchmarkReadFilesSmall <-  microbenchmark(read_clusterapply(), 
-                 read_doparallel_foreach(), 
-                 read_parlapply(), 
-                 read_sequential(),
-                 times = 1)
- saveRDS(benchmarkReadFilesSmall, "~/R/Afstudeerwerk/DataOpdracht1/RShinyDashboardAfstudeer/data/benchmarkReadFilesSmall.rds")
+  microbenchmark(readFiles_clusterapply(), 
+                 readFiles_doparallel_foreach(), 
+                 readFiles_parlapply(), 
+                 readFiles_sequential(),
+                 times = 3)
 }
