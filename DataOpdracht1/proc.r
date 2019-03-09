@@ -1,3 +1,23 @@
+#BENCHMARKS OP
+#500.000
+#1.500.000
+#3.200.000
+#4.800.000
+#6.400.000
+#8.000.000
+
+##VINCENT
+#Readfiles
+
+##PIETER
+#Preprocessing
+#cluster  -->  k , iter , nruns, batchsize
+
+##DYLAN
+#Corpus
+#DTM
+
+
 (.packages())
 
 source("loadPackages.R")
@@ -6,7 +26,7 @@ no_cores <- detectCores()
 save <- TRUE # save to data files
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/medium/"; batches <- 5
+ifn <- "tls203_part"; ifp <- "../../../data/mini/"; batches <- 1
 
 if (save) dir.create("data", showWarnings = FALSE)
 

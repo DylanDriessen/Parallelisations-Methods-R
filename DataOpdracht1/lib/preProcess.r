@@ -45,7 +45,7 @@ preProcessDoparallelChunked <- function(){
   #print("#####################preProcess_DevidedInChunks_doparallel")
   cluster <- makeCluster(no_cores)
   registerDoSNOW(cluster)
-  res <- foreach(chunk = createChunksObjects(no_cores), .combine = c,.export = "preProcessChunk") %dopar% 
+  res <- foreach(chunk = createChunksObjects(no_cores*2), .combine = c,.export = "preProcessChunk") %dopar% 
     preProcessChunk(chunk)
   stopCluster(cluster)
   return(res)
@@ -56,7 +56,7 @@ preProcessParallelChunked <- function(){
   #print("#####################preProcess_DevidedInChunks_parallel")
   
   cluster <- makeCluster(no_cores)
-  res <- parLapply(cluster,createChunksObjects(no_cores),preProcessChunk)
+  res <- parLapply(cluster,createChunksObjects(no_cores*2),preProcessChunk)
   stopCluster(cluster)
   return(unlist(res))
 }
@@ -72,7 +72,7 @@ preProcessClusterChunked <- function() {
   ###################################################
   #print("preProcess_DevidedInChunks_cluster")
   cluster <- makeCluster(no_cores)
-  result <- unlist(clusterApply(cluster, createChunksObjects(no_cores),preProcessChunk)) #Named function gebruikt ca 58% minder ram
+  result <- unlist(clusterApply(cluster, createChunksObjects(no_cores*2),preProcessChunk)) #Named function gebruikt ca 58% minder ram
   stopCluster(cluster)
   return(result)
 }
