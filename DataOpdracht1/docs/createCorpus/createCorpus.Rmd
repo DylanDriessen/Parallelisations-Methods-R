@@ -228,15 +228,35 @@ Deze resultaten zijn bekomen op een dataset van 500.000 documenten.
 De tijd zal zich lineair verhouden t.o.v. de dataset.
 Bevindingen op grotere datasets bevestigen dit, maar zijn niet geplaatst geraakt in een microbenchmark door problemen met het RAM.
 
+##50.000
+```{r}
+readRDS(file = "./resources/bench50k.rds")
+```
+
 ##500.000
+```{r}
+readRDS(file = "./resources/bench500k.rds")
+```
+
 
 ##1.500.000
+Meer chunks gekozen voor Chunk1Loop => 16 chunks ipv 8.
 ```{r}
-readRDS(file = "./resources/corpusBenchmark.rds")
+readRDS(file = "./resources/bench1.5m.rds")
 ```
 ##3.200.000
 
+```{r}
+readRDS(file = "./resources/bench3.2m.rds")
+```
+
+
 ##4.800.000
+
+```{r}
+readRDS(file = "./resources/bench4.8m.rds")
+```
+
 
 ##6.400.000
 
