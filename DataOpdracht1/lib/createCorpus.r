@@ -59,7 +59,7 @@ TMCorpusChunk1Loop <- function() {
       gsub(pattern, replace, x))
   print("createdocsChunks")
   # print("Create docsChunks")
-  docsChunks <- createDocsChunks(64)
+  docsChunks <- createDocsChunks(500)
   cl <- createCorpusCluster()
   registerDoParallel(cl)
   print("forEach loopke")
