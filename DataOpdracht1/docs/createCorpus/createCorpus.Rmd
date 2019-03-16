@@ -1,8 +1,6 @@
 ---
 title: "Create a corpus"
-output:
-  html_document:
-    df_print: paged
+output: html_notebook
 ---
 
 In deze documentatie tonen we aan dat de klassieke [tm-package]() sneller verloopt door middel van parallellisatie. Hiernaast maken we gebruik van een andere package [Quanteda](https://cran.r-project.org/web/packages/quanteda/quanteda.pdf). 
@@ -59,7 +57,7 @@ Met 'clusterEvalQ' laden we de tm-package in op elke core.
 
 ```{r}
 createCorpusCluster <- function() {
-  no_cores <- detectCores() - 1 
+  no_cores <- detectCores() 
   cl <- makeCluster(no_cores, outfile = "")
   clusterEvalQ(cl, {
     library("tm")
@@ -81,7 +79,7 @@ TMCorpusChunk <- function() {
   (crp.replacePattern <- content_transformer(function(x, pattern, replace) gsub(pattern, replace, x)))
   
   ids <- 1:length(crp)
-  no_cores <- detectCores() - 1
+  no_cores <- detectCores()
   chunks <- split(ids, factor(sort(rank(ids) %% no_cores)))
   
   registerDoParallel(cl)
@@ -180,10 +178,10 @@ De tokens worden gecleaned, en deze cleaning zal soms strenger verlopen dan bij 
 
 In *quanteda_options* geven we mee over hoeveel cores quanteda threads kan gebruiken.
 Deze functies blijven ook intern opgeslagen en kunnen opgevraagd worden met *quanteda_options()* in de console.
-
 ```{r}
-quanteda_options()
+quanteda::quanteda_options();
 ```
+
 
 
 ```{r}
@@ -219,27 +217,44 @@ QuantedaCorpus <- function() {
   crpT <- tokens_remove(crpT, "*\\d*")
   
   # SAVE RESULTS
-  save(crpT, file = "crpT.RDa")
+  save(crpT, file = "Quan.RDa")
   return(crpT)
 }
 ```
 
-Deze resultaten zijn bekomen op een dataset van 500.000 documenten.
-De tijd zal zich lineair verhouden t.o.v. de dataset.
-Bevindingen op grotere datasets bevestigen dit, maar zijn niet geplaatst geraakt in een microbenchmark door problemen met het RAM.
+
+##50.000
+```{r}
+readRDS(file = "./resources/bench50k.rds")
+```
 
 ##500.000
+```{r}
+readRDS(file = "./resources/bench500k.rds")
+```
+
 
 ##1.500.000
+Meer chunks gekozen voor Chunk1Loop => 16 chunks ipv 8.
 ```{r}
-readRDS(file = "./resources/corpusBenchmark.rds")
+readRDS(file = "./resources/bench1.5m.rds")
 ```
 ##3.200.000
 
+```{r}
+readRDS(file = "./resources/bench3.2m.rds")
+```
+
+
 ##4.800.000
 
-##6.400.000
+```{r}
+readRDS(file = "./resources/bench4.8m.rds")
+```
 
-##8.000.000
+#![corpusPlot](./resources/Corpus.JPG)
+[
+**Fig. 1:** *Corpus technieken in functie van tijd en grootte van dataset*
+]
 
-Uit deze resultaten kunnen we besluiten dat het package Quanteda het snelste is.
+Uit deze resultaten kunnen we besluiten dat het package Quanteda het snelste is en alsook exponentieel zal verlopen.

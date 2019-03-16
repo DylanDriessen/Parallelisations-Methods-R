@@ -83,13 +83,34 @@ preProcessClusterChunked <- function() {
 
 ***
 
-##Microbenchmark
-
+##Microbenchmarks
+###Vergelijking
 ```{r echo=FALSE}
 print("50.000 lijnen")
 readRDS("./resources/preProcessBenchmark.rds")
 ```
-
+#![vergelijking](./resources/vergelijking.png)
+#![vergelijkingZonderExtremen](./resources/vergelijkingZonderExtremen.png)
+### preProcessSequential
+```{r echo=FALSE}
+readRDS("./resources/preprocessSequentialChunkedBenchmarkOverNoLinesResult.rds")
+```
+#![preProcessSequential](./resources/preProcessSeq.png)
+### preProcessParallelChunked
+```{r echo=FALSE}
+readRDS("./resources/preProcessParallelChunkedBenchmarkOverNoLinesResult.rds")
+```
+#![preProcessParallelChunked](./resources/preProcessParallelChunked.png)
+### preProcessDoparallelChunked
+```{r echo=FALSE}
+readRDS("./resources/preProcessDoparallelChunkedBenchmarkOverNoLinesResult.rds")
+```
+#![preProcessDoparallelChunked](./resources/preProcessDoparallelChunked.png)
+###preProcessClusterChunked
+```{r echo=FALSE}
+readRDS("./resources/preProcessClusterChunkedBenchmarkOverNoLinesResult.rds")
+```
+#![preProcessClusterChunked](./resources/preProcessClusterChunked.png)
 ##Bevindingen
 * Het parallel uitvoeren van named functions gebruikt minder ram dan wanneer we ze anonymous maken.
 * Wanneer we parLappy gaan gebruiken zonder de vector eerst te verdelen in chunks, zien we dat er geen overhead is op vlak van communicatie. Toch is de functie waar we de vector eerst gaan verdelen in chunks een beetje sneller.

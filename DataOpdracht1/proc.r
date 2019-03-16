@@ -26,7 +26,7 @@ no_cores <- detectCores()
 save <- TRUE # save to data files
 
 ## Batches info
-ifn <- "tls203_part"; ifp <- "../../../data/mini/"; batches <- 1
+ifn <- "tls203_part"; ifp <- "../../../data/"; batches <- 4
 
 if (save) dir.create("data", showWarnings = FALSE)
 
@@ -46,7 +46,7 @@ docs <- readFiles_doparallel_foreach()
 docs$id <- 1:nrow(docs)
 
 # save to RDS
-if (save) saveRDS(docs, file="data/docs.rds")
+if (save) saveRDS(docs, file="data/docs_6.4m.rds")
 
 ################################################################################
 # 2 PREPROCESS
@@ -60,7 +60,7 @@ source("lib/preProcess.r")
 docspp$text <- preProcessClusterChunked()
 
 # save to RDS
-if (save) saveRDS(docspp, "data/docspp.rds")
+if (save) saveRDS(docspp, "data/docspp_8m.rds")
 
 # remove docs
 rm(docs); gc()
