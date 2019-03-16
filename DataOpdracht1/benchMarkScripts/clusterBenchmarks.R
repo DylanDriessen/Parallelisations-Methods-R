@@ -18,34 +18,34 @@ runClusterBenchmarks <- function(){
   
   #SKMEANS Sequential====
   
-  print("skmeansCluster")
-  saveRDS(object = clusterOverNoLinesBenchmark(skmeansCluster),file = "skmeansClusterBenchmarkOverNoLinesResult.rds")
-  saveRDS(object = clusterOverKBenchmark(skmeansCluster),file = "skmeansClusterBenchmarkOverKResult.rds")
+  # print("skmeansCluster")
+  # saveRDS(clusterOverNoLinesBenchmark(skmeansCluster),file = "skmeansClusterBenchmarkOverNoLinesResult.rds")
+  # saveRDS(clusterOverKBenchmark(skmeansCluster),file = "skmeansClusterBenchmarkOverKResult.rds")
   
   #SKMEANS Parallel ====
 
-  print("skmeansClusterPar")
-  saveRDS(object = clusterOverNoLinesBenchmark(skmeansClusterPar),file = "skmeansClusterParBenchmarkOverNoLinesResult.rds")
-  saveRDS(object = clusterOverKBenchmark(skmeansClusterPar),file = "skmeansClusterParBenchmarkOverKResult.rds")
+  # print("skmeansClusterPar")
+  # saveRDS(clusterOverNoLinesBenchmark(skmeansClusterPar),file = "skmeansClusterParBenchmarkOverNoLinesResult.rds")
+  # saveRDS(clusterOverKBenchmark(skmeansClusterPar),file = "skmeansClusterParBenchmarkOverKResult.rds")
 
   #SKMEANS doParallel====
 
-  print("skmeansClusterDoPar")
-  saveRDS(object = clusterOverNoLinesBenchmark(skmeansClusterDoPar),file = "skmeansClusterDoParBenchmarkOverNoLinesResult.rds")
-  saveRDS(object = clusterOverKBenchmark(skmeansClusterDoPar),file = "skmeansClusterDoParBenchmarkOverKResult.rds")
+  # print("skmeansClusterDoPar")
+  # saveRDS(clusterOverNoLinesBenchmark(skmeansClusterDoPar),file = "skmeansClusterDoParBenchmarkOverNoLinesResult.rds")
+  # saveRDS(clusterOverKBenchmark(skmeansClusterDoPar),file = "skmeansClusterDoParBenchmarkOverKResult.rds")
 
   #SKMEANSclusterApply Iteration ====
 
   print("skmeansClusterParIter")
-  saveRDS(object = clusterOverNoLinesBenchmark(skmeansClusterParIter),file = "skmeansClusterParIterBenchmarkOverNoLinesResult.rds")
-  saveRDS(object = clusterOverKBenchmark(skmeansClusterParIter),file = "skmeansClusterParIterBenchmarkOverKResult.rds")
+  saveRDS(clusterOverNoLinesBenchmark(skmeansClusterParIter),file = "skmeansClusterParIterBenchmarkOverNoLinesResult.rds")
+  saveRDS(clusterOverKBenchmark(skmeansClusterParIter),file = "skmeansClusterParIterBenchmarkOverKResult.rds")
 
   #SKMEANS doParallel Iterations ====
 
 
   print("skmeansClusterDoParIter")
-  saveRDS(object = clusterOverNoLinesBenchmark(skmeansClusterDoParIter),file = "skmeansClusterDoParIterBenchmarkOverNoLinesResult.rds")
-  saveRDS(object = clusterOverKBenchmark(skmeansClusterDoParIter),file = "skmeansClusterDoParIterBenchmarkOverKResult.rds")
+  saveRDS(clusterOverNoLinesBenchmark(skmeansClusterDoParIter),file = "skmeansClusterDoParIterBenchmarkOverNoLinesResult.rds")
+  saveRDS(clusterOverKBenchmark(skmeansClusterDoParIter),file = "skmeansClusterDoParIterBenchmarkOverKResult.rds")
 }
 
 
@@ -56,12 +56,11 @@ clusterOverNoLinesBenchmark <- function(f){
   
   print("Benchmark cluster over")
   
-  res <- microbenchmark(runClusterOverNoLines(f,no_lines = "8.000.000"),
-                        runClusterOverNoLines(f,no_lines = "6.400.000"),
-                        runClusterOverNoLines(f,no_lines = "4.800.000"),
+  res <- microbenchmark(runClusterOverNoLines(f,no_lines = "4.800.000"),
                         runClusterOverNoLines(f,no_lines = "3.200.000"),
                         runClusterOverNoLines(f,no_lines = "1.500.000"),
                         runClusterOverNoLines(f,no_lines = "500.000"),
+                        runClusterOverNoLines(f,no_lines = "50.000"),
                         setup = benchmarkOverNoLinesSetup(), #Runs without getting benchmarked 
                         control = list(order="inorder"),
                         times = 1)
@@ -77,31 +76,31 @@ benchmarkOverNoLinesSetup <- function(){
   
   counter <<- counter + 1
   if(counter == 1){
-    print("8000000 lines")
-    DFM <<- readRDS(file="data/DFM.rds")
+    print("50000 lines")
+    DFM <<- readRDS(file="data/DFM_50k.rds")
   }else if(counter == 2){
-    print("6400000 lines")
-    DFM <<- readRDS(file="data/DFM.rds")
-  }else if(counter == 3){
-    print("4800000 lines")
-    DFM <<- readRDS(file="data/DFM.rds")
-  }else if(counter == 4){
-    print("3200000 lines")
-    DFM <<- readRDS(file="data/DFM.rds")
-  }else if(counter == 5){
-    print("1500000 lines")
-    DFM <<- readRDS(file="data/DFM.rds")
-  }else if(counter == 6){
     print("500000 lines")
-    DFM <<- readRDS(file="data/DFM.rds")
+    DFM <<- readRDS(file="data/DFM_500k.rds")
   }
+  else if(counter == 3){
+    print("1500000 lines")
+    DFM <<- readRDS(file="data/DFM_1.5m.rds")
+  }
+  else if(counter == 4){
+    print("3200000 lines")
+    DFM <<- readRDS(file="data/DFM_3.2m.rds")
+  }
+  # else if(counter == 4){
+  #   print("4800000 lines")
+  #   DFM <<- readRDS(file="data/DFM_4.8m.rds")
+  # }
 }
 
 #Cluster over k's Benchmark ----
 
 clusterOverKBenchmark <- function(f){
   counter <<- 0
-  DFM <<- readRDS(file="data/DFM.rds")
+  DFM <<- readRDS(file="data/DFM_50k.rds")
   
   print("Benchmark cluster over")
   
