@@ -52,6 +52,7 @@ skmeansClusterPar <- function(k,nstarts,maxiter) {
   return(result[[1]])
 }
 ```
+
 ####DoParallel
 ```{r}
 skmeansClusterDoPar <- function(k,nstarts,maxiter) {
@@ -112,6 +113,50 @@ skmeansClusterDoParIter <- function(k,nstarts,maxiter) {
 }
 ```
 ###Benchmark
+
+####SEQ
+```{r echo=FALSE}
+readRDS("./resources/overNlines/skmeansClusterBenchmarkOverNoLinesResult.rds")
+```
+```{r echo=FALSE}
+readRDS("./resources/overK/skmeansClusterBenchmarkOverKResult.rds")
+```
+
+####DoPar
+```{r echo=FALSE}
+readRDS("./resources/overNlines/skmeansClusterDoParBenchmarkOverNoLinesResult.rds")
+```
+```{r echo=FALSE}
+readRDS("./resources/overK/skmeansClusterDoParBenchmarkOverKResult.rds")
+```
+
+####DoParIter
+```{r echo=FALSE}
+readRDS("./resources/overNlines/skmeansClusterDoParIterBenchmarkOverNoLinesResult.rds")
+```
+```{r echo=FALSE}
+readRDS("./resources/overK/skmeansClusterDoParIterBenchmarkOverKResult.rds")
+```
+
+####Par
+```{r echo=FALSE}
+readRDS("./resources/overNlines/skmeansClusterParBenchmarkOverNoLinesResult.rds")
+```
+```{r echo=FALSE}
+readRDS("./resources/overK/skmeansClusterParBenchmarkOverKResult.rds")
+```
+
+####ParIter
+```{r echo=FALSE}
+readRDS("./resources/overNlines/skmeansClusterParIterBenchmarkOverNoLinesResult.rds")
+```
+```{r echo=FALSE}
+  readRDS("./resources/overK/skmeansClusterParIterBenchmarkOverKResult.rds")
+```
+
+###Vergelijking
+Clustering over 500000 lijnen
+#![tmp](./resources/ClusteringComp.png)
 
 
 ###Aantal clusters in functie van de tijd
