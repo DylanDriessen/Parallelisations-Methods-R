@@ -56,3 +56,4 @@ vignettes/*.pdf
 
 /DataOpdracht1/results/*
 !DataOpdracht1/docs/preProcessing/resources/*.rds
+!DataOpdracht1/docs/readFiles/resources/*.rds
