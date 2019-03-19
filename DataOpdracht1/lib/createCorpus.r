@@ -59,7 +59,7 @@ TMCorpusChunk1Loop <- function() {
       gsub(pattern, replace, x))
   print("createdocsChunks")
   # print("Create docsChunks")
-  docsChunks <- createDocsChunks(no_cores)
+  docsChunks <- createDocsChunks(500)
   cl <- createCorpusCluster()
   registerDoParallel(cl)
   print("forEach loopke")
@@ -264,7 +264,7 @@ TMCorpus <- function() {
 QuantedaCorpus <- function() {
   print("QuantedaCorpus")
   
-  quanteda_options(threads = no_cores, verbose = TRUE)
+  quanteda_options(threads = 16, verbose = TRUE)
   
   # print("Creating Quanteda Corpus")
   print("QuantedaCorpus")

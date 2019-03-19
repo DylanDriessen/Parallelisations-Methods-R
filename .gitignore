@@ -57,3 +57,6 @@ vignettes/*.pdf
 /DataOpdracht1/results/*
 !DataOpdracht1/docs/preProcessing/resources/*.rds
 !DataOpdracht1/docs/readFiles/resources/*.rds
+!DataOpdracht1/docs/cluster/resources/overK/*.rds
+!DataOpdracht1/docs/cluster/resources/overNlines/*.rds
+!DataOpdracht1/docs/cluster/resources/*.rds

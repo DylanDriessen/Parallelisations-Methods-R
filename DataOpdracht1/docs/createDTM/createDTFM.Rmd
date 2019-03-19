@@ -1,8 +1,6 @@
 ---
 title: "Create a Document Term/Feature Matrix"
-output:
-  html_document:
-    df_print: paged
+output: html_notebook
 ---
 
 In deze documentatie gaan we bekijken hoe we efficiënter een Document Term Matrix (DTM) en een Document Feature Matrix (DFM) kunnen creëren.
@@ -90,8 +88,18 @@ Cosine clustering zal een fout geven als er zero rows zouden zijn in de DFM, doo
 createDFMnormal <- function() {
   dtm_raw <- dfm(docsCorpusQuan)
   rowSums(dtm_raw, na.rm = FALSE)
-  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
-  
+    tryCatch(
+    {
+      print("try1")
+      dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+      print("try")
+      return(dtm_raw)
+    },
+    error = function(condition) {
+    print("catch")
+    return(dtm_raw)
+    }
+  )
   return(dtm_raw)
 }
 ```
@@ -102,9 +110,19 @@ Zo kunnen er ook functies van de tm-package op de originele DFM uitgevoerd worde
 ```{r}
 createDFMasDTM <- function() {
   dtm_raw <- dfm(docsCorpusQuan)
-  dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+  tryCatch(
+    {
+      print("try1")
+      dtm_raw <- dtm_raw[rowSums(dtm_raw[,-1]) != 0,]
+      print("try")
+      return(dtm_raw)
+    },
+    error = function(condition) {
+    print("catch")
+    return(dtm_raw)
+    }
+  )
   dtm_raw <- convert(dtm_raw, to = "tm")
-
   return(dtm_raw)
 }
 ```
@@ -163,13 +181,13 @@ DFM blijft hetzelfde werken zoals hierboven uitgelegd.
 ```{r}
 createDFMChunksBind <- function() {
   cl <- makeCreateDFMCluster()
-  no_cores <- detectCores()
+  # no_cores <- detectCores() - 1
   registerDoParallel(cl)
   dfmList <- list()
-  docrows <- nrow(docs)
+  docrows <- nrow(docsCorpusQuan)
   dc <- docsCorpusQuan
   dfmList <-
-    foreach(i = 1:no_cores, .combine = rbind) %dopar% {
+    foreach(i = 1:no_cores*2, .combine = rbind, .export = "no_cores") %dopar% {
       og <- round((i - 1) * docrows / no_cores) + 1
       print(paste(no_cores, docrows))
       bg <- round(docrows / no_cores * i)
@@ -179,24 +197,48 @@ createDFMChunksBind <- function() {
     }
   
   stopCluster(cl)
-  dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
-  
-  return(dfmList)
+  tryCatch(
+    {
+      print("try1")
+      dfmList <- dfmList[rowSums(dfmList[,-1]) != 0,]
+      print("try")
+      return(dfmList)
+    },
+    error = function(condition) {
+      print("catch")
+      return(dfmList)
+    }
+  )
 }
 ```
 
 
 ### Benchmarks
+##50.000
+```{r}
+readRDS("./resources/benchmark50k.rds")
+```
 
 ##500.000
-
+```{r}
+readRDS("./resources/benchmark500k.rds")
+```
 ##1.500.000
 ```{r}
-readRDS("./resources/dtmBenchmark.rds")
+readRDS("./resources/benchmark1.5m.rds")
 ```
 
 ##3.200.000
+```{r}
+readRDS("./resources/benchmark3.2m.rds")
+```
 
-##6.400.000
+##4.800.000
+```{r}
+readRDS("./resources/benchmark4.8m.rds")
+```
 
-##8.000.000
+#![corpusPlot](./resources/DTM.JPG)
+[
+**Fig. 1:** *DTM en DFM technieken in functie van tijd en grootte van dataset*
+]
