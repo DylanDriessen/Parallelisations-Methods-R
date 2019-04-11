@@ -62,8 +62,15 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-DataOpdracht1/RShinyDashboardAfstudeer/* linguist-vendored
-DataOpdracht1/RShinyDashboardAfstudeer/www/index.html linguist-vendored
+* linguist-vendored
+*.Rdata linguist-vendored=false
+*.rdb linguist-vendored=false
+*.rds  linguist-vendored=false
+*.Rd linguist-vendored=false
+*.Rmd linguist-vendored=false
+*.R linguist-vendored=false
+*.Rdx linguist-vendored=false
+
 # Basic .gitattributes for a R repo.
 
 # Source files
