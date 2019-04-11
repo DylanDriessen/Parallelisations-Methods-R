@@ -70,6 +70,7 @@
 *.Rmd linguist-vendored=false
 *.R linguist-vendored=false
 *.Rdx linguist-vendored=false
+*.sh linguist-vendored=false
 
 # Basic .gitattributes for a R repo.
 
