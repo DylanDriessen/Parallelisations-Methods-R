@@ -63,3 +63,4 @@
 #*.RTF   diff=astextplain
 
 DataOpdracht1/RShinyDashboardAfstudeer/* linguist-vendored
+DataOpdracht1/RShinyDashboardAfstudeer/www/index.html linguist-vendored
